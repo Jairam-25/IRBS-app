@@ -1,1 +1,15 @@
-<p>train-list works!</p>
+<h2>Select Train</h2>
+
+<div class="form-group">
+  <label for="date">Travel Date</label>
+  <input id="date" type="date" [(ngModel)]="selectedDate" />
+</div>
+
+<div *ngFor="let train of trains" class="train-card">
+  <h3>{{ train.trainName }}</h3>
+  <p>{{ train.fromStation }} → {{ train.toStation }}</p>
+
+  <button (click)="selectTrain(train.id)">
+    Select Train
+  </button>
+</div>

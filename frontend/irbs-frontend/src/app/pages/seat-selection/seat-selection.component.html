@@ -1,1 +1,18 @@
-<p>seat-selection works!</p>
+<h2>Seat Selection</h2>
+
+<p>Train ID: {{ trainId }}</p>
+<p>Date: {{ date }}</p>
+
+<div class="seat-grid">
+  <div *ngFor="let seat of seats"
+       [ngClass]="getSeatClass(seat)"
+       (click)="selectSeat(seat)">
+    {{ seat }}
+  </div>
+</div>
+
+<br>
+
+<button (click)="bookSeat()" [disabled]="!selectedSeat">
+  Book Seat
+</button>
