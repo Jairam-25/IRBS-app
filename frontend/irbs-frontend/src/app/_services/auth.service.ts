@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class AuthService {
 
-  private apiUrl = 'https://localhost:5001/api/auth'; // your .NET API
+  private apiUrl = 'https://localhost:7280/api/Auth'; // your .NET API
 
   constructor(private http: HttpClient) {}
 

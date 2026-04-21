@@ -1,0 +1,216 @@
+/* Wrapper */
+.auth-wrapper {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  overflow: hidden;
+}
+
+/* Info section */
+.auth-info {
+  color: #fff;
+  width: 40%;
+  z-index: 2;
+}
+
+.auth-info h1 {
+  font-size: 40px;
+  font-weight: 600;
+}
+
+.auth-info p {
+  margin: 15px 0;
+  color: #ddd;
+}
+
+.auth-info ul {
+  margin-top: 10px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.auth-info li {
+  margin-bottom: 8px;
+}
+
+/* Login card */
+.auth-card {
+  background: #fff;
+  padding: 40px;
+  border-radius: 16px;
+  width: 380px;
+  z-index: 2;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* Inputs */
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+/* Button */
+.btn-login {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #667eea;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+
+/* Hover animation */
+.btn-login {
+  transition: all 0.3s ease;
+}
+
+.btn-login:hover {
+  transform: translateY(-2px) scale(1.02);
+  background: #3b8eea;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* Click (press) effect */
+.btn-login:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* 🌊 Bubbles */
+.bubbles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+}
+
+/* Each bubble */
+.bubbles span {
+  position: absolute;
+  bottom: -100px;
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  animation: rise 10s linear infinite;
+}
+
+/* Random positions */
+.bubbles span:nth-child(1) { left: 10%; animation-duration: 8s; }
+.bubbles span:nth-child(2) { left: 25%; animation-duration: 12s; }
+.bubbles span:nth-child(3) { left: 40%; animation-duration: 10s; }
+.bubbles span:nth-child(4) { left: 60%; animation-duration: 14s; }
+.bubbles span:nth-child(5) { left: 75%; animation-duration: 9s; }
+.bubbles span:nth-child(6) { left: 90%; animation-duration: 11s; }
+
+/* Animation */
+@keyframes rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(-100vh) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Loader wrapper inside button */
+.train-loader {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Track line */
+.track {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: rgba(255,255,255,0.6);
+  bottom: 5px;
+}
+
+/* Train container */
+.mini-train {
+  display: flex;
+  gap: 4px;
+  position: absolute;
+  left: -60px;
+  animation: moveTrain 1.2s linear infinite;
+}
+
+/* Engine */
+.mini-train .engine {
+  width: 12px;
+  height: 10px;
+  background: #fff;
+  border-radius: 2px;
+}
+
+/* Coaches */
+.mini-train .coach {
+  width: 10px;
+  height: 10px;
+  background: #e0e0e0;
+  border-radius: 2px;
+}
+
+/* Movement */
+@keyframes moveTrain {
+  0% {
+    left: -60px;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* ----------------------------------------------------------------------------------------- */
+
+/* Disable look */
+.btn-login:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Spinner */
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #fff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Center spinner in button */
+.btn-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Spin animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

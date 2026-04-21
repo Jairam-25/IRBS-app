@@ -1,1 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f7fa;
+  color: #333;
+}
+
+h1, h2, h3 {
+  font-weight: 600;
+}
+
+p {
+  font-weight: 400;
+  color: #666;
+}
+
+input, button {
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.auth-card {
+  font-size: 14px;
+  letter-spacing: 0.3px;
+}
