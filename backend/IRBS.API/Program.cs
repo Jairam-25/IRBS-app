@@ -6,7 +6,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🔐 JWT Config
+// JWT Config
 var jwt = builder.Configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwt["Key"]);
 
@@ -33,7 +33,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// 🟢 Services
+// Services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -56,13 +56,13 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// 🟢 DB
+// DB
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
-// 🟢 Middleware
+// Middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

@@ -24,7 +24,7 @@ namespace IRBS.API.Controllers
             _config = config;
         }
 
-        // 🔐 Register
+        // Register
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDTO dto)
         {
@@ -44,7 +44,7 @@ namespace IRBS.API.Controllers
             return Ok("User registered successfully");
         }
 
-        // 🔐 Login
+        // Login
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO dto)
         {
@@ -64,7 +64,7 @@ namespace IRBS.API.Controllers
             return Ok(new { token });
         }
 
-        // 🔒 Hash Password
+        // Hash Password
         private string HashPassword(string password)
         {
             using var sha256 = SHA256.Create();
@@ -73,7 +73,7 @@ namespace IRBS.API.Controllers
             return Convert.ToBase64String(hash);
         }
 
-        // 🔑 Generate JWT
+        // Generate JWT
         private string GenerateJwtToken(User user)
         {
             var jwt = _config.GetSection("Jwt");
