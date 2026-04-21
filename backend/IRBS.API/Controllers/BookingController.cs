@@ -40,12 +40,20 @@ namespace IRBS.API.Controllers
                 b.SeatNumber == booking.SeatNumber);
 
             if (exists)
-                return BadRequest("Seat already booked");
+                return BadRequest(new
+                {
+                    success = true,
+                    message = "Seat already booked"
+                });
 
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
 
-            return Ok("Seat booked successfully");
+            return Ok(new
+            {
+                success = true,
+                message = "Seat booked successfully"
+            });
         }
     }
 }
