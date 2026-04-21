@@ -1,0 +1,114 @@
+/* Background */
+.home-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: white;
+  padding: 20px;
+}
+
+/* Header */
+.home-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.home-header h1 {
+  font-size: 32px;
+}
+
+.home-header p {
+  opacity: 0.8;
+}
+
+/* Layout */
+.home-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Sections */
+.train-section,
+.seat-section {
+  flex: 1;
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+/* Train card */
+.train-card {
+  background: white;
+  color: black;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.train-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.train-card button {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border: none;
+  background: #4facfe;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Seat grid */
+.seat-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.seat-grid div {
+  background: #fff;
+  color: black;
+  padding: 10px;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.seat-grid div:hover {
+  background: #4facfe;
+  color: white;
+}
+
+/* seat states */
+.selected {
+  background: #00c853 !important;
+  color: white;
+}
+
+.booked {
+  background: #ff5252 !important;
+  color: white;
+  cursor: not-allowed;
+}
+
+/* Button */
+.book-btn {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px;
+  background: #667eea;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.book-btn:disabled {
+  opacity: 0.5;
+}

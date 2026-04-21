@@ -1,1 +1,67 @@
-<p>home works!</p>
+<div class="home-wrapper">
+
+  <!-- HEADER -->
+  <div class="search-section">
+    <h2>🚆 IRBS Train Booking</h2>
+
+    <div class="form-group">
+      <label>Travel Date</label>
+      <input
+  type="date"
+  [(ngModel)]="selectedDate"
+  (change)="onDateChange()" />
+    </div>
+  </div>
+
+  <!-- TRAIN LIST -->
+  <div class="train-list">
+    <h3>Available Trains</h3>
+
+    <div *ngFor="let train of trains" class="train-card">
+
+      <div class="train-info">
+        <h4>{{ train.trainName }}</h4>
+        <p>{{ train.fromStation }} ➜ {{ train.toStation }}</p>
+      </div>
+
+      <button (click)="selectTrain(train)">
+        Select Train
+      </button>
+
+    </div>
+  </div>
+
+  <!-- SEAT SECTION -->
+  <div class="seat-section" *ngIf="selectedTrain">
+
+    <h3>Seat Selection</h3>
+
+    <p>
+      Train: <b>{{ selectedTrain.trainName }}</b>
+    </p>
+
+    <p>
+      Date: <b>{{ selectedDate }}</b>
+    </p>
+
+    <div class="seat-grid">
+      <div
+        *ngFor="let seat of seats"
+        [ngClass]="getSeatClass(seat)"
+        (click)="selectSeat(seat)"
+      >
+        {{ seat }}
+      </div>
+    </div>
+
+    <button
+      class="book-btn"
+      (click)="bookSeat()"
+      [disabled]="!selectedSeat"
+    >
+      Book Seat
+    </button>
+
+  </div>
+
+</div>

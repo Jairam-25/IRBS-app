@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { TrainService } from '../../_services/train.service';
 
 @Component({
   selector: 'app-seat-selection',
@@ -10,37 +10,44 @@ import { CommonModule } from '@angular/common';
   templateUrl: './seat-selection.component.html',
   styleUrls: ['./seat-selection.component.css']
 })
-export class SeatSelectionComponent implements OnInit {
+export class SeatSelectionComponent implements OnInit, OnDestroy {
 
   seats: string[] = [];
   bookedSeats: string[] = [];
-  selectedSeat: string = '';
+
+  selectedSeats: string[] = [];
 
   trainId!: number;
   date!: string;
 
+  private intervalId: any;
+
   constructor(
-    private http: HttpClient,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private trainService: TrainService
   ) {}
 
   ngOnInit(): void {
 
     this.route.queryParams.subscribe(params => {
-      this.trainId = params['trainId'];
+      this.trainId = +params['trainId'];
       this.date = params['date'];
 
       this.generateSeats();
       this.loadBookedSeats();
 
-      // 🔄 Auto refresh
-      setInterval(() => {
+      // refresh booked seats safely
+      this.intervalId = setInterval(() => {
         this.loadBookedSeats();
       }, 5000);
     });
   }
 
-  // 🎟️ Generate seats
+  ngOnDestroy(): void {
+    clearInterval(this.intervalId);
+  }
+
+  // 🚆 Seat layout
   generateSeats() {
     this.seats = [];
     const rows = ['A', 'B', 'C', 'D'];
@@ -52,52 +59,63 @@ export class SeatSelectionComponent implements OnInit {
     }
   }
 
-  // 🔍 Get booked seats
+  // 🔄 API call
   loadBookedSeats() {
-    this.http.get<string[]>(
-      `http://localhost:5041/api/booking/seats?trainId=${this.trainId}&date=${this.date}`
-    ).subscribe(res => {
-      this.bookedSeats = res;
-    });
+    this.trainService.getBookedSeats(this.trainId, this.date)
+      .subscribe({
+        next: (res: any) => {
+          this.bookedSeats = res || [];
+        },
+        error: (err) => console.error('Booked seats error', err)
+      });
   }
 
-  // 🎨 Select seat
+  // 🎯 MULTI SELECT (IMPORTANT FIX)
   selectSeat(seat: string) {
+
     if (this.bookedSeats.includes(seat)) return;
-    this.selectedSeat = seat;
+
+    if (this.selectedSeats.includes(seat)) {
+      this.selectedSeats = this.selectedSeats.filter(s => s !== seat);
+    } else {
+      this.selectedSeats = [...this.selectedSeats, seat];
+    }
   }
 
-  // 🎟️ Book seat
+  // 🎟️ BOOK MULTIPLE SEATS
   bookSeat() {
-    const token = localStorage.getItem('token');
 
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
-    });
+    if (this.selectedSeats.length === 0) {
+      alert('Select at least one seat');
+      return;
+    }
 
     const body = {
       trainId: this.trainId,
-      seatNumber: this.selectedSeat,
+      seatNumbers: this.selectedSeats,
       travelDate: this.date
     };
 
-    this.http.post('http://localhost:5041/api/booking/book', body, { headers })
+    this.trainService.bookSeat(body)
       .subscribe({
-        next: () => {
-          alert('Seat booked successfully!');
-          this.selectedSeat = '';
+        next: (res: any) => {
+          alert(res?.message || 'Booked successfully 🚆');
+          this.selectedSeats = [];
           this.loadBookedSeats();
         },
-        error: err => {
-          alert(err.error);
+        error: (err) => {
+          alert(err.error?.message || err.error);
         }
       });
   }
 
-  // 🎨 Seat color
+  // 🎨 UI STATE
   getSeatClass(seat: string) {
+
     if (this.bookedSeats.includes(seat)) return 'booked';
-    if (this.selectedSeat === seat) return 'selected';
+
+    if (this.selectedSeats.includes(seat)) return 'selected';
+
     return 'available';
   }
 }
