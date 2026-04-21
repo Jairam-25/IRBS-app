@@ -1,4 +1,4 @@
-<div class="auth-wrapper" @pageAnimation>
+<div class="auth-wrapper" [class.loading]="isLoading" @pageAnimation>
 
   <!-- Background bubbles -->
   <div class="bubbles">
@@ -51,5 +51,12 @@
       </button>
     </form>
   </div>
+
+  <div class="station-overlay" *ngIf="isSuccess">
+  <div class="station-text">
+    🚉 Arrived at Station
+    <span>Welcome aboard IRBS</span>
+  </div>
+</div>
 
 </div>

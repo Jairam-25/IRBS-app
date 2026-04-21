@@ -35,12 +35,9 @@ export class LoginComponent {
   email = '';
   password = '';
   isLoading = false;
+  isSuccess = false;
 
   bubbles = Array(6);
-
-//   onLogin() {
-//   console.log("Login clicked"); // add this
-// }
 
   onLogin() {
   const data = {
@@ -53,19 +50,21 @@ export class LoginComponent {
       console.log('Login success', res);
 
       this.isLoading = true;
+      this.isSuccess = false;
 
       // simulate API call OR replace with real API
       setTimeout(() => {
         this.isLoading = false;
-        this.router.navigate(['/dashboard']);
-      }, 1500);
+        this.isSuccess = true;
+        this.router.navigate(['/home']);
+      }, 1200);
 
       localStorage.setItem('token', res.token);
-      setTimeout(() => {
-        this.router.navigate(['/home']);
-      }, 300);
-      // this.router.navigate(['/home']);
-    },
+        setTimeout(() => {
+          this.router.navigate(['/home']);
+        }, 300);
+        // this.router.navigate(['/home']);
+      },
       error: (err) => {
         console.error('Login failed', err);
         alert('Invalid credentials');
