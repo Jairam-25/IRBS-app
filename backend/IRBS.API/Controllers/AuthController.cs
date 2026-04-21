@@ -41,7 +41,11 @@ namespace IRBS.API.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return Ok("User registered successfully");
+            return Ok(new
+            {
+                success = true,
+                message = "User registered successfully"
+            });
         }
 
         // Login
@@ -61,7 +65,11 @@ namespace IRBS.API.Controllers
 
             var token = GenerateJwtToken(user);
 
-            return Ok(new { token });
+            return Ok(new
+            {
+                token = token,
+                message = "Login successful"
+            });
         }
 
         // Hash Password
