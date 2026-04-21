@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 import { AuthService } from '../../_services/auth.service';
-import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, CommonModule ],
+  imports: [FormsModule, CommonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
   animations: [
@@ -19,11 +19,6 @@ import { trigger, transition, style, animate } from '@angular/animations';
         animate('400ms ease-out',
           style({ opacity: 1, transform: 'translateY(0)' })
         )
-      ]),
-      transition(':leave', [
-        animate('300ms ease-in',
-          style({ opacity: 0, transform: 'translateY(-20px)' })
-        )
       ])
     ])
   ]
@@ -32,42 +27,83 @@ export class LoginComponent {
 
   constructor(private auth: AuthService, private router: Router) {}
 
+  // form fields
+  name = '';
   email = '';
   password = '';
+
+  // states
   isLoading = false;
   isSuccess = false;
+  isRegisterMode = false;
 
   bubbles = Array(6);
 
-  onLogin() {
-  const data = {
-    email: this.email,
-    password: this.password
-  };
+  toggleMode() {
+    this.isRegisterMode = !this.isRegisterMode;
+  }
 
-  this.auth.login(data).subscribe({
-    next: (res) => {
-      console.log('Login success', res);
+  onSubmit() {
+    if (this.isRegisterMode) {
+      this.register();
+    } else {
+      this.login();
+    }
+  }
 
-      this.isLoading = true;
-      this.isSuccess = false;
+  // LOGIN
+  login() {
+    const data = {
+      email: this.email,
+      password: this.password
+    };
 
-      // simulate API call OR replace with real API
-      setTimeout(() => {
-        this.isLoading = false;
-        this.isSuccess = true;
-        this.router.navigate(['/home']);
-      }, 1200);
+    this.auth.login(data).subscribe({
+      next: (res) => {
+        console.log('Login success', res);
 
-      localStorage.setItem('token', res.token);
+        this.isLoading = true;
+        this.isSuccess = false;
+
+        localStorage.setItem('token', res.token);
+
         setTimeout(() => {
-          this.router.navigate(['/home']);
-        }, 300);
-        // this.router.navigate(['/home']);
+          this.isLoading = false;
+          this.isSuccess = true;
+
+          setTimeout(() => {
+            this.router.navigate(['/home']);
+          }, 800);
+
+        }, 1200);
       },
       error: (err) => {
         console.error('Login failed', err);
         alert('Invalid credentials');
+      }
+    });
+  }
+
+  // REGISTER
+  register() {
+    const data = {
+      name: this.name,
+      email: this.email,
+      password: this.password
+    };
+
+    this.auth.register(data).subscribe({
+      next: (res) => {
+        console.log('Register success', res);
+
+        alert('Registration successful 🚉 Please login');
+
+        this.isRegisterMode = false;
+        this.password = '';
+      },
+      error: (err) => {
+        console.error('Register failed', err);
+        alert('Registration failed');
       }
     });
   }

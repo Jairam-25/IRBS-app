@@ -5,13 +5,13 @@
     <span *ngFor="let b of bubbles"></span>
   </div>
 
-  <!-- Left: Info Section -->
+  <!-- Left info -->
   <div class="auth-info">
     <h1>IRBS</h1>
     <h3>Indian Railway Booking System</h3>
+
     <p>
       Search trains, check seat availability, and book tickets instantly.
-      Built for speed, reliability, and real-time booking experience.
     </p>
 
     <ul>
@@ -21,42 +21,58 @@
     </ul>
   </div>
 
-  <!-- Right: Login -->
+  <!-- Right card -->
   <div class="auth-card">
-    <h2>Login</h2>
 
-    <form (ngSubmit)="onLogin()">
-      <div class="form-group">
-        <input type="email" [(ngModel)]="email" name="email" placeholder="Email" required />
-      </div>
+    <h2>{{ isRegisterMode ? 'Register' : 'Login' }}</h2>
 
-      <div class="form-group">
-        <input type="password" [(ngModel)]="password" name="password" placeholder="Password" required />
-      </div>
+    <!-- Name only for register -->
+    <div class="form-group" *ngIf="isRegisterMode">
+      <input type="text" [(ngModel)]="name" name="name" placeholder="Name" />
+    </div>
 
-      <button class="btn-login" [disabled]="isLoading" (click)="onLogin()">
+    <div class="form-group">
+      <input type="email" [(ngModel)]="email" name="email" placeholder="Email" />
+    </div>
 
-        <span *ngIf="!isLoading">Login</span>
+    <div class="form-group">
+      <input type="password" [(ngModel)]="password" name="password" placeholder="Password" />
+    </div>
 
-        <div *ngIf="isLoading" class="train-loader">
-            <div class="track"></div>
+    <button class="btn-login" (click)="onSubmit()" [disabled]="isLoading">
 
-            <div class="mini-train">
-            <div class="engine"></div>
-            <div class="coach"></div>
-            <div class="coach"></div>
-            </div>
+      <span *ngIf="!isLoading">
+        {{ isRegisterMode ? 'Register' : 'Login' }}
+      </span>
+
+      <div *ngIf="isLoading" class="train-loader">
+        <div class="track"></div>
+        <div class="mini-train">
+          <div class="engine"></div>
+          <div class="coach"></div>
+          <div class="coach"></div>
         </div>
+      </div>
 
-      </button>
-    </form>
+    </button>
+
+    <p style="cursor:pointer; text-decoration: underline; margin-top:20px; color:#f70000;"
+       (click)="toggleMode()">
+
+      {{ isRegisterMode
+        ? 'Already have account? Login'
+        : 'Create new account?' }}
+
+    </p>
+
   </div>
 
+  <!-- Success station effect -->
   <div class="station-overlay" *ngIf="isSuccess">
-  <div class="station-text">
-    🚉 Arrived at Station
-    <span>Welcome aboard IRBS</span>
+    <div class="station-text">
+      Hurry! Arrived at Station
+      <span>Welcome to a Home IRBS</span>
+    </div>
   </div>
-</div>
 
 </div>
