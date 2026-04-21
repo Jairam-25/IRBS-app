@@ -16,7 +16,7 @@ namespace IRBS.API.Controllers
             _context = context;
         }
 
-        // 🎟️ Get booked seats for a train & date
+        // Get booked seats for a train & date
         [HttpGet("seats")]
         public async Task<IActionResult> GetBookedSeats(int trainId, DateTime date)
         {
@@ -28,12 +28,12 @@ namespace IRBS.API.Controllers
             return Ok(bookedSeats);
         }
 
-        // 🎟️ Book a seat
+        // Book a seat
         [Authorize]
         [HttpPost("book")]
         public async Task<IActionResult> BookSeat(Booking booking)
         {
-            // ❌ Check if already booked
+            // Check if already booked
             var exists = await _context.Bookings.AnyAsync(b =>
                 b.TrainId == booking.TrainId &&
                 b.TravelDate == booking.TravelDate &&
