@@ -1,4 +1,5 @@
 ﻿using IRBS.API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +16,8 @@ namespace IRBS.API.Controllers
             _context = context;
         }
 
-        // 🚆 Add Train (Admin use)
+        // Add Train (Admin use)
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddTrain(Train train)
         {

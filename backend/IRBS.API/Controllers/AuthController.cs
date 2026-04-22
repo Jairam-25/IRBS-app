@@ -84,7 +84,7 @@ namespace IRBS.API.Controllers
         // Generate JWT
         private string GenerateJwtToken(User user)
         {
-            var jwt = _config.GetSection("Jwt");
+            var jwt = _config.GetSection("Jwt");            
 
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(jwt["Key"])
@@ -95,7 +95,9 @@ namespace IRBS.API.Controllers
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role)
             };
 
             var token = new JwtSecurityToken(
