@@ -29,14 +29,13 @@ namespace IRBS.API.Controllers
             return Ok(bookedSeats);
         }
 
-        // Book a seat
         [Authorize]
         [HttpPost("book")]
         public async Task<IActionResult> BookSeat(Booking booking)
         {
-            // Try to get user id from token to avoid an extra DB round-trip
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             User? user = null;
+
             if (int.TryParse(userIdClaim, out var userId))
             {
                 user = await _context.Users.FindAsync(userId);
@@ -49,29 +48,32 @@ namespace IRBS.API.Controllers
             }
 
             if (user == null)
-                return Unauthorized("User not found");
+                return Unauthorized(new { success = false, message = "User not found" });
 
-            // Attach UserId to booking
             booking.UserId = user.Id;
 
-            // Check if already booked
             var exists = await _context.Bookings.AnyAsync(b =>
                 b.TrainId == booking.TrainId &&
                 b.TravelDate == booking.TravelDate &&
                 b.SeatNumber == booking.SeatNumber);
 
             if (exists)
-                return BadRequest(new
-                {
-                    success = true,
-                    message = "Seat already booked"
-                });
+                return BadRequest(new { success = false, message = "Seat already booked" });
 
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
 
-            return Ok(new { success = true, bookingId = booking.Id });
+            // Send notification
+            var notifier = new NotificationService();
+            string subject = $"Booking Confirmation - Train {booking.TrainId}";
+            string body = notifier.BuildBookingConfirmation(user, booking);
+
+            await notifier.SendEmailAsync(user.Email, subject, body);
+
+
+            return Ok(new { success = true, bookingId = booking.Id, message = "Seat booked successfully" });
         }
+
 
         // Get my bookings
         [Authorize]

@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using IRBS.API.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Razorpay.Api;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace IRBS.API.Controllers
 {
@@ -21,49 +24,78 @@ namespace IRBS.API.Controllers
         // 🔹 Create Order
         [Authorize]
         [HttpPost("create-order")]
-        public IActionResult CreateOrder(decimal amount)
+        public IActionResult CreateOrder([FromBody] PaymentRequestDto dto)
         {
-            var key = _config["Razorpay:Key"];
-            var secret = _config["Razorpay:Secret"];
-
-            var client = new RazorpayClient(key, secret);
-
             var options = new Dictionary<string, object>
-            {
-                { "amount", amount * 100 }, // paise
-                { "currency", "INR" },
-                { "receipt", $"IRBS-{ Guid.NewGuid().ToString().Substring(0, 20) }"}
-            };
+    {
+        { "amount", dto.Amount * 100 }, // amount in paise
+        { "currency", "INR" },
+        { "receipt", Guid.NewGuid().ToString() },
+        { "payment_capture", 1 }
+    };
+
+            var client = new Razorpay.Api.RazorpayClient(
+                _config["Razorpay:Key"],
+                _config["Razorpay:Secret"]
+            );
 
             var order = client.Order.Create(options);
-            return Ok(new 
-            { 
-                orderId = order["id"].ToString()
+
+            return Ok(new
+            {
+                success = true,
+                orderId = order["id"].ToString(),
+                amount = dto.Amount,
+                currency = "INR"
             });
         }
 
+
         // 🔹 Verify Payment
         [Authorize]
-        [HttpPost("verify")]
-        public IActionResult VerifyPayment(string razorpayOrderId, string razorpayPaymentId, string razorpaySignature)
+        [HttpPost("verify-payment")]
+        public async Task<IActionResult> VerifyPayment([FromBody] PaymentVerificationDto dto)
         {
-            var attributes = new Dictionary<string, string>
-            {
-                { "razorpay_order_id", razorpayOrderId },
-                { "razorpay_payment_id", razorpayPaymentId },
-                { "razorpay_signature", razorpaySignature }
-            };
+            var secret = _config["Razorpay:Secret"];
 
-            try
-            {
-                Utils.verifyPaymentSignature(attributes);
-                return Ok(new { success = true, message = "Payment verified successfully" });
-            }
-            catch
-            {
+            bool isValid = RazorpayHelper.VerifySignature(dto.OrderId, dto.PaymentId, dto.Signature, secret);
+
+            if (!isValid)
                 return BadRequest(new { success = false, message = "Payment verification failed" });
-            }
+
+            // Update booking status
+            var booking = await _context.Bookings.FindAsync(dto.BookingId);
+            if (booking == null) return NotFound("Booking not found");
+
+            booking.Status = "Paid";
+            await _context.SaveChangesAsync();
+
+            // 🔔 Send payment receipt notification
+            var notifier = new NotificationService();
+            var user = await _context.Users.FindAsync(booking.UserId);
+            string subject = "Payment Successful - IRBS";
+            string body = $@"
+Dear {user.Name},
+
+Your payment for booking {booking.Id} has been successfully processed.
+
+Details:
+- Train: {booking.TrainId}
+- Seat Number: {booking.SeatNumber}
+- Travel Date: {booking.TravelDate:dd-MMM-yyyy HH:mm}
+- Amount Paid: ₹{dto.Amount}
+
+Thank you for choosing IRBS. Safe travels!
+
+Warm regards,
+IRBS Customer Support
+";
+            await notifier.SendEmailAsync(user.Email, subject, body);
+
+            return Ok(new { success = true, message = "Payment verified successfully" });
         }
+
+
 
         [HttpPost("verify-dummy")]
         public IActionResult VerifyDummyPayment(int bookingId)
@@ -78,5 +110,23 @@ namespace IRBS.API.Controllers
             return Ok(new { success = true, message = "Dummy payment verified", bookingId = booking.Id });
         }
 
+    }
+
+    public static class RazorpayHelper
+    {
+        public static bool VerifySignature(string orderId, string paymentId, string signature, string secret)
+        {
+            var payload = orderId + "|" + paymentId;
+            var secretBytes = Encoding.UTF8.GetBytes(secret);
+            var payloadBytes = Encoding.UTF8.GetBytes(payload);
+
+            using (var hmac = new HMACSHA256(secretBytes))
+            {
+                var hash = hmac.ComputeHash(payloadBytes);
+                var generatedSignature = BitConverter.ToString(hash).Replace("-", "").ToLower();
+
+                return generatedSignature == signature;
+            }
+        }
     }
 }
