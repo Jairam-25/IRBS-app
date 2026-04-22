@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using IRBS.API.DTOs;
 using IRBS.API.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace IRBS.API.Controllers
 {
@@ -16,43 +17,50 @@ namespace IRBS.API.Controllers
             _context = context;
         }
 
-        // Get booked seats for a train & date
         [HttpGet("seats")]
-        public async Task<IActionResult> GetBookedSeats(int trainId, DateTime date)
+        public async Task<IActionResult> GetBookedSeats([FromQuery] int trainId, [FromQuery] DateTime date)
         {
             var bookedSeats = await _context.Bookings
-                .Where(b => b.TrainId == trainId && b.TravelDate == date)
+                .Where(b => b.TrainId == trainId && b.TravelDate.Date == date.Date)
                 .Select(b => b.SeatNumber)
                 .ToListAsync();
 
             return Ok(bookedSeats);
         }
 
-        // Book a seat
         [Authorize]
         [HttpPost("book")]
-        public async Task<IActionResult> BookSeat(Booking booking)
+        public async Task<IActionResult> BookSeat([FromBody] BookSeatsDto dto)
         {
-            // Check if already booked
-            var exists = await _context.Bookings.AnyAsync(b =>
-                b.TrainId == booking.TrainId &&
-                b.TravelDate == booking.TravelDate &&
-                b.SeatNumber == booking.SeatNumber);
+            if (dto.SeatNumbers == null || dto.SeatNumbers.Count == 0)
+                return BadRequest(new { success = false, message = "No seats selected" });
 
-            if (exists)
-                return BadRequest(new
+            var alreadyBooked = await _context.Bookings
+                .Where(b => b.TrainId == dto.TrainId && b.TravelDate.Date == dto.TravelDate.Date)
+                .Select(b => b.SeatNumber)
+                .ToListAsync();
+
+            var conflict = dto.SeatNumbers.Intersect(alreadyBooked).ToList();
+            if (conflict.Any())
+                return BadRequest(new { success = false, message = $"Already booked: {string.Join(", ", conflict)}" });
+
+            foreach (var seat in dto.SeatNumbers)
+            {
+                _context.Bookings.Add(new Booking
                 {
-                    success = true,
-                    message = "Seat already booked"
+                    TrainId = dto.TrainId,
+                    SeatNumber = seat,
+                    TravelDate = dto.TravelDate.Date,
+                    Status = "Booked"
                 });
+            }
 
-            _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
 
             return Ok(new
             {
                 success = true,
-                message = "Seat booked successfully"
+                message = "Seats booked successfully"
             });
         }
     }
