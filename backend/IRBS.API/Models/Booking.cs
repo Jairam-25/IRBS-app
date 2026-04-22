@@ -12,5 +12,9 @@
         public DateTime TravelDate { get; set; }
 
         public string Status { get; set; } = "Booked";
+
+        // Navigation properties
+        public User User { get; set; }
+        public Train Train { get; set; }
     }
 }
