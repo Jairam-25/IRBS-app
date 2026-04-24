@@ -1,0 +1,182 @@
+/* NAVBAR BASE */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 14px 30px;
+
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(0px);
+
+  transition: all 0.3s ease;
+}
+
+/* 🔥 SCROLL EFFECT */
+nav.scrolled {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+  padding: 10px 30px;
+}
+
+/* LOGO */
+.logo {
+  font-size: 30px;
+  font-weight: bold;
+  color: #ff6d00;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+nav.scrolled .logo {
+  transform: scale(0.9);
+}
+
+/* NAV LINKS */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 45px;
+}
+
+/* LINKS STYLE */
+.nav-links a {
+  text-decoration: none;
+  color: #444;
+  font-weight: 500;
+  position: relative;
+  transition: 0.3s;
+}
+
+/* HOVER EFFECT */
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: #ff6d00;
+  transition: 0.3s;
+}
+
+.nav-links a:hover {
+  color: #000;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/* ACTIVE LINK (Angular auto adds class) */
+.nav-links a.active {
+  color: #000;
+}
+
+.nav-links a.active::after {
+  width: 100%;
+}
+
+/* MENU ICON (mobile) */
+.menu-icon {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------------------ */
+
+
+/* 👤 USER AREA ONLY */
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 6px 12px;
+  border-radius: 30px;
+
+  background: rgba(255, 109, 0, 0.08);
+  border: 1px solid rgba(255, 109, 0, 0.2);
+}
+
+/* Welcome text */
+.welcome-text {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.welcome-text strong {
+  color: #ff6d00;
+  font-weight: 600;
+}
+
+/* Logout button */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  background: #ff6d00;
+  color: #fff;
+
+  border: none;
+  border-radius: 20px;
+
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+/* hover */
+.logout-btn:hover {
+  background: #e85f00;
+  transform: translateY(-1px);
+}
+
+/* 📱 MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+
+  .menu-icon {
+    display: block;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 70px;
+    right: 20px;
+
+    flex-direction: column;
+    gap: 15px;
+
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+
+    transition: all 0.3s ease;
+  }
+
+  /* SHOW MENU */
+  .nav-links.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}

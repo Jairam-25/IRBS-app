@@ -25,3 +25,5 @@ input, button {
   font-size: 14px;
   letter-spacing: 0.3px;
 }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

@@ -1,15 +1,14 @@
 <div class="home-wrapper">
 
-  <!-- HEADER -->
-  <div class="search-section">
-    <h2>🚆 IRBS Train Booking</h2>
-
-    <div class="form-group">
+  <!-- SEARCH -->
+  <div class="search-bar">
+    <div class="search-item">
       <label>Travel Date</label>
       <input
-  type="date"
-  [(ngModel)]="selectedDate"
-  (change)="onDateChange()" />
+        type="date"
+        [(ngModel)]="selectedDate"
+        (change)="onDateChange()"
+      />
     </div>
   </div>
 
@@ -19,13 +18,14 @@
 
     <div *ngFor="let train of trains" class="train-card">
 
-      <div class="train-info">
+      <div>
         <h4>{{ train.trainName }}</h4>
         <p>{{ train.fromStation }} ➜ {{ train.toStation }}</p>
       </div>
 
+      <!-- 🔥 IMPORTANT -->
       <button (click)="selectTrain(train)">
-        Select Train
+        Select
       </button>
 
     </div>
@@ -36,13 +36,8 @@
 
     <h3>Seat Selection</h3>
 
-    <p>
-      Train: <b>{{ selectedTrain.trainName }}</b>
-    </p>
-
-    <p>
-      Date: <b>{{ selectedDate }}</b>
-    </p>
+    <p>Train: <b>{{ selectedTrain.trainName }}</b></p>
+    <p>Date: <b>{{ selectedDate }}</b></p>
 
     <div class="seat-grid">
       <div

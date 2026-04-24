@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { TrainService } from '../../_services/train.service';
@@ -8,49 +8,39 @@ import { TrainService } from '../../_services/train.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './seat-selection.component.html',
-  styleUrls: ['./seat-selection.component.css']
+  styleUrl: './seat-selection.component.css'
 })
-export class SeatSelectionComponent implements OnInit, OnDestroy {
+export class SeatSelectionComponent implements OnInit {
 
   seats: string[] = [];
   bookedSeats: string[] = [];
-
-  selectedSeats: string[] = [];
+  selectedSeat: string | null = null;
 
   trainId!: number;
   date!: string;
-
-  private intervalId: any;
 
   constructor(
     private route: ActivatedRoute,
     private trainService: TrainService
   ) {}
 
-  ngOnInit(): void {
-
+  ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.trainId = +params['trainId'];
       this.date = params['date'];
 
+      console.log('TrainId:', this.trainId);
+      console.log('Date:', this.date);
+
       this.generateSeats();
       this.loadBookedSeats();
-
-      // refresh booked seats safely
-      this.intervalId = setInterval(() => {
-        this.loadBookedSeats();
-      }, 5000);
     });
   }
 
-  ngOnDestroy(): void {
-    clearInterval(this.intervalId);
-  }
-
-  // 🚆 Seat layout
+  // 🚆 Generate seats
   generateSeats() {
+    const rows = ['A','B','C','D'];
     this.seats = [];
-    const rows = ['A', 'B', 'C', 'D'];
 
     for (let r of rows) {
       for (let i = 1; i <= 6; i++) {
@@ -59,63 +49,58 @@ export class SeatSelectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 🔄 API call
+  // 🔄 Load booked seats
   loadBookedSeats() {
     this.trainService.getBookedSeats(this.trainId, this.date)
       .subscribe({
         next: (res: any) => {
           this.bookedSeats = res || [];
         },
-        error: (err) => console.error('Booked seats error', err)
+        error: (err: any) => console.error('Seat load error', err)
       });
   }
 
-  // 🎯 MULTI SELECT (IMPORTANT FIX)
+  // 🎯 Select seat
   selectSeat(seat: string) {
-
     if (this.bookedSeats.includes(seat)) return;
-
-    if (this.selectedSeats.includes(seat)) {
-      this.selectedSeats = this.selectedSeats.filter(s => s !== seat);
-    } else {
-      this.selectedSeats = [...this.selectedSeats, seat];
-    }
+    this.selectedSeat = seat;
   }
 
-  // 🎟️ BOOK MULTIPLE SEATS
-  bookSeat() {
-
-    if (this.selectedSeats.length === 0) {
-      alert('Select at least one seat');
-      return;
-    }
-
-    const body = {
-      trainId: this.trainId,
-      seatNumbers: this.selectedSeats,
-      travelDate: this.date
-    };
-
-    this.trainService.bookSeat(body)
-      .subscribe({
-        next: (res: any) => {
-          alert(res?.message || 'Booked successfully 🚆');
-          this.selectedSeats = [];
-          this.loadBookedSeats();
-        },
-        error: (err) => {
-          alert(err.error?.message || err.error);
-        }
-      });
-  }
-
-  // 🎨 UI STATE
+  // 🎨 UI class
   getSeatClass(seat: string) {
-
     if (this.bookedSeats.includes(seat)) return 'booked';
-
-    if (this.selectedSeats.includes(seat)) return 'selected';
-
+    if (this.selectedSeat === seat) return 'selected';
     return 'available';
   }
+
+  // 🎟️ Book seat
+  bookSeat() {
+
+  if (!this.selectedSeat) {
+    alert('Select a seat first');
+    return;
+  }
+
+  const userId = Number(localStorage.getItem('userId')); // YOU MUST STORE THIS AT LOGIN
+
+  const body = {
+    trainId: this.trainId,
+    seatNumber: this.selectedSeat,
+    travelDate: new Date(this.date).toISOString()
+  };
+
+  console.log('Booking payload:', body); // DEBUG
+
+  this.trainService.bookSeat(body)
+    .subscribe({
+      next: (res: any) => {
+        alert('Seat booked successfully');
+        this.loadBookedSeats();
+      },
+      error: (err) => {
+        console.error(err);
+        alert(JSON.stringify(err.error?.errors)); // SHOW REAL ERROR
+      }
+    });
+}
 }

@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { ActivatedRoute } from '@angular/router';
 
 import { AuthService } from '../../_services/auth.service';
 
@@ -25,14 +26,16 @@ import { AuthService } from '../../_services/auth.service';
 })
 export class LoginComponent {
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
-  // form fields
   name = '';
   email = '';
   password = '';
 
-  // states
   isLoading = false;
   isSuccess = false;
   isRegisterMode = false;
@@ -51,8 +54,14 @@ export class LoginComponent {
     }
   }
 
-  // LOGIN
+  // =========================
+  // LOGIN (FIXED FLOW)
+  // =========================
   login() {
+
+    this.isLoading = true;
+    this.isSuccess = false;
+
     const data = {
       email: this.email,
       password: this.password
@@ -62,30 +71,42 @@ export class LoginComponent {
       next: (res) => {
         console.log('Login success', res);
 
-        this.isLoading = true;
-        this.isSuccess = false;
+        // 🔥 STEP 1: set session FIRST
+        this.auth.setSession(res);
 
-        localStorage.setItem('token', res.token);
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
 
+        // 🔥 STEP 2: UI feedback AFTER session is set
         setTimeout(() => {
           this.isLoading = false;
           this.isSuccess = true;
 
           setTimeout(() => {
-            this.router.navigate(['/home']);
-          }, 800);
+            this.router.navigate([returnUrl]);
+          }, 600);
 
-        }, 1200);
+        }, 800);
+        console.log('Login Success', res);
       },
+      
       error: (err) => {
         console.error('Login failed', err);
+
+        this.isLoading = false;
+        this.isSuccess = false;
+
         alert('Invalid credentials');
       }
     });
   }
 
-  // REGISTER
+  // =========================
+  // REGISTER (unchanged but cleaned)
+  // =========================
   register() {
+
+    this.isLoading = true;
+
     const data = {
       name: this.name,
       email: this.email,
@@ -96,13 +117,19 @@ export class LoginComponent {
       next: (res) => {
         console.log('Register success', res);
 
+        this.isLoading = false;
+
         alert('Registration successful 🚉 Please login');
 
         this.isRegisterMode = false;
         this.password = '';
       },
+
       error: (err) => {
         console.error('Register failed', err);
+
+        this.isLoading = false;
+
         alert('Registration failed');
       }
     });

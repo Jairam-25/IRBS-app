@@ -1,0 +1,271 @@
+/* =========================
+   MAIN WRAPPER
+========================= */
+.train-wrapper {
+  padding: 20px;
+  background: #f7f9fc;
+  min-height: 100vh;
+}
+
+/* =========================
+   SEARCH BAR (FIXED PROPERLY)
+========================= */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+
+  background: white;
+  padding: 18px;
+  border-radius: 14px;
+
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+/* 🔥 FIX MATERIAL FIELD HEIGHT + ALIGNMENT */
+mat-form-field {
+  flex: 1;
+  min-width: 220px;
+}
+
+/* 🔥 REMOVE EXTRA SPACE BELOW MATERIAL INPUT */
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* 🔄 SWAP BUTTON FIX (CENTER PERFECTLY) */
+.swap-btn {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #ff6d00;
+  color: white;
+
+  cursor: pointer;
+  transition: 0.25s ease;
+
+  flex-shrink: 0;
+}
+
+.swap-btn:hover {
+  transform: rotate(180deg);
+  background: #e85f00;
+}
+
+/* 📅 DATE INPUT FIX */
+.search-box input[type="date"] {
+  height: 56px;
+  padding: 0 12px;
+
+  border: 1px solid #ddd;
+  border-radius: 10px;
+
+  font-size: 14px;
+}
+
+/* 🔍 SEARCH BUTTON FIX */
+.search-btn {
+  height: 56px;
+  padding: 0 20px;
+
+  background: #ff6d00;
+  color: white;
+
+  border: none;
+  border-radius: 10px;
+
+  cursor: pointer;
+  font-weight: 500;
+
+  transition: 0.2s ease;
+}
+
+.search-btn:hover {
+  background: #e85f00;
+}
+
+/* =========================
+   TRAIN LIST (UNCHANGED)
+========================= */
+.train-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(540px, 1fr));
+  gap: 28px;
+  align-items: stretch;
+}
+
+/* =========================
+   TRAIN CARD
+========================= */
+.train-card {
+  background: white;
+  border-radius: 16px;
+  padding: 18px;
+
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transition: all 0.25s ease;
+
+  border-left: 5px solid #ff6d00;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.train-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+
+/* =========================
+   HEADER
+========================= */
+.train-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.train-header h3 {
+  margin: 0;
+  color: #222;
+}
+
+/* =========================
+   ROUTE
+========================= */
+.route {
+  margin-top: 8px;
+  font-size: 15px;
+  color: #444;
+}
+
+/* =========================
+   META INFO
+========================= */
+.meta {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #666;
+
+  display: flex;
+  gap: 15px;
+}
+
+/* =========================
+   SEAT INFO
+========================= */
+.seat-info {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.seat {
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.available {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.booked {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.total {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+/* =========================
+   BUTTON
+========================= */
+.select-btn {
+  margin-top: 15px;
+  width: 100%;
+
+  padding: 10px;
+  background: #ff6d00;
+  color: white;
+
+  border: none;
+  border-radius: 10px;
+
+  cursor: pointer;
+  font-weight: 500;
+
+  transition: 0.2s ease;
+}
+
+.select-btn:hover {
+  background: #e85f00;
+}
+
+/* =========================
+   SEAT BAR
+========================= */
+.seat-bar {
+  height: 8px;
+  background: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.seat-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4caf50, #8bc34a);
+  transition: width 0.4s ease;
+}
+
+.seat-label {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+}
+
+/* =========================
+   FILTERS
+========================= */
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: 6px 12px;
+  background: #f1f1f1;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.chip:hover {
+  background: #ff6d00;
+  color: white;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .train-list {
+    grid-template-columns: 1fr;
+  }
+}

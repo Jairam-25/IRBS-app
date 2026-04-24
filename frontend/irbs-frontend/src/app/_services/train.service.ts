@@ -1,35 +1,41 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class TrainService {
 
-  // 🔥 GLOBAL BASE URL
   private baseUrl = 'https://localhost:7280/api';
 
   constructor(private http: HttpClient) {}
 
-  getTrains(date: string) {
-    return this.http.get(`${this.baseUrl}/Train?date=${date}`);
+  // ✅ GET ALL TRAINS
+  getTrains(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/Train`);
   }
 
-  getBookedSeats(trainId: number, date: string) {
-    return this.http.get(
-      `${this.baseUrl}/Booking/seats?trainId=${trainId}&date=${date}`
-    );
+  // ✅ SEARCH TRAINS (IMPORTANT)
+  searchTrains(from: string, to: string): Observable<any> {
+    const params = new HttpParams()
+      .set('from', from)
+      .set('to', to);
+
+    return this.http.get(`${this.baseUrl}/Train/search`, { params });
   }
 
-  bookSeat(data: any) {
-    const token = localStorage.getItem('token');
+  // ✅ GET BOOKED SEATS
+  getBookedSeats(trainId: number, date: string): Observable<any> {
+    const params = new HttpParams()
+      .set('trainId', trainId)
+      .set('date', date);
 
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
-    });
+    return this.http.get(`${this.baseUrl}/Booking/seats`, { params });
+  }
 
-    return this.http.post(
-      `${this.baseUrl}/Booking/book`,
-      data,
-      { headers }
-    );
+  // ✅ BOOK SEAT (CRITICAL FIX)
+  bookSeat(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/Booking/book`, data);
   }
 }

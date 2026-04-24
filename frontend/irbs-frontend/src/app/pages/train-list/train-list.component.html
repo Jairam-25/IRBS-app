@@ -1,15 +1,95 @@
-<h2>Select Train</h2>
+<div class="train-wrapper">
 
-<div class="form-group">
-  <label for="date">Travel Date</label>
-  <input id="date" type="date" [(ngModel)]="selectedDate" />
+  <div class="filters">
+    <span class="chip">All</span>
+    <span class="chip">Express</span>
+    <span class="chip">Superfast</span>
+    <span class="chip">AC</span>
+    <span class="chip">Sleeper</span>
+  </div>
+
+  <!-- SEARCH -->
+ <div class="search-box">
+
+  <!-- FROM -->
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>From Station</mat-label>
+    <input matInput
+           [(ngModel)]="fromStation"
+           [matAutocomplete]="autoFrom"
+           (input)="filterFrom(fromStation)" />
+
+    <mat-autocomplete #autoFrom="matAutocomplete">
+      <mat-option *ngFor="let s of filteredFromStations" [value]="s.name">
+        {{ s.name }}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <!-- SWAP BUTTON -->
+  <button mat-icon-button class="swap-btn" (click)="swapStations()">
+    ⇅
+  </button>
+
+  <!-- TO -->
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>To Station</mat-label>
+    <input matInput
+           [(ngModel)]="toStation"
+           [matAutocomplete]="autoTo"
+           (input)="filterTo(toStation)" />
+
+    <mat-autocomplete #autoTo="matAutocomplete">
+      <mat-option *ngFor="let s of filteredToStations" [value]="s.name">
+        {{ s.name }}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <input type="date" [(ngModel)]="selectedDate" />
+
+  <button class="search-btn" (click)="searchTrains()">Search</button>
+
 </div>
 
-<div *ngFor="let train of trains" class="train-card">
-  <h3>{{ train.trainName }}</h3>
-  <p>{{ train.fromStation }} → {{ train.toStation }}</p>
+  <!-- LIST -->
+  <div class="train-list">
 
-  <button (click)="selectTrain(train.id)">
-    Select Train
-  </button>
+    <div class="train-card" *ngFor="let train of trains">
+
+      <div class="seat-bar">
+    <div class="seat-fill" [style.width.%]="(train.availableSeats / train.totalSeats) * 100"></div>
+  </div>
+
+  <div class="seat-label">
+    {{ train.availableSeats }} / {{ train.totalSeats }} seats available
+  </div>
+
+      <div class="train-header">
+        <h3>{{ train.trainName }}</h3>
+        <span>#{{ train.id }}</span>
+      </div>
+
+      <div class="route">
+        {{ train.fromStation }} → {{ train.toStation }}
+      </div>
+
+      <div class="meta">
+        <span><i class="bi bi-calendar3-event-fill"></i> {{ train.date }}</span>
+        <span><i class="bi bi-alarm-fill"></i> {{ train.departureTime }} - {{ train.arrivalTime }}</span>
+      </div>
+
+      <div class="seat-info">
+        <span class="seat available">Available: {{ train.availableSeats }}</span>
+        <span class="seat booked">Booked: {{ train.bookedSeats }}</span>
+      </div>
+
+      <button class="select-btn" (click)="selectTrain(train)">
+        Select
+      </button>
+
+    </div>
+
+  </div>
+
 </div>
