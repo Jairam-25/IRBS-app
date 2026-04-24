@@ -1,4 +1,5 @@
-﻿using IRBS.API.Models;
+﻿using IRBS.API.DTOs;
+using IRBS.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,10 @@ namespace IRBS.API.Controllers
         public async Task<IActionResult> GetBookedSeats(int trainId, DateTime date)
         {
             var bookedSeats = await _context.Bookings
-                .Where(b => b.TrainId == trainId && b.TravelDate == date)
+                .Where(b =>
+                    b.TrainId == trainId &&
+                    b.TravelDate.Date == date.Date
+                )
                 .Select(b => b.SeatNumber)
                 .ToListAsync();
 
@@ -31,8 +35,9 @@ namespace IRBS.API.Controllers
 
         [Authorize]
         [HttpPost("book")]
-        public async Task<IActionResult> BookSeat(Booking booking)
+        public async Task<IActionResult> BookSeat(CreateBookingDto dto)
         {
+            // 🔹 Get user from token
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             User? user = null;
 
@@ -50,28 +55,47 @@ namespace IRBS.API.Controllers
             if (user == null)
                 return Unauthorized(new { success = false, message = "User not found" });
 
-            booking.UserId = user.Id;
+            // 🔹 Validate Train
+            var train = await _context.Trains.FindAsync(dto.TrainId);
+            if (train == null)
+                return BadRequest(new { success = false, message = "Invalid train" });
 
+            // 🔹 Check seat already booked
             var exists = await _context.Bookings.AnyAsync(b =>
-                b.TrainId == booking.TrainId &&
-                b.TravelDate == booking.TravelDate &&
-                b.SeatNumber == booking.SeatNumber);
+                b.TrainId == dto.TrainId &&
+                b.TravelDate.Date == dto.TravelDate.Date &&
+                b.SeatNumber == dto.SeatNumber
+            );
 
             if (exists)
                 return BadRequest(new { success = false, message = "Seat already booked" });
 
+            // 🔹 Create Booking (IMPORTANT)
+            var booking = new Booking
+            {
+                UserId = user.Id,
+                TrainId = dto.TrainId,
+                SeatNumber = dto.SeatNumber,
+                TravelDate = dto.TravelDate,
+                Status = "Booked"
+            };
+
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
 
-            // Send notification
+            // 🔹 Email
             var notifier = new NotificationService();
             string subject = $"Booking Confirmation - Train {booking.TrainId}";
             string body = notifier.BuildBookingConfirmation(user, booking);
 
             await notifier.SendEmailAsync(user.Email, subject, body);
 
-
-            return Ok(new { success = true, bookingId = booking.Id, message = "Seat booked successfully" });
+            return Ok(new
+            {
+                success = true,
+                bookingId = booking.Id,
+                message = "Seat booked successfully"
+            });
         }
 
 

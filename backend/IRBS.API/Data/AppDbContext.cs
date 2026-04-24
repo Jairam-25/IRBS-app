@@ -9,6 +9,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Train> Trains { get; set; }
     public DbSet<Booking> Bookings { get; set; }
+    public DbSet<Station> Stations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

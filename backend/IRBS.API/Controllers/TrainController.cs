@@ -1,4 +1,5 @@
-﻿using IRBS.API.Models;
+﻿using IRBS.API.DTOs;
+using IRBS.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace IRBS.API.Controllers
         }
 
         // Add Train (Admin use)
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddTrain(Train train)
         {
@@ -31,7 +32,21 @@ namespace IRBS.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetTrains()
         {
-            var trains = await _context.Trains.ToListAsync();
+            var trains = await _context.Trains
+                .Select(t => new TrainDto
+                {
+                    Id = t.Id,
+                    TrainName = t.TrainName,
+                    FromStation = t.FromStation,
+                    ToStation = t.ToStation,
+                    Date = t.Date,
+                    DepartureTime = t.DepartureTime,
+                    ArrivalTime = t.ArrivalTime,
+                    TotalSeats = t.TotalSeats,
+                    BookedSeats = t.BookedSeats
+                })
+                .ToListAsync();
+
             return Ok(trains);
         }
 
