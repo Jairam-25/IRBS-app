@@ -48,12 +48,61 @@
 
   <input type="date" [(ngModel)]="selectedDate" />
 
-  <button class="search-btn" (click)="searchTrains()">Search</button>
+  <button class="search-btn" (click)="searchTrains()" [disabled]="isLoading">
+
+  <span *ngIf="!isLoading">
+    Search
+  </span>
+
+  <div *ngIf="isLoading" class="train-loader">
+    <div class="track"></div>
+    <div class="mini-train">
+      <div class="engine"></div>
+      <div class="coach"></div>
+      <div class="coach"></div>
+    </div>
+  </div>
+
+</button>
 
 </div>
 
+<!-- 🟡 EMPTY STATE -->
+<div class="empty-state" *ngIf="!trains.length && !fromStation && !toStation">
+
+  <div class="empty-card">
+    <h2><i class="bi bi-train-front-fill"></i> Search Trains Easily</h2>
+    <p>Enter your journey details to find available trains, timings and seats.</p>
+
+    <div class="tips">
+      <span><i class="bi bi-check-circle-fill"></i> Fast booking</span>
+      <span><i class="bi bi-check-circle-fill"></i> Live seat availability</span>
+      <span><i class="bi bi-check-circle-fill"></i> Secure payments</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- 🔍 NO RESULTS -->
+<div class="no-result" *ngIf="hasSearched && !trains.length">
+  <p>❌ No trains found for selected route</p>
+</div>
+
+<!-- GLOBAL LOADING -->
+<div *ngIf="isLoading" class="center-loader">
+  <div class="train-loader big">
+    <div class="track"></div>
+    <div class="mini-train">
+      <div class="engine"></div>
+      <div class="coach"></div>
+      <div class="coach"></div>
+    </div>
+  </div>
+  <p>Fetching trains...</p>
+</div>
+
   <!-- LIST -->
-  <div class="train-list">
+  <div class="train-list fade-in" *ngIf="!isLoading && trains.length">
 
     <div class="train-card" *ngFor="let train of trains">
 

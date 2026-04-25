@@ -5,7 +5,7 @@ nav {
   z-index: 1000;
 
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
 
   padding: 14px 30px;
@@ -41,7 +41,7 @@ nav.scrolled .logo {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 45px;
+  gap: 35px;
 }
 
 /* LINKS STYLE */
@@ -143,6 +143,41 @@ nav.scrolled .logo {
 .logout-btn:hover {
   background: #e85f00;
   transform: translateY(-1px);
+}
+
+/* =========================
+   LOGIN BUTTON (PRO)
+========================= */
+.login-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 30px;
+
+  border-radius: 20px;
+
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+
+  color: #ff6d00;
+  background: rgba(255, 109, 0, 0.08);
+  border: 1px solid rgba(255, 109, 0, 0.25);
+
+  transition: all 0.25s ease;
+}
+
+/* hover effect */
+.login-btn:hover {
+  background: #ff6d00;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* icon */
+.login-btn i {
+  font-size: 16px;
 }
 
 /* 📱 MOBILE RESPONSIVE */

@@ -262,6 +262,182 @@ mat-form-field {
 }
 
 /* =========================
+   EMPTY STATE
+========================= */
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+.empty-card {
+  text-align: center;
+  background: white;
+  padding: 40px;
+  border-radius: 18px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  animation: fadeUp 0.6s ease;
+}
+
+.empty-card h2 {
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.empty-card p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.tips {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.tips span {
+  background: #f1f1f1;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+/* =========================
+   NO RESULT
+========================= */
+.no-result {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 16px;
+  color: #c62828;
+}
+
+/* CENTER LOADER */
+.center-loader {
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* BIG VERSION */
+.train-loader.big {
+  width: 200px;
+  height: 40px;
+}
+
+/* TEXT */
+.center-loader p {
+  color: #666;
+  font-size: 14px;
+}
+
+/* smooth card transition */
+.fade-in {
+  animation: fadeSlideUp 0.6s ease;
+}
+
+/* ------------------------------------------------------------- */
+
+/* Loader wrapper inside button */
+.train-loader {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Track line */
+.track {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: rgb(0, 0, 0);
+  bottom: 5px;
+}
+
+/* Train container */
+.mini-train {
+  display: flex;
+  gap: 4px;
+  position: absolute;
+  left: -60px;
+  animation: moveTrain 1.2s linear infinite;
+}
+
+/* Engine */
+.mini-train .engine {
+  width: 12px;
+  height: 10px;
+  background: #ff0000;
+  border-radius: 2px;
+}
+
+/* Coaches */
+.mini-train .coach {
+  width: 10px;
+  height: 10px;
+  background: #ff714d;
+  border-radius: 2px;
+}
+
+/* Movement */
+@keyframes moveTrain {
+  0% {
+    left: -60px;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.center-loader {
+  animation: fadeLoader 0.3s ease;
+}
+
+@keyframes fadeLoader {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* =========================
+   ANIMATION
+========================= */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
    RESPONSIVE
 ========================= */
 @media (max-width: 768px) {

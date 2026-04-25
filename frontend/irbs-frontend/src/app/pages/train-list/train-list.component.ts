@@ -35,6 +35,8 @@ export class TrainListComponent implements OnInit, OnDestroy {
   fromStation = '';
   toStation = '';
   selectedDate = '';
+  isLoading = false;
+  hasSearched = false;
 
   trains: any[] = [];
   stations: any[] = [];
@@ -108,19 +110,28 @@ swapStations() {
     alert("From and To cannot be same");
     return;
   }
+  
+    this.isLoading = true;
+    this.hasSearched = true;
+    this.trains = []; // clear old results immediately
+
+    const startTime = Date.now();
 
   this.trainService.searchTrains(this.fromStation, this.toStation)
     .subscribe({
         next: (res: any) => {
 
           console.log("TRAIN API RESPONSE:", res);
+          const elapsed = Date.now() - startTime;
+          const remaining = Math.max(3000 - elapsed, 0);
 
-          // 🔥 SAFE MAPPING (prevents UI breaking if fields missing)
+          // SAFE MAPPING (prevents UI breaking if fields missing)
+          setTimeout(() => {
           this.trains = (res || []).map((t: any) => ({
             id: t.id,
             trainName: t.trainName,
             fromStation: t.fromStation || 'N/A',
-            toStation: t.toStation || 'N/A',
+            toStation: t.toStation || 'N/A',            
 
             // optional fields (safe fallback)
             date: t.date || '',
@@ -131,12 +142,21 @@ swapStations() {
             bookedSeats: t.bookedSeats ?? 0,
             totalSeats: t.totalSeats ?? 0
           }));
+          this.isLoading = false;
+          this.hasSearched = true;
+          }, remaining);        
         },
 
         error: (err: any) => {
-          console.error(err);
-          this.trains = []; // safe fallback
-        }
+          const elapsed = Date.now() - startTime;
+          const remaining = Math.max(3000 - elapsed, 0);
+
+          setTimeout(() => {
+          this.trains = [];
+          this.isLoading = false;
+          this.hasSearched = false;
+        }, remaining);
+      }
       });
   }
 

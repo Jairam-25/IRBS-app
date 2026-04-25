@@ -1,11 +1,13 @@
 <nav class="navbar" [class.scrolled]="isScrolled">
 
-  <div class="logo">IRBS</div>
+  <div class="">
+    <div class="logo">IRBS</div>
+  </div>
 
   <div class="nav-links" [class.active]="isMenuOpen">
 
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-      <i class="bi bi-house"></i> Home
+      <i class="bi bi-house-fill"></i> Home
     </a>
 
     <a routerLink="/trains" routerLinkActive="active">
@@ -13,7 +15,7 @@
     </a>
 
     <a routerLink="/flights" routerLinkActive="active">
-      <i class="bi bi-airplane"></i> Flights
+      <i class="bi bi-airplane-fill"></i> Flights
     </a>
 
     <a routerLink="/buses" routerLinkActive="active">
@@ -21,36 +23,39 @@
     </a>
 
     <a routerLink="/hotels" routerLinkActive="active">
-      <i class="bi bi-building"></i> Hotels
+      <i class="bi bi-buildings-fill"></i> Hotels
     </a>
 
     <a routerLink="/offers" routerLinkActive="active">
       <i class="bi bi-tags-fill"></i> Offers
     </a>
+    </div>
 
+    <div>
     <!-- 🔐 Logged In -->
-<ng-container *ngIf="auth.isLoggedIn$ | async; else guest">
+  <ng-container *ngIf="auth.isLoggedIn$ | async; else guest">
 
-  <div class="user-section">
+    <div class="user-section">
 
-    <span class="welcome-text">
-      <i class="bi bi-person-fill-check"></i> Welcome <strong>{{ auth.userName$ | async }}</strong>
-    </span>
+      <span class="welcome-text">
+        <i class="bi bi-person-fill-check"></i> Welcome <strong>{{ auth.userName$ | async }}</strong>
+      </span>
 
-    <button class="logout-btn" (click)="logout()">
-      <i class="bi bi-box-arrow-right"></i>
-      Logout
-    </button>
+      <button class="logout-btn" (click)="logout()">
+        <i class="bi bi-box-arrow-right"></i>
+        Logout
+      </button>
 
-  </div>
+    </div>
 
-</ng-container>
+  </ng-container>
 
-<ng-template #guest>
-  <a routerLink="/login" routerLinkActive="active">
-    <i class="bi bi-person"></i> Login
-  </a>
-</ng-template>
+  <ng-template #guest>
+    <a routerLink="/login" class="login-btn" routerLinkActive="active">
+      <i class="bi bi-person-circle"></i>
+      <span>Login</span>
+    </a>
+  </ng-template>
 
   </div>
 
