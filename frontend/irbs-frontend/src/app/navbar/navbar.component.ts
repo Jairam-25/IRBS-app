@@ -2,6 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../_services/auth.service';
+import { Router } from 'express';
 
 @Component({
   selector: 'app-navbar',
@@ -14,6 +15,7 @@ export class NavbarComponent {
 
   constructor(public auth: AuthService) {}
 
+  isNavigating = false;
   isMenuOpen = false;
   isScrolled = false;
 

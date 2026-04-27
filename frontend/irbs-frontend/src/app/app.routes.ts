@@ -5,8 +5,8 @@ import { SeatSelectionComponent } from './pages/seat-selection/seat-selection.co
 import { LoginComponent } from './pages/login/login.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'trains', component: TrainListComponent },
-  { path: 'seat-selection', component: SeatSelectionComponent },
-  { path: 'login', component: LoginComponent }
+  { path: '', component: HomeComponent, data: { animation: 'Home' } },
+  { path: 'trains', component: TrainListComponent, data: { animation: 'Trains' } },
+  { path: 'seat-selection', component: SeatSelectionComponent, data: { animation: 'Seat' } },
+  { path: 'login', component: LoginComponent, data: { animation: 'Login' } }
 ];

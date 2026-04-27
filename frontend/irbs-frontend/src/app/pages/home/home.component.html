@@ -1,62 +1,106 @@
-<div class="home-wrapper">
+<div class="home">
 
-  <!-- SEARCH -->
-  <div class="search-bar">
-    <div class="search-item">
-      <label>Travel Date</label>
-      <input
-        type="date"
-        [(ngModel)]="selectedDate"
-        (change)="onDateChange()"
-      />
-    </div>
-  </div>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>IRBS – Smart Travel Booking Platform <i class="bi bi-train-front-fill"></i></h1>
+      <p>
+        Book trains, flights, buses and hotels in one place.
+        Fast, secure and reliable journey planning.
+      </p>
 
-  <!-- TRAIN LIST -->
-  <div class="train-list">
-    <h3>Available Trains</h3>
+      <div class="hero-actions">
+        <a routerLink="/trains" routerLinkActive="active" class="primary-btn">
+          <i class="bi bi-train-front-fill"></i> Book Trains
+        </a>
 
-    <div *ngFor="let train of trains" class="train-card">
-
-      <div>
-        <h4>{{ train.trainName }}</h4>
-        <p>{{ train.fromStation }} ➜ {{ train.toStation }}</p>
-      </div>
-
-      <!-- 🔥 IMPORTANT -->
-      <button (click)="selectTrain(train)">
-        Select
-      </button>
-
-    </div>
-  </div>
-
-  <!-- SEAT SECTION -->
-  <div class="seat-section" *ngIf="selectedTrain">
-
-    <h3>Seat Selection</h3>
-
-    <p>Train: <b>{{ selectedTrain.trainName }}</b></p>
-    <p>Date: <b>{{ selectedDate }}</b></p>
-
-    <div class="seat-grid">
-      <div
-        *ngFor="let seat of seats"
-        [ngClass]="getSeatClass(seat)"
-        (click)="selectSeat(seat)"
-      >
-        {{ seat }}
+        <a routerLink="/flights" routerLinkActive="active" class="secondary-btn">
+          <i class="bi bi-airplane-fill"></i> Explore Flights
+        </a>
       </div>
     </div>
+  </section>
 
-    <button
-      class="book-btn"
-      (click)="bookSeat()"
-      [disabled]="!selectedSeat"
-    >
-      Book Seat
-    </button>
+  <!-- SERVICES -->
+  <section class="services">
 
-  </div>
+    <div class="card" routerLink="/trains">
+      <i class="bi bi-train-front-fill"></i>
+      <h3>Train Booking</h3>
+      <p>Search trains, check seat availability and book instantly.</p>
+    </div>
+
+    <div class="card" routerLink="/flights">
+      <i class="bi bi-airplane-fill"></i>
+      <h3>Flight Booking</h3>
+      <p>Find best deals and book flights quickly.</p>
+    </div>
+
+    <div class="card" routerLink="/buses">
+      <i class="bi bi-bus-front-fill"></i>
+      <h3>Bus Booking</h3>
+      <p>Comfortable and affordable bus travel options.</p>
+    </div>
+
+    <div class="card" routerLink="/hotels">
+      <i class="bi bi-buildings-fill"></i>
+      <h3>Hotel Booking</h3>
+      <p>Stay at top-rated hotels at best prices.</p>
+    </div>
+
+  </section>
+
+  <!-- ABOUT PROJECT -->
+  <section class="about">
+
+    <h2>Why IRBS?</h2>
+
+    <div class="about-grid">
+
+      <div class="about-card">
+        <h4>🚀 Fast Search</h4>
+        <p>Instantly find trains and travel options with optimized search.</p>
+      </div>
+
+      <div class="about-card">
+        <h4>📊 Real-Time Availability</h4>
+        <p>Live seat availability with booking updates.</p>
+      </div>
+
+      <div class="about-card">
+        <h4>🔐 Secure System</h4>
+        <p>JWT authentication and secure backend integration.</p>
+      </div>      
+
+    </div>
+
+  </section>
+
+  <!-- POPULAR ROUTES -->
+  <section class="routes">
+
+    <h2>Popular Routes</h2>
+
+    <div class="route-list">
+
+      <div class="route" routerLink="/trains">
+        Chennai ➜ Madurai
+      </div>
+
+      <div class="route" routerLink="/trains">
+        Coimbatore ➜ Bangalore
+      </div>
+
+      <div class="route" routerLink="/trains">
+        Trichy ➜ Chennai
+      </div>
+
+      <div class="route" routerLink="/trains">
+        Salem ➜ Hyderabad
+      </div>
+
+    </div>
+
+  </section>
 
 </div>

@@ -94,6 +94,7 @@ mat-form-field {
    TRAIN LIST (UNCHANGED)
 ========================= */
 .train-list {
+  margin-top: 28px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(540px, 1fr));
   gap: 28px;

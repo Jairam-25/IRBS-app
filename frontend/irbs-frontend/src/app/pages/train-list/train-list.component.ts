@@ -112,7 +112,7 @@ swapStations() {
   }
   
     this.isLoading = true;
-    this.hasSearched = true;
+    // this.hasSearched = true;
     this.trains = []; // clear old results immediately
 
     const startTime = Date.now();
