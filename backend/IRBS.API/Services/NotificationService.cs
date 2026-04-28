@@ -1,4 +1,5 @@
 ﻿using IRBS.API.Models;
+using IRBS.API.Models.Bus_Model;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -41,5 +42,17 @@ Thank you for choosing IRBS. We wish you a safe and pleasant journey!
 Warm regards,
 IRBS Customer Support
 ";
+    }
+    public string BuildBusBookingConfirmation(User user, BusBooking booking, Bus bus)
+    {
+        return $@"
+    Dear {user.Name},
+
+    Your booking is confirmed.
+
+    Bus Name: {bus.BusName}
+    Route: {bus.FromCity} to {bus.ToCity}
+    Seat: {booking.SeatNumber}
+    Date: {booking.TravelDate:dd-MMM-yyyy}";
     }
 }

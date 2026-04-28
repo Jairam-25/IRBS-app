@@ -1,4 +1,5 @@
 ﻿using IRBS.API.Models;
+using IRBS.API.Models.Bus_Model;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
@@ -10,6 +11,8 @@ public class AppDbContext : DbContext
     public DbSet<Train> Trains { get; set; }
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<Station> Stations { get; set; }
+    public DbSet<Bus> Buses { get; set; }
+    public DbSet<BusBooking> BusBookings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
