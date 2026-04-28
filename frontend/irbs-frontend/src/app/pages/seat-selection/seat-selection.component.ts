@@ -17,11 +17,16 @@ export class SeatSelectionComponent implements OnInit {
 
   seats: string[] = [];
   bookedSeats: string[] = [];
-  selectedSeat: string | null = null;
+
+  // MULTI SELECT
+  selectedSeats: string[] = [];
+  maxSeats = 6;
 
   trainId!: number;
   date!: string;
+
   isBooking = false;
+
   userName = '';
   fromStation = '';
   toStation = '';
@@ -30,31 +35,33 @@ export class SeatSelectionComponent implements OnInit {
     private route: ActivatedRoute,
     private trainService: TrainService,
     private dialog: MatDialog,
-    private auth: AuthService,
+    private auth: AuthService
   ) {}
 
   ngOnInit() {
+
+    // USER
     this.auth.userName$.subscribe(name => {
-    this.userName = name || 'Guest';
-  });
+      this.userName = name || 'Guest';
+    });
+
+    // PARAMS
     this.route.queryParams.subscribe(params => {
+
       this.trainId = +params['trainId'];
-      this.date = params['date'];
+      this.date = new Date(params['date']).toISOString().split('T')[0];
 
       this.fromStation = params['from'];
       this.toStation = params['to'];
-
-      console.log('TrainId:', this.trainId);
-      console.log('Date:', this.date);
-      console.log('From Station:', this.fromStation);
-      console.log('To Station:', this.toStation);
 
       this.generateSeats();
       this.loadBookedSeats();
     });
   }
 
-  // 🚆 Generate seats
+  // =========================
+  // GENERATE SEATS
+  // =========================
   generateSeats() {
     const rows = ['A','B','C','D'];
     this.seats = [];
@@ -66,7 +73,9 @@ export class SeatSelectionComponent implements OnInit {
     }
   }
 
-  // 🔄 Load booked seats
+  // =========================
+  // LOAD BOOKED
+  // =========================
   loadBookedSeats() {
     this.trainService.getBookedSeats(this.trainId, this.date)
       .subscribe({
@@ -77,84 +86,121 @@ export class SeatSelectionComponent implements OnInit {
       });
   }
 
-  // 🎯 Select seat
+  // =========================
+  // SELECT (MULTI)
+  // =========================
   selectSeat(seat: string) {
-    if (this.bookedSeats.includes(seat)) return;
-    this.selectedSeat = seat;
+
+    if (this.bookedSeats.includes(seat) || this.isBooking) return;
+
+    const index = this.selectedSeats.indexOf(seat);
+
+    if (index > -1) {
+      // ❌ unselect
+      this.selectedSeats.splice(index, 1);
+    } else {
+
+      // 🚫 limit
+      if (this.selectedSeats.length >= this.maxSeats) {
+        this.dialog.open(PopupComponent, {
+          width: '320px',
+          data: {
+            title: 'Limit reached',
+            message: `Max ${this.maxSeats} seats allowed`
+          }
+        });
+        return;
+      }
+
+      // ✅ add
+      this.selectedSeats.push(seat);
+    }
   }
 
-  // 🎨 UI class
+  // =========================
+  // UI CLASS
+  // =========================
   getSeatClass(seat: string) {
     if (this.bookedSeats.includes(seat)) return 'booked';
-    if (this.selectedSeat === seat) return 'selected';
+    if (this.selectedSeats.includes(seat)) return 'selected';
     return 'available';
   }
 
-  // 🎟️ Book seat
-bookSeat() {
+  // =========================
+  // BOOK MULTIPLE
+  // =========================
+  bookSeat() {
 
-  if (!this.selectedSeat) {
-    this.dialog.open(PopupComponent, {
-      width: '360px',
-      panelClass: 'custom-dialog',
-      data: {
-        title: 'Select Seat',
-        message: 'Select a seat first!'
+    if (!this.selectedSeats.length) {
+      this.dialog.open(PopupComponent, {
+        width: '360px',
+        data: {
+          title: 'Select Seat',
+          message: 'Select at least one seat!'
+        }
+      });
+      return;
+    }
+
+    this.isBooking = true;
+
+    const body = {
+      trainId: this.trainId,
+      seatNumbers: this.selectedSeats,
+      travelDate: this.date
+    };
+
+    const startTime = Date.now();
+
+    this.trainService.bookMultipleSeats(body).subscribe({
+
+      next: () => {
+
+        const elapsed = Date.now() - startTime;
+        const delay = Math.max(0, 1500 - elapsed);
+
+        setTimeout(() => {
+
+          this.isBooking = false;
+
+          // instant UI update
+          this.bookedSeats.push(...this.selectedSeats);
+
+          this.dialog.open(PopupComponent, {
+            width: '360px',
+            panelClass: 'custom-dialog',
+            data: {
+              title: 'Booking Successful',
+              message: `${this.selectedSeats.length} seats booked successfully`
+            }
+          });
+
+          this.selectedSeats = [];
+
+          // sync with backend
+          this.loadBookedSeats();
+
+        }, delay);
+        console.log('FINAL PAYLOAD:', body);
       },
-      disableClose: true
-    });
-    return;
-  }
 
-  this.isBooking = true; // START LOADING
+      error: (err) => {
+        console.log('FULL ERROR:', err);
+        console.log('BACKEND MESSAGE:', err.error);
 
-  const body = {
-    trainId: this.trainId,
-    seatNumber: this.selectedSeat,
-    travelDate: new Date(this.date).toISOString()
-  };
-
-  const startTime = Date.now(); // for smooth delay
-
-  this.trainService.bookSeat(body).subscribe({
-    next: (res: any) => {
-
-      const elapsed = Date.now() - startTime;
-      const delay = Math.max(0, 1500 - elapsed); // minimum 1.5s feel
-
-      setTimeout(() => {
         this.isBooking = false;
 
         this.dialog.open(PopupComponent, {
           width: '360px',
           panelClass: 'custom-dialog',
           data: {
-            title: 'Success',
-            message: 'Seat booked successfully.'
-          },
-          disableClose: true
+            title: 'Booking Failed',
+            message: err.error?.message || JSON.stringify(err.error)
+          }
         });
-
-        this.selectedSeat = null;
-        this.loadBookedSeats();
-
-      }, delay);
-    },
-
-    error: (err) => {
-
-      this.isBooking = false;
-
-      this.dialog.open(PopupComponent, {
-        width: '360px',
-        panelClass: 'custom-dialog',
-        data: {
-          title: 'Booking Failed',
-          message: err.error?.message || 'Something went wrong'
-        },
-        disableClose: true
-      });
-    }
-  });
-}
+        console.log('FINAL PAYLOAD:', body);
+      }
+      
+    });
+  }
 }

@@ -1,13 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { TrainService } from '../../_services/train.service';
 import { StationService } from '../../_services/station.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PopupComponent } from '../../_notifyAlert/popup.component';
 
-// Angular Material imports (THIS WAS MISSING)
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,17 +23,13 @@ import { MatNativeDateModule } from '@angular/material/core';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-
-    // ADD THESE
     MatFormFieldModule,
     MatInputModule,
     MatAutocompleteModule,
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
-
     MatDatepickerModule,
-    MatInputModule,
     MatNativeDateModule
   ],
   templateUrl: './train-list.component.html',
@@ -44,7 +39,8 @@ export class TrainListComponent implements OnInit, OnDestroy {
 
   fromStation = '';
   toStation = '';
-  // selectedDate = '';
+  selectedDate!: Date;
+
   isLoading = false;
   hasSearched = false;
 
@@ -54,15 +50,13 @@ export class TrainListComponent implements OnInit, OnDestroy {
   filteredFromStations: any[] = [];
   filteredToStations: any[] = [];
 
-    // FIXED: Only ONE type
-    selectedDate!: Date;
-    // block past dates
-    minDate: Date = new Date();
+  minDate: Date = new Date();
 
   constructor(
     private trainService: TrainService,
     private stationService: StationService,
     private router: Router,
+    private route: ActivatedRoute,
     private dialog: MatDialog
   ) {}
 
@@ -70,40 +64,58 @@ export class TrainListComponent implements OnInit, OnDestroy {
   // INIT
   // =========================
   ngOnInit() {
-    this.trains = [];
     this.loadStations();
+
+    // 🔥 RESTORE STATE (BACK BUTTON / REFRESH)
+    this.route.queryParams.subscribe(params => {
+
+      if (params['from'] && params['to'] && params['date']) {
+
+        this.fromStation = params['from'];
+        this.toStation = params['to'];
+
+        // convert string → Date
+        this.selectedDate = new Date(params['date']);
+
+        // 🔥 silent search (no URL update again)
+        this.searchTrainsSilently();
+      }
+    });
   }
 
+  // =========================
+  // LOAD STATIONS
+  // =========================
   loadStations() {
-  this.stationService.getStations().subscribe({
-    next: (res) => {
-      this.stations = res;
-      this.filteredFromStations = res;
-      this.filteredToStations = res;
-    }
-  });
-}
+    this.stationService.getStations().subscribe({
+      next: (res) => {
+        this.stations = res;
+        this.filteredFromStations = res;
+        this.filteredToStations = res;
+      }
+    });
+  }
 
-filterFrom(value: string) {
-  this.filteredFromStations = this._filter(value);
-}
+  filterFrom(value: string) {
+    this.filteredFromStations = this._filter(value);
+  }
 
-filterTo(value: string) {
-  this.filteredToStations = this._filter(value);
-}
+  filterTo(value: string) {
+    this.filteredToStations = this._filter(value);
+  }
 
-private _filter(value: string) {
-  const filterValue = value.toLowerCase();
-  return this.stations.filter(s =>
-    s.name.toLowerCase().includes(filterValue)
-  );
-}
+  private _filter(value: string) {
+    const filterValue = value.toLowerCase();
+    return this.stations.filter(s =>
+      s.name.toLowerCase().includes(filterValue)
+    );
+  }
 
-swapStations() {
-  const temp = this.fromStation;
-  this.fromStation = this.toStation;
-  this.toStation = temp;
-}
+  swapStations() {
+    const temp = this.fromStation;
+    this.fromStation = this.toStation;
+    this.toStation = temp;
+  }
 
   // =========================
   // CLEANUP
@@ -113,83 +125,91 @@ swapStations() {
   }
 
   // =========================
-  // SEARCH TRAINS
+  // SEARCH (WITH URL UPDATE)
   // =========================
   searchTrains() {
 
-  if (!this.fromStation || !this.toStation) {
-    this.dialog.open(PopupComponent, {
-      width: '360px',
-      maxWidth: '90vw',
-      panelClass: 'custom-dialog',
-      data: {
-        title: 'Select Station',
-        message: 'Select valid stations!'
+    if (!this.fromStation || !this.toStation) {
+      this.showPopup('Select Station', 'Select valid stations!');
+      return;
+    }
+
+    if (this.fromStation === this.toStation) {
+      this.showPopup('Select Station', 'From and To cannot be same!');
+      return;
+    }
+
+    if (!this.selectedDate) {
+      this.showPopup('Select Date', 'Please select travel date!');
+      return;
+    }
+
+    this.isLoading = true;
+    this.trains = [];
+
+    // 🔥 PUSH TO URL (IMPORTANT)
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        from: this.fromStation,
+        to: this.toStation,
+        date: this.selectedDate.toISOString()
       },
-      disableClose: true
+      queryParamsHandling: 'merge'
     });
-    return;
+
+    this.callTrainAPI();
   }
 
-  if (this.fromStation === this.toStation) {
-    this.dialog.open(PopupComponent, {
-      width: '360px',
-      maxWidth: '90vw',
-      panelClass: 'custom-dialog',
-      data: {
-        title: 'Select Station',
-        message: 'From station and To station cannot be same!'
-      },
-      disableClose: true
-    });
-    return;
-  }
-  
+  // =========================
+  // SILENT SEARCH (NO URL UPDATE)
+  // =========================
+  searchTrainsSilently() {
     this.isLoading = true;
-    this.trains = []; // clear old results immediately
+    this.trains = [];
+    this.callTrainAPI();
+  }
+
+  // =========================
+  // COMMON API CALL
+  // =========================
+  callTrainAPI() {
 
     const startTime = Date.now();
 
-  this.trainService.searchTrains(this.fromStation, this.toStation)
-    .subscribe({
+    this.trainService.searchTrains(this.fromStation, this.toStation, this.selectedDate.toISOString())
+      .subscribe({
+
         next: (res: any) => {
 
-          console.log("TRAIN API RESPONSE:", res);
           const elapsed = Date.now() - startTime;
-          const remaining = Math.max(3000 - elapsed, 0);
+          const remaining = Math.max(1000 - elapsed, 0);
 
-          // SAFE MAPPING (prevents UI breaking if fields missing)
           setTimeout(() => {
-          this.trains = (res || []).map((t: any) => ({
-            id: t.id,
-            trainName: t.trainName,
-            fromStation: t.fromStation || 'N/A',
-            toStation: t.toStation || 'N/A',            
 
-            // optional fields (safe fallback)
-            date: t.date || '',
-            departureTime: t.departureTime || '',
-            arrivalTime: t.arrivalTime || '',
+            this.trains = (res || []).map((t: any) => ({
+              id: t.id,
+              trainName: t.trainName,
+              fromStation: t.fromStation || 'N/A',
+              toStation: t.toStation || 'N/A',
+              date: t.date || '',
+              departureTime: t.departureTime || '',
+              arrivalTime: t.arrivalTime || '',
+              availableSeats: t.availableSeats ?? 0,
+              bookedSeats: t.bookedSeats ?? 0,
+              totalSeats: t.totalSeats ?? 0
+            }));
 
-            availableSeats: t.availableSeats ?? 0,
-            bookedSeats: t.bookedSeats ?? 0,
-            totalSeats: t.totalSeats ?? 0
-          }));
-          this.isLoading = false;
-          this.hasSearched = true;
-          }, remaining);        
+            this.isLoading = false;
+            this.hasSearched = true;
+
+          }, remaining);
         },
 
-        error: (err: any) => {
-          const elapsed = Date.now() - startTime;
-          const remaining = Math.max(3000 - elapsed, 0);
-
-          setTimeout(() => {
-          this.trains = [];
+        error: () => {
           this.isLoading = false;
-          this.hasSearched = false;
-        }, remaining);
-      }
+          this.trains = [];
+        }
       });
   }
 
@@ -199,26 +219,29 @@ swapStations() {
   selectTrain(train: any) {
 
     if (!this.selectedDate) {
-      this.dialog.open(PopupComponent, {
-      width: '360px',
-      maxWidth: '90vw',
-      panelClass: 'custom-dialog',
-      data: {
-        title: 'Select date',
-        message: 'Select date first!'
-      },
-      disableClose: true
-    });
+      this.showPopup('Select date', 'Select date first!');
       return;
     }
 
     this.router.navigate(['/seat-selection'], {
       queryParams: {
         trainId: train.id,
-        date: this.selectedDate,
-        from: train.fromStation,
-        to: train.toStation
+        date: this.selectedDate.toISOString(),
+        from: this.fromStation,
+        to: this.toStation
       }
+    });
+  }
+
+  // =========================
+  // POPUP HELPER
+  // =========================
+  showPopup(title: string, message: string) {
+    this.dialog.open(PopupComponent, {
+      width: '360px',
+      panelClass: 'custom-dialog',
+      data: { title, message },
+      disableClose: true
     });
   }
 }

@@ -44,18 +44,22 @@
     </div>
   </div>
 
+  <div class="seat-counter">
+    {{ selectedSeats.length }} / {{ maxSeats }} selected
+  </div>
+
   <!-- FOOTER ACTION -->
   <div class="seat-footer">
 
-    <p *ngIf="selectedSeat">
-      Selected Seat:
-      <strong>{{ selectedSeat }}</strong>
+    <p *ngIf="selectedSeats.length">
+      Selected Seats:
+      <strong>{{ selectedSeats.join(', ') }}</strong>
     </p>
 
     <button
       class="book-btn"
       (click)="bookSeat()"
-      [disabled]="!selectedSeat"
+      [disabled]="!selectedSeats.length"
     >
       Confirm Booking
     </button>
