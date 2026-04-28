@@ -1,4 +1,5 @@
-﻿using IRBS.API.Models.Bus_Model;
+﻿using IRBS.API.DTOs;
+using IRBS.API.Models.Bus_Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -37,21 +38,20 @@ namespace IRBS.API.Controllers
         // Book a seat on a bus
         [Authorize]
         [HttpPost("book")]
-        public async Task<IActionResult> BookSeat(BusBooking dto)
+        public async Task<IActionResult> BookSeat(CreateBusBookingDto dto)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            if (!int.TryParse(userIdClaim, out int userId))
-                return Unauthorized("Invalid user");
+            if (!int.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
 
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
-                return Unauthorized("User not found");
+                return Unauthorized();
 
             var bus = await _context.Buses.FindAsync(dto.BusId);
             if (bus == null)
-                return BadRequest("Bus not found");
-
+                return BadRequest("Invalid Bus");
 
             var exists = await _context.BusBookings.AnyAsync(x =>
                 x.BusId == dto.BusId &&
@@ -63,7 +63,7 @@ namespace IRBS.API.Controllers
 
             var booking = new BusBooking
             {
-                UserId = user.Id,
+                UserId = userId,
                 BusId = dto.BusId,
                 SeatNumber = dto.SeatNumber,
                 TravelDate = dto.TravelDate,
@@ -73,11 +73,13 @@ namespace IRBS.API.Controllers
             _context.BusBookings.Add(booking);
             await _context.SaveChangesAsync();
 
-            var buses = await _context.Buses.FindAsync(booking.BusId);
+            string body = _notificationService.BuildBusBookingConfirmation(user, booking, bus);
 
-            string body = _notificationService.BuildBusBookingConfirmation(user, booking, buses);
-
-            await _notificationService.SendEmailAsync(user.Email, "Bus Booking Confirmed", body);
+            await _notificationService.SendEmailAsync(
+                user.Email,
+                "Bus Booking Confirmed",
+                body
+            );
 
             return Ok(new
             {

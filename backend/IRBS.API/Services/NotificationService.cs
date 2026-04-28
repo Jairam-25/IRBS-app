@@ -48,11 +48,16 @@ IRBS Customer Support
         return $@"
     Dear {user.Name},
 
-    Your booking is confirmed.
+ We are pleased to inform you that your booking has been confirmed.
 
     Bus Name: {bus.BusName}
     Route: {bus.FromCity} to {bus.ToCity}
     Seat: {booking.SeatNumber}
-    Date: {booking.TravelDate:dd-MMM-yyyy}";
+    Date: {booking.TravelDate:dd-MMM-yyyy}
+Thank you for choosing IRBS. We wish you a safe and pleasant journey!
+
+Warm regards,
+IRBS Customer Support
+";
     }
 }

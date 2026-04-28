@@ -11,10 +11,14 @@ namespace IRBS.API.Models.Bus_Model
 
         public int BusId { get; set; }
 
-        public string SeatNumber { get; set; }
+        public string SeatNumber { get; set; } = string.Empty;
 
         public DateTime TravelDate { get; set; }
 
         public string Status { get; set; } = "Booked";
+
+        public Bus? Bus { get; set; }
+
+        public User? User { get; set; }
     }
 }

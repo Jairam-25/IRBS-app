@@ -31,6 +31,20 @@ public class AppDbContext : DbContext
             .HasOne(b => b.User)
             .WithMany()
             .HasForeignKey(b => b.UserId);
+
+        modelBuilder.Entity<BusBooking>()
+            .HasIndex(b => new { b.BusId, b.SeatNumber, b.TravelDate })
+            .IsUnique();
+
+        modelBuilder.Entity<BusBooking>()
+            .HasOne(b => b.Bus)
+            .WithMany()
+            .HasForeignKey(b => b.BusId);
+
+        modelBuilder.Entity<BusBooking>()
+            .HasOne(b => b.User)
+            .WithMany()
+            .HasForeignKey(b => b.UserId);
     }
 
 }
