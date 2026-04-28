@@ -2,11 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { TrainService } from '../../_services/train.service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { PopupComponent } from '../../_notifyAlert/popup.component';
+import { AuthService } from '../../_services/auth.service';
 
 @Component({
   selector: 'app-seat-selection',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatDialogModule],
   templateUrl: './seat-selection.component.html',
   styleUrl: './seat-selection.component.css'
 })
@@ -18,19 +21,33 @@ export class SeatSelectionComponent implements OnInit {
 
   trainId!: number;
   date!: string;
+  isBooking = false;
+  userName = '';
+  fromStation = '';
+  toStation = '';
 
   constructor(
     private route: ActivatedRoute,
-    private trainService: TrainService
+    private trainService: TrainService,
+    private dialog: MatDialog,
+    private auth: AuthService,
   ) {}
 
   ngOnInit() {
+    this.auth.userName$.subscribe(name => {
+    this.userName = name || 'Guest';
+  });
     this.route.queryParams.subscribe(params => {
       this.trainId = +params['trainId'];
       this.date = params['date'];
 
+      this.fromStation = params['from'];
+      this.toStation = params['to'];
+
       console.log('TrainId:', this.trainId);
       console.log('Date:', this.date);
+      console.log('From Station:', this.fromStation);
+      console.log('To Station:', this.toStation);
 
       this.generateSeats();
       this.loadBookedSeats();
@@ -74,14 +91,22 @@ export class SeatSelectionComponent implements OnInit {
   }
 
   // 🎟️ Book seat
-  bookSeat() {
+bookSeat() {
 
   if (!this.selectedSeat) {
-    alert('Select a seat first');
+    this.dialog.open(PopupComponent, {
+      width: '360px',
+      panelClass: 'custom-dialog',
+      data: {
+        title: 'Select Seat',
+        message: 'Select a seat first!'
+      },
+      disableClose: true
+    });
     return;
   }
 
-  const userId = Number(localStorage.getItem('userId')); // YOU MUST STORE THIS AT LOGIN
+  this.isBooking = true; // START LOADING
 
   const body = {
     trainId: this.trainId,
@@ -89,18 +114,47 @@ export class SeatSelectionComponent implements OnInit {
     travelDate: new Date(this.date).toISOString()
   };
 
-  console.log('Booking payload:', body); // DEBUG
+  const startTime = Date.now(); // for smooth delay
 
-  this.trainService.bookSeat(body)
-    .subscribe({
-      next: (res: any) => {
-        alert('Seat booked successfully');
+  this.trainService.bookSeat(body).subscribe({
+    next: (res: any) => {
+
+      const elapsed = Date.now() - startTime;
+      const delay = Math.max(0, 1500 - elapsed); // minimum 1.5s feel
+
+      setTimeout(() => {
+        this.isBooking = false;
+
+        this.dialog.open(PopupComponent, {
+          width: '360px',
+          panelClass: 'custom-dialog',
+          data: {
+            title: 'Success',
+            message: 'Seat booked successfully.'
+          },
+          disableClose: true
+        });
+
+        this.selectedSeat = null;
         this.loadBookedSeats();
-      },
-      error: (err) => {
-        console.error(err);
-        alert(JSON.stringify(err.error?.errors)); // SHOW REAL ERROR
-      }
-    });
+
+      }, delay);
+    },
+
+    error: (err) => {
+
+      this.isBooking = false;
+
+      this.dialog.open(PopupComponent, {
+        width: '360px',
+        panelClass: 'custom-dialog',
+        data: {
+          title: 'Booking Failed',
+          message: err.error?.message || 'Something went wrong'
+        },
+        disableClose: true
+      });
+    }
+  });
 }
 }

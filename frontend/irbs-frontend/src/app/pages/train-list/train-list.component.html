@@ -46,7 +46,20 @@
     </mat-autocomplete>
   </mat-form-field>
 
-  <input type="date" [(ngModel)]="selectedDate" />
+  <mat-form-field appearance="outline" class="date-field">
+    <mat-label>Travel Date</mat-label>
+
+    <input
+      matInput
+      [matDatepicker]="picker"
+      [(ngModel)]="selectedDate"
+      [min]="minDate"
+      readonly
+    >
+
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
 
   <button class="search-btn" (click)="searchTrains()" [disabled]="isLoading">
 

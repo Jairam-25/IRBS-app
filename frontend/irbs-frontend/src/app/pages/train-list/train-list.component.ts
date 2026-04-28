@@ -4,13 +4,18 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TrainService } from '../../_services/train.service';
 import { StationService } from '../../_services/station.service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { PopupComponent } from '../../_notifyAlert/popup.component';
 
 // Angular Material imports (THIS WAS MISSING)
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-train-list',
@@ -20,12 +25,17 @@ import { MatIconModule } from '@angular/material/icon';
     FormsModule,
     ReactiveFormsModule,
 
-    // 🔥 ADD THESE
+    // ADD THESE
     MatFormFieldModule,
     MatInputModule,
     MatAutocompleteModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatDialogModule,
+
+    MatDatepickerModule,
+    MatInputModule,
+    MatNativeDateModule
   ],
   templateUrl: './train-list.component.html',
   styleUrls: ['./train-list.component.css']
@@ -34,7 +44,7 @@ export class TrainListComponent implements OnInit, OnDestroy {
 
   fromStation = '';
   toStation = '';
-  selectedDate = '';
+  // selectedDate = '';
   isLoading = false;
   hasSearched = false;
 
@@ -44,10 +54,16 @@ export class TrainListComponent implements OnInit, OnDestroy {
   filteredFromStations: any[] = [];
   filteredToStations: any[] = [];
 
+    // FIXED: Only ONE type
+    selectedDate!: Date;
+    // block past dates
+    minDate: Date = new Date();
+
   constructor(
     private trainService: TrainService,
     private stationService: StationService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) {}
 
   // =========================
@@ -102,17 +118,34 @@ swapStations() {
   searchTrains() {
 
   if (!this.fromStation || !this.toStation) {
-    alert("Select valid stations");
+    this.dialog.open(PopupComponent, {
+      width: '360px',
+      maxWidth: '90vw',
+      panelClass: 'custom-dialog',
+      data: {
+        title: 'Select Station',
+        message: 'Select valid stations!'
+      },
+      disableClose: true
+    });
     return;
   }
 
   if (this.fromStation === this.toStation) {
-    alert("From and To cannot be same");
+    this.dialog.open(PopupComponent, {
+      width: '360px',
+      maxWidth: '90vw',
+      panelClass: 'custom-dialog',
+      data: {
+        title: 'Select Station',
+        message: 'From station and To station cannot be same!'
+      },
+      disableClose: true
+    });
     return;
   }
   
     this.isLoading = true;
-    // this.hasSearched = true;
     this.trains = []; // clear old results immediately
 
     const startTime = Date.now();
@@ -166,14 +199,25 @@ swapStations() {
   selectTrain(train: any) {
 
     if (!this.selectedDate) {
-      alert('Select date first');
+      this.dialog.open(PopupComponent, {
+      width: '360px',
+      maxWidth: '90vw',
+      panelClass: 'custom-dialog',
+      data: {
+        title: 'Select date',
+        message: 'Select date first!'
+      },
+      disableClose: true
+    });
       return;
     }
 
     this.router.navigate(['/seat-selection'], {
       queryParams: {
         trainId: train.id,
-        date: this.selectedDate
+        date: this.selectedDate,
+        from: train.fromStation,
+        to: train.toStation
       }
     });
   }

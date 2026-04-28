@@ -1,51 +1,123 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { trigger, transition, style, animate } from '@angular/animations';
-import { ActivatedRoute } from '@angular/router';
-
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../_services/auth.service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { PopupComponent } from '../../_notifyAlert/popup.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, MatDialogModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
-  animations: [
-    trigger('pageAnimation', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(20px)' }),
-        animate('400ms ease-out',
-          style({ opacity: 1, transform: 'translateY(0)' })
-        )
-      ])
-    ])
-  ]
+  styleUrl: './login.component.css'
 })
 export class LoginComponent {
 
   constructor(
     private auth: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private dialog: MatDialog
   ) {}
 
+  // =====================
+  // FORM FIELDS
+  // =====================
   name = '';
   email = '';
   password = '';
+  confirmPassword = '';
 
+  // =====================
+  // UI STATE
+  // =====================
   isLoading = false;
-  isSuccess = false;
   isRegisterMode = false;
 
-  bubbles = Array(6);
+  // =====================
+  // VALIDATION
+  // =====================
+  emailValid = false;
+  passwordValid = false;
+  passwordsMatch = false;
+  emailExistsError = false;
 
+  // =====================
+  // TOGGLE
+  // =====================
   toggleMode() {
     this.isRegisterMode = !this.isRegisterMode;
+
+    // reset everything
+    this.emailExistsError = false;
+    this.password = '';
+    this.confirmPassword = '';
   }
 
+  // =====================
+  // EMAIL CHECK
+  // =====================
+  checkEmail() {
+    this.emailExistsError = false;
+
+    this.emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email);
+  }
+
+  // =====================
+  // PASSWORD RULES
+  // =====================
+  hasMinLength() {
+    return this.password.length >= 8;
+  }
+
+  hasUppercase() {
+    return /[A-Z]/.test(this.password);
+  }
+
+  hasLowercase() {
+    return /[a-z]/.test(this.password);
+  }
+
+  hasNumber() {
+    return /\d/.test(this.password);
+  }
+
+  hasSpecial() {
+    return /[@$!%*?&]/.test(this.password);
+  }
+
+  checkPassword() {
+    this.passwordValid =
+      this.hasMinLength() &&
+      this.hasUppercase() &&
+      this.hasLowercase() &&
+      this.hasNumber() &&
+      this.hasSpecial();
+  }
+
+  getStrength() {
+    let score = 0;
+    if (this.hasMinLength()) score++;
+    if (this.hasUppercase()) score++;
+    if (this.hasLowercase()) score++;
+    if (this.hasNumber()) score++;
+    if (this.hasSpecial()) score++;
+
+    return (score / 5) * 100;
+  }
+
+  // =====================
+  // CONFIRM PASSWORD
+  // =====================
+  checkMatch() {
+    this.passwordsMatch = this.password === this.confirmPassword;
+  }
+
+  // =====================
+  // SUBMIT
+  // =====================
   onSubmit() {
     if (this.isRegisterMode) {
       this.register();
@@ -54,13 +126,11 @@ export class LoginComponent {
     }
   }
 
-  // =========================
-  // LOGIN (FIXED FLOW)
-  // =========================
+  // =====================
+  // LOGIN
+  // =====================
   login() {
-
     this.isLoading = true;
-    this.isSuccess = false;
 
     const data = {
       email: this.email,
@@ -69,41 +139,50 @@ export class LoginComponent {
 
     this.auth.login(data).subscribe({
       next: (res) => {
-        console.log('Login success', res);
-
-        // 🔥 STEP 1: set session FIRST
         this.auth.setSession(res);
 
         const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
 
-        // 🔥 STEP 2: UI feedback AFTER session is set
         setTimeout(() => {
           this.isLoading = false;
-          this.isSuccess = true;
-
-          setTimeout(() => {
-            this.router.navigate([returnUrl]);
-          }, 600);
-
+          this.router.navigate([returnUrl]);
         }, 800);
-        console.log('Login Success', res);
+
+        this.dialog.open(PopupComponent, {
+          width: '360px',
+          maxWidth: '90vw',
+          panelClass: 'custom-dialog',
+          data: {
+            title: 'Login Successful',
+            message: 'You have been logged in successfully.'
+          },
+          disableClose: true
+        });
       },
-      
-      error: (err) => {
-        console.error('Login failed', err);
-
+      error: () => {
         this.isLoading = false;
-        this.isSuccess = false;
-
-        alert('Invalid credentials');
+        this.dialog.open(PopupComponent, {
+              width: '360px',
+              maxWidth: '90vw',
+              panelClass: 'custom-dialog',
+              data: {
+                title: 'Invalid Credentials',
+                message: 'Invalid email or password. Please try again.'
+              },
+              disableClose: true
+            });
       }
     });
   }
 
-  // =========================
-  // REGISTER (unchanged but cleaned)
-  // =========================
+  // =====================
+  // REGISTER
+  // =====================
   register() {
+
+    if (!this.emailValid || !this.passwordValid || !this.passwordsMatch) {
+      return;
+    }
 
     this.isLoading = true;
 
@@ -114,23 +193,31 @@ export class LoginComponent {
     };
 
     this.auth.register(data).subscribe({
-      next: (res) => {
-        console.log('Register success', res);
-
+      next: () => {
         this.isLoading = false;
 
-        alert('Registration successful 🚉 Please login');
+        this.dialog.open(PopupComponent, {
+          width: '360px',
+          maxWidth: '90vw',
+          panelClass: 'custom-dialog',
+          data: {
+            title: 'Registration Successful',
+            message: 'Your account has been created successfully.'
+          },
+          disableClose: true
+        });
 
         this.isRegisterMode = false;
         this.password = '';
+        this.confirmPassword = '';
       },
-
       error: (err) => {
-        console.error('Register failed', err);
-
         this.isLoading = false;
 
-        alert('Registration failed');
+        // 🔥 THIS IS YOUR FIX
+        if (err.error === "User already exists") {
+          this.emailExistsError = true;
+        }
       }
     });
   }

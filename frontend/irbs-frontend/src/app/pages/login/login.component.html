@@ -1,48 +1,92 @@
-<div class="auth-wrapper" [class.loading]="isLoading" @pageAnimation>
+<div class="center-wrapper">
 
-  <!-- Background bubbles -->
-  <div class="bubbles">
-    <span *ngFor="let b of bubbles"></span>
-  </div>
-
-  <!-- Left info -->
-  <div class="auth-info">
-    <h1>IRBS</h1>
-    <h3>Indian Railway Booking System</h3>
-
-    <p>
-      Search trains, check seat availability, and book tickets instantly.
-    </p>
-
-    <ul>
-      <li>✔ Real-time seat availability</li>
-      <li>✔ Secure booking system</li>
-      <li>✔ Fast search & filters</li>
-    </ul>
-  </div>
-
-  <!-- Right card -->
   <div class="auth-card">
 
-    <h2>{{ isRegisterMode ? 'Register' : 'Login' }}</h2>
-
-    <!-- Name only for register -->
-    <div class="form-group" *ngIf="isRegisterMode">
-      <input type="text" [(ngModel)]="name" name="name" placeholder="Name" />
+    <!-- HEADER -->
+    <div class="card-header">
+      <h2>{{ isRegisterMode ? 'Create Account' : 'Welcome Back' }}</h2>
+      <p>
+        {{ isRegisterMode 
+          ? 'Register to start booking your journey' 
+          : 'Login to continue your journey' }}
+      </p>
     </div>
 
+    <!-- NAME -->
+    <div *ngIf="isRegisterMode" class="form-group">
+      <input type="text" [(ngModel)]="name" placeholder="Full Name">
+    </div>
+
+    <!-- EMAIL -->
     <div class="form-group">
-      <input type="email" [(ngModel)]="email" name="email" placeholder="Email" />
+      <input
+        type="email"
+        [(ngModel)]="email"
+        placeholder="Email"
+        (input)="checkEmail()"
+      >
+
+      <small *ngIf="!emailValid && email">
+        <i class="bi bi-x-circle-fill"></i> Invalid email format
+      </small>
+
+      <small *ngIf="emailExistsError" style="color:red">
+        <i class="bi bi-exclamation-triangle-fill"></i> Email already registered
+      </small>
     </div>
 
-    <div class="form-group">
-      <input type="password" [(ngModel)]="password" name="password" placeholder="Password" />
+    <!-- PASSWORD -->
+    <div class="form-group password-field">
+
+      <input
+        type="password"
+        [(ngModel)]="password"
+        placeholder="Password"
+        (input)="checkPassword()"
+      >
+
+      <!-- Strength -->
+      <div class="strength-bar" *ngIf="isRegisterMode">
+        <div [style.width.%]="getStrength()"></div>
+      </div>
+
+      <!-- RULES -->
+      <div class="rules" *ngIf="isRegisterMode">
+        <p [class.valid]="hasMinLength()">8+ chars</p>
+        <p [class.valid]="hasUppercase()">Uppercase</p>
+        <p [class.valid]="hasLowercase()">Lowercase</p>
+        <p [class.valid]="hasNumber()">Number</p>
+        <p [class.valid]="hasSpecial()">Special</p>
+      </div>
+
     </div>
 
-    <button class="btn-login" (click)="onSubmit()" [disabled]="isLoading">
+    <!-- CONFIRM -->
+    <div *ngIf="isRegisterMode" class="form-group password-field">
+      <input
+        type="password"
+        [(ngModel)]="confirmPassword"
+        placeholder="Confirm Password"
+        (input)="checkMatch()"
+      >
+
+      <small [class.valid]="passwordsMatch">
+        {{ passwordsMatch ? '✔ Passwords match' : 'Passwords do not match' }}
+      </small>
+    </div>
+
+    <!-- BUTTON -->
+    <button
+      class="btn-login"
+      (click)="onSubmit()"
+      [disabled]="
+        isLoading ||
+        (isRegisterMode && (!passwordValid || !passwordsMatch || !emailValid))
+      "
+    >
 
       <span *ngIf="!isLoading">
-        {{ isRegisterMode ? 'Register' : 'Login' }}
+        {{ isRegisterMode ? 'Create Account' : 'Login' }}
       </span>
 
       <div *ngIf="isLoading" class="train-loader">
@@ -56,23 +100,11 @@
 
     </button>
 
-    <p style="cursor:pointer; text-decoration: underline; margin-top:20px; color:#f70000;"
-       (click)="toggleMode()">
-
-      {{ isRegisterMode
-        ? 'Already have account? Login'
-        : 'Create new account?' }}
-
+    <!-- SWITCH -->
+    <p (click)="toggleMode()" class="switch">
+      {{ isRegisterMode ? 'Already have an account? Login' : 'Create new account' }}
     </p>
 
-  </div>
-
-  <!-- Success station effect -->
-  <div class="station-overlay" *ngIf="isSuccess">
-    <div class="station-text">
-      Hurry! Arrived at Station
-      <span>Welcome to a Home IRBS</span>
-    </div>
   </div>
 
 </div>

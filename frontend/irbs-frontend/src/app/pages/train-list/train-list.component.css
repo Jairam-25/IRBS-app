@@ -23,7 +23,7 @@
   box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
-/* 🔥 FIX MATERIAL FIELD HEIGHT + ALIGNMENT */
+/* FIX MATERIAL FIELD HEIGHT + ALIGNMENT */
 mat-form-field {
   flex: 1;
   min-width: 220px;
@@ -34,7 +34,7 @@ mat-form-field {
   display: none;
 }
 
-/* 🔄 SWAP BUTTON FIX (CENTER PERFECTLY) */
+/* SWAP BUTTON FIX (CENTER PERFECTLY) */
 .swap-btn {
   width: 42px;
   height: 42px;
@@ -388,6 +388,34 @@ mat-form-field {
   height: 10px;
   background: #ff714d;
   border-radius: 2px;
+}
+
+
+/* --------------Date Format---------------------------- */
+
+.date-field {
+  width: 220px;
+}
+
+/* Match your orange IRBS theme */
+::ng-deep .mat-mdc-form-field-outline {
+  border-radius: 10px;
+}
+
+::ng-deep .mat-datepicker-toggle {
+  color: #ff6d00;
+}
+
+/* Input look */
+::ng-deep .mat-mdc-input-element {
+  cursor: pointer;
+}
+
+/* Focus color */
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__leading,
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__notch,
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__trailing {
+  border-color: #ff6d00 !important;
 }
 
 /* Movement */

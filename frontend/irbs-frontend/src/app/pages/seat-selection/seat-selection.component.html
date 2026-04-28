@@ -1,23 +1,84 @@
-<h2>Seat Selection</h2>
+<div class="seat-wrapper">
 
-<p>Train ID: {{ trainId }}</p>
-<p>Date: {{ date }}</p>
+  <!-- HEADER -->
+  <div class="seat-header">
+    <h2>Seat Selection</h2>
+    <div class="trip-info">
 
-<div class="seat-grid">
-  <div
-    *ngFor="let seat of seats"
-    [ngClass]="getSeatClass(seat)"
-    (click)="selectSeat(seat)"
-  >
-    {{ seat }}
+      <div class="trip-row">
+        <span class="label">Passenger</span>
+        <span class="value">{{ userName }}</span>
+      </div>
+
+      <div class="trip-row">
+        <span class="label">Route</span>
+        <span class="value">
+          {{ fromStation }} → {{ toStation }}
+        </span>
+      </div>
+
+      <div class="trip-row">
+        <span class="label">Travel Date</span>
+        <span class="value">{{ date }}</span>
+      </div>
+
+    </div>
   </div>
+
+  <!-- LEGEND -->
+  <div class="seat-legend">
+    <div><span class="box available"></span> Available</div>
+    <div><span class="box selected"></span> Selected</div>
+    <div><span class="box booked"></span> Booked</div>
+  </div>
+
+  <!-- GRID -->
+  <div class="seat-grid">
+    <div
+      *ngFor="let seat of seats"
+      [ngClass]="getSeatClass(seat)"
+      (click)="selectSeat(seat)"
+      class="seat"
+    >
+      {{ seat }}
+    </div>
+  </div>
+
+  <!-- FOOTER ACTION -->
+  <div class="seat-footer">
+
+    <p *ngIf="selectedSeat">
+      Selected Seat:
+      <strong>{{ selectedSeat }}</strong>
+    </p>
+
+    <button
+      class="book-btn"
+      (click)="bookSeat()"
+      [disabled]="!selectedSeat"
+    >
+      Confirm Booking
+    </button>
+
+  </div>
+
 </div>
 
-<button
-  (click)="bookSeat()"
-  [disabled]="!selectedSeat"
->
-  Book Seat
-</button>
+<div class="booking-overlay" *ngIf="isBooking">
+  <div class="booking-loader">
 
-<p>Selected Seat: {{ selectedSeat }}</p>
+    <div class="track">
+      <div class="track-fill"></div>
+    </div>
+
+    <div class="train">
+      <div class="engine"></div>
+      <div class="coach"></div>
+      <div class="coach"></div>
+      <div class="coach"></div>
+    </div>
+
+    <p>Booking your seat...</p>
+
+  </div>
+</div>

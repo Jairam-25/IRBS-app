@@ -27,3 +27,32 @@ input, button {
 }
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.custom-dialog .mat-mdc-dialog-surface {
+  overflow: hidden !important;
+  border-radius: 16px;
+  padding: 0;
+}
+
+
+.mat-mdc-form-field-outline {
+  border-radius: 10px;
+}
+
+.mat-datepicker-toggle {
+  color: #ff6d00;
+}
+
+.mat-mdc-input-element {
+  cursor: pointer;
+}
+
+.mat-mdc-form-field {
+  --mdc-theme-primary: #ff6d00;
+}
+
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: #ff6d00 !important;
+}
