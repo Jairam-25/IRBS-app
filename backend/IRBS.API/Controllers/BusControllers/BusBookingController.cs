@@ -38,7 +38,7 @@ namespace IRBS.API.Controllers
         // Book a seat on a bus
         [Authorize]
         [HttpPost("book")]
-        public async Task<IActionResult> BookSeat(CreateBusBookingDto dto)
+        public async Task<IActionResult> BookSeat([FromBody] CreateBusBookingDto dto)
         {
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
@@ -101,7 +101,7 @@ namespace IRBS.API.Controllers
 
             var data = await _context.BusBookings
                 .Where(x => x.UserId == userId)
-                .Include(x => x.BusId)
+                .Include(x => x.Bus)
                 .ToListAsync();
 
             return Ok(data);
@@ -112,16 +112,25 @@ namespace IRBS.API.Controllers
         [HttpPost("cancel")]
         public async Task<IActionResult> Cancel(int bookingId)
         {
-            var booking = await _context.BusBookings.FindAsync(bookingId);
+            var claim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (claim == null)
+                return Unauthorized();
+
+            if (!int.TryParse(claim.Value, out int userId))
+                return Unauthorized();
+
+            var booking = await _context.BusBookings
+                .FirstOrDefaultAsync(x => x.Id == bookingId && x.UserId == userId);
 
             if (booking == null)
-                return NotFound();
+                return NotFound("Booking not found");
 
             booking.Status = "Cancelled";
 
             await _context.SaveChangesAsync();
 
-            return Ok("Booking cancelled");
+            return Ok("Booking cancelled successfully");
         }
     }
 }
