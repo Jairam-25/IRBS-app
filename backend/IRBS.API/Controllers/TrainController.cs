@@ -28,7 +28,7 @@ namespace IRBS.API.Controllers
             return Ok(train);
         }
 
-        // 🚆 Get All Trains
+        // Get All Trains
         [HttpGet]
         public async Task<IActionResult> GetTrains()
         {
@@ -50,7 +50,7 @@ namespace IRBS.API.Controllers
             return Ok(trains);
         }
 
-        // 🔍 Search Train (From + To)
+        // Search Train (From + To)
         [HttpGet("search")]
         public async Task<IActionResult> Search(string from, string to)
         {
