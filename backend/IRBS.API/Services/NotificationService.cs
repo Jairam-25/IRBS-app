@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 public class NotificationService : INotificationService
 {
-    private readonly string _fromEmail = "irbs2026@gmail.com";
-    private readonly string _password = "yjwv ubmf wzvi gnzn";
+    private readonly string? _fromEmail;
+    private readonly string? _password;
+
+    public NotificationService(IConfiguration configuration)
+    {
+        _fromEmail = configuration["EmailSettings:FromEmail"];
+        _password = configuration["EmailSettings:Password"];
+    }
 
     public async Task SendEmailAsync(string to, string subject, string body)
     {
@@ -17,7 +23,7 @@ public class NotificationService : INotificationService
             EnableSsl = true
         };
 
-        var mail = new MailMessage(_fromEmail, to, subject, body);
+        var mail = new MailMessage(_fromEmail ?? string.Empty, to, subject, body);
         await client.SendMailAsync(mail);
     }
 

@@ -71,7 +71,7 @@ namespace IRBS.API.Controllers
             await _context.SaveChangesAsync();
 
             // 🔔 Send payment receipt notification
-            var notifier = new NotificationService();
+            var notifier = new NotificationService(_config);
             var user = await _context.Users.FindAsync(booking.UserId);
             string subject = "Payment Successful - IRBS";
             string body = $@"
