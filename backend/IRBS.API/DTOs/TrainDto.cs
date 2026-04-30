@@ -2,7 +2,7 @@
 {
     public class TrainDto
     {
-        public int Id { get; set; }
+        public string TrainNumber { get; set; }
         public string TrainName { get; set; }
         public string FromStation { get; set; }
         public string ToStation { get; set; }

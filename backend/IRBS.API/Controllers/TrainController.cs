@@ -35,7 +35,7 @@ namespace IRBS.API.Controllers
             var trains = await _context.Trains
                 .Select(t => new TrainDto
                 {
-                    Id = t.Id,
+                    TrainNumber = t.TrainNumber,
                     TrainName = t.TrainName,
                     FromStation = t.FromStation,
                     ToStation = t.ToStation,

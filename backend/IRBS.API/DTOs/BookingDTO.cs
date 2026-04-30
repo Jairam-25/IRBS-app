@@ -1,9 +1,12 @@
-﻿namespace IRBS.API.DTOs
+﻿using IRBS.API.DTOs;
+
+namespace IRBS.API.DTOs
 {
     public class BookingDTO
     {
-        public int TrainId { get; set; }
         public List<string> SeatNumbers { get; set; } = new();
         public DateTime TravelDate { get; set; }
+        public string TrainNumber { get; set; }
+        public List<PassengerDto> Passengers { get; set; } = new();
     }
 }

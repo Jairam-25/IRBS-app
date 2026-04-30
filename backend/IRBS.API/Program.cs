@@ -1,3 +1,5 @@
+using IRBS.API.Core.Interface;
+using IRBS.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -43,6 +45,8 @@ builder.Services.AddAuthentication(options =>
 
 // Services
 builder.Services.AddControllers();
+builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
