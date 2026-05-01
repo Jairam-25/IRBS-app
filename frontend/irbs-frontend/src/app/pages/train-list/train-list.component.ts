@@ -225,10 +225,11 @@ export class TrainListComponent implements OnInit, OnDestroy {
 
     this.router.navigate(['/seat-selection'], {
       queryParams: {
-        trainId: train.id,
-        date: this.selectedDate.toISOString(),
-        from: this.fromStation,
-        to: this.toStation
+        trainId:     train.id,
+        trainNumber: train.trainNumber,
+        date:        this.selectedDate,
+        from:        train.fromStation,
+        to:          train.toStation
       }
     });
   }

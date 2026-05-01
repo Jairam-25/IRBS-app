@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
+import { Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +42,12 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/register`, data);
   }
 
+  getToken(): string | null {
+        if (this.isBrowser()) {
+      return localStorage.getItem('token');
+    }
+    return null;
+  }
   // =========================
   // SESSION MANAGEMENT
   // =========================

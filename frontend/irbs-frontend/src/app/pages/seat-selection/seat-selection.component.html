@@ -1,88 +1,194 @@
 <div class="seat-wrapper">
-
+ 
   <!-- HEADER -->
   <div class="seat-header">
     <h2>Seat Selection</h2>
-    <div class="trip-info">
-
-      <div class="trip-row">
-        <span class="label">Passenger</span>
-        <span class="value">{{ userName }}</span>
-      </div>
-
-      <div class="trip-row">
-        <span class="label">Route</span>
-        <span class="value">
-          {{ fromStation }} → {{ toStation }}
-        </span>
-      </div>
-
-      <div class="trip-row">
-        <span class="label">Travel Date</span>
-        <span class="value">{{ date }}</span>
-      </div>
-
-    </div>
   </div>
-
+ 
+  <!-- TRIP INFO -->
+  <div class="trip-info">
+ 
+    <div class="trip-row">
+      <span class="label">Passenger</span>
+      <span class="value">{{ userName }}</span>
+    </div>
+ 
+    <div class="trip-row">
+      <span class="label">Train</span>
+      <span class="value">{{ trainNumber }}</span>
+    </div>
+ 
+    <div class="trip-row">
+      <span class="label">Route</span>
+      <span class="value">{{ fromStation }} → {{ toStation }}</span>
+    </div>
+ 
+    <div class="trip-row">
+      <span class="label">Travel Date</span>
+      <span class="value">{{ date }}</span>
+    </div>
+ 
+  </div>
+ 
+  <!-- COACH TABS -->
+  <div class="coach-tabs">
+    <button
+      *ngFor="let c of coaches"
+      class="coach-tab"
+      [class.active]="activeCoach === c.name"
+      (click)="selectCoach(c.name)"
+    >
+      {{ c.name }}
+      <span class="coach-total">{{ c.total }} seats</span>
+    </button>
+  </div>
+ 
   <!-- LEGEND -->
   <div class="seat-legend">
     <div><span class="box available"></span> Available</div>
     <div><span class="box selected"></span> Selected</div>
     <div><span class="box booked"></span> Booked</div>
   </div>
+ 
+  <!-- GRID — uses coachSeats (filtered for active coach) -->
+<div class="compartment" *ngFor="let group of getSeatGroups()">
 
-  <!-- GRID -->
-  <div class="seat-grid">
+  <!-- LEFT SIDE (6 seats) -->
+  <div class="main-berths">
     <div
-      *ngFor="let seat of seats"
+      *ngFor="let seat of group.slice(0,6)"
+      class="seat-box"
       [ngClass]="getSeatClass(seat)"
       (click)="selectSeat(seat)"
-      class="seat"
     >
-      {{ seat }}
+      <div class="seat-number">{{ seat.split('-')[1] }}</div>
+      <div class="berth">{{ getBerth(seat) }}</div>
     </div>
   </div>
 
-  <div class="seat-counter">
-    {{ selectedSeats.length }} / {{ maxSeats }} selected
+  <!-- RIGHT SIDE (Side Lower/Upper) -->
+  <div class="side-berths">
+    <div
+      *ngFor="let seat of group.slice(6,8)"
+      class="seat-box side"
+      [ngClass]="getSeatClass(seat)"
+      (click)="selectSeat(seat)"
+    >
+      <div class="seat-number">{{ seat.split('-')[1] }}</div>
+      <div class="berth">{{ getBerth(seat) }}</div>
+    </div>
   </div>
 
+</div>
+ 
+  <!-- SEAT COUNTER -->
+  <div class="seat-counter">
+    <span class="counter-badge">{{ selectedSeats.length }} / {{ maxSeats }}</span>
+    seats selected
+  </div>
+ 
   <!-- FOOTER ACTION -->
   <div class="seat-footer">
-
+ 
     <p *ngIf="selectedSeats.length">
-      Selected Seats:
+      Selected:
       <strong>{{ selectedSeats.join(', ') }}</strong>
     </p>
-
+ 
+    <!-- Opens passenger form instead of booking directly -->
     <button
       class="book-btn"
-      (click)="bookSeat()"
+      (click)="openPassengerForm()"
       [disabled]="!selectedSeats.length"
     >
       Confirm Booking
     </button>
-
+ 
   </div>
-
+ 
 </div>
-
+ 
+ 
+<!-- ═══════════════════════════════════════════════════════
+     PASSENGER DETAILS FORM  (NEW)
+═══════════════════════════════════════════════════════ -->
+<div class="passenger-overlay" *ngIf="showPassengerForm">
+  <div class="passenger-modal">
+ 
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h3>Passenger Details</h3>
+      <button class="close-btn" (click)="closePassengerForm()">✕</button>
+    </div>
+ 
+    <!-- One row per selected seat -->
+    <div class="passenger-list">
+ 
+      <div
+        class="passenger-row"
+        *ngFor="let p of passengers; let i = index"
+      >
+ 
+        <div class="passenger-seat-badge">{{ selectedSeats[i] }}</div>
+ 
+        <div class="passenger-fields">
+ 
+          <div class="field-group">
+            <label>Passenger Name</label>
+            <input
+              type="text"
+              [(ngModel)]="p.name"
+              placeholder="Full name"
+              class="pax-input"
+            />
+          </div>
+ 
+          <div class="field-group age-field">
+            <label>Age</label>
+            <input
+              type="number"
+              [(ngModel)]="p.age"
+              placeholder="Age"
+              min="1"
+              max="120"
+              class="pax-input"
+            />
+          </div>
+ 
+        </div>
+ 
+      </div>
+ 
+    </div>
+ 
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button class="cancel-btn" (click)="closePassengerForm()">Cancel</button>
+      <button class="confirm-btn" (click)="confirmPassengers()">Book Now</button>
+    </div>
+ 
+  </div>
+</div>
+ 
+ 
+<!-- ═══════════════════════════════════════════════════════
+     BOOKING LOADING OVERLAY  (unchanged)
+═══════════════════════════════════════════════════════ -->
 <div class="booking-overlay" *ngIf="isBooking">
   <div class="booking-loader">
-
+ 
     <div class="track">
       <div class="track-fill"></div>
     </div>
-
+ 
     <div class="train">
       <div class="engine"></div>
       <div class="coach"></div>
       <div class="coach"></div>
       <div class="coach"></div>
     </div>
-
+ 
     <p>Booking your seat...</p>
-
+ 
   </div>
 </div>
