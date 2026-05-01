@@ -18,10 +18,22 @@ namespace IRBS.API.Services
             return new Random().Next(100000000, 999999999).ToString();
         }
 
-        public string GetBerth(int num)
+        public string GetBerth(int seatNumber)
         {
-            string[] map = { "LB", "MB", "UB", "LB", "MB", "UB", "SL", "SU" };
-            return map[(num - 1) % 8];
+            int mod = (seatNumber - 1) % 8;
+
+            return mod switch
+            {
+                0 => "LB",
+                1 => "MB",
+                2 => "UB",
+                3 => "LB",
+                4 => "MB",
+                5 => "UB",
+                6 => "SL",
+                7 => "SU",
+                _ => "NA"
+            };
         }
 
         public List<string> GenerateAllSeats()
@@ -30,10 +42,10 @@ namespace IRBS.API.Services
 
             var coaches = new[]
             {
-                new { Name = "S1", Total = 72 },
-                new { Name = "S2", Total = 72 },
-                new { Name = "A1", Total = 64 }
-            };
+            new { Name = "S1", Total = 72 },
+            new { Name = "S2", Total = 72 },
+            new { Name = "A1", Total = 64 }
+        };
 
             foreach (var c in coaches)
             {
@@ -46,7 +58,49 @@ namespace IRBS.API.Services
             return seats;
         }
 
-        public byte[] GenerateTicketPdf(Train train, BookingDTO bookings, string pnr)
+        public List<string> AllocateSeats(
+            List<string> availableSeats,
+            int count)
+        {
+            var allocated = new List<string>();
+
+            foreach (var coach in new[] { "S1", "S2", "A1" })
+            {
+                var coachSeats = availableSeats
+                    .Where(s => s.StartsWith(coach))
+                    .Select(s => int.Parse(s.Split('-')[1]))
+                    .OrderBy(n => n)
+                    .ToList();
+
+                for (int i = 0; i <= coachSeats.Count - count; i++)
+                {
+                    var block = coachSeats.Skip(i).Take(count).ToList();
+
+                    bool continuous = true;
+
+                    for (int j = 1; j < block.Count; j++)
+                    {
+                        if (block[j] != block[j - 1] + 1)
+                        {
+                            continuous = false;
+                            break;
+                        }
+                    }
+
+                    if (continuous)
+                    {
+                        allocated = block.Select(n => $"{coach}-{n}").ToList();
+                        return allocated;
+                    }
+                }
+            }
+
+            // fallback
+            return availableSeats.Take(count).ToList();
+        }
+
+        // PDF
+        public byte[] GenerateTicketPdf(Train train, BookingDTO dto, string pnr)
         {
             using var ms = new MemoryStream();
 
@@ -54,11 +108,9 @@ namespace IRBS.API.Services
             var pdf = new PdfDocument(writer);
             var doc = new Document(pdf);
 
-            // HEADER 
             doc.Add(new Paragraph("Indian Railway Booking System E-TICKET")
-                .SetFontSize(18)
-                .SetFontSize(18)
-                .SetTextAlignment(TextAlignment.CENTER));
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetFontSize(18));
 
             doc.Add(new Paragraph("\n"));
 
@@ -66,7 +118,7 @@ namespace IRBS.API.Services
             var journeyTable = new Table(2).UseAllAvailableWidth();
 
             journeyTable.AddCell("Train Number");
-            journeyTable.AddCell(bookings.TrainNumber.ToString());
+            journeyTable.AddCell(dto.TrainNumber.ToString());
 
             journeyTable.AddCell("From");
             journeyTable.AddCell(train.FromStation);
@@ -75,7 +127,7 @@ namespace IRBS.API.Services
             journeyTable.AddCell(train.ToStation);
 
             journeyTable.AddCell("Travel Date");
-            journeyTable.AddCell(bookings.TravelDate.ToString("yyyy-MM-dd"));
+            journeyTable.AddCell(dto.TravelDate.ToString("yyyy-MM-dd"));
 
             journeyTable.AddCell("PNR");
             journeyTable.AddCell(pnr);
@@ -93,23 +145,15 @@ namespace IRBS.API.Services
             table.AddHeaderCell("Seat");
             table.AddHeaderCell("Berth");
 
-            for (int i = 0; i < bookings.SeatNumbers.Count; i++)
+            for (int i = 0; i < dto.SeatNumbers.Count; i++)
             {
-                var seat = bookings.SeatNumbers[i];
-                var parts = seat.Split('-');
+                var parts = dto.SeatNumbers[i].Split('-');
 
-                string coach = parts[0];
-                int number = int.Parse(parts[1]);
-
-                var passenger = bookings.Passengers.Count > i
-                    ? bookings.Passengers[i]
-                    : new PassengerDto { Name = $"Passenger {i + 1}", Age = 0 };
-
-                table.AddCell(passenger.Name);
-                table.AddCell(passenger.Age.ToString());
-                table.AddCell(coach);
-                table.AddCell(number.ToString());
-                table.AddCell(GetBerth(number));
+                table.AddCell(dto.Passengers[i].Name);
+                table.AddCell(dto.Passengers[i].Age.ToString());
+                table.AddCell(parts[0]);
+                table.AddCell(parts[1]);
+                table.AddCell(dto.Passengers[i].Berth); 
             }
 
             doc.Add(table);
@@ -141,7 +185,7 @@ namespace IRBS.API.Services
             doc.Add(new Paragraph("Carry valid ID proof during journey")
                 .SetFontSize(10)
                 .SetTextAlignment(TextAlignment.CENTER));
-
+            
             doc.Close();
 
             return ms.ToArray();

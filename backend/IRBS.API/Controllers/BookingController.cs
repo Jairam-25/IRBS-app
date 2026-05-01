@@ -190,7 +190,8 @@ namespace IRBS.API.Controllers
                 passengers = bookings.Select(b => new
                 {
                     name = b.PassengerName,
-                    age = b.PassengerAge
+                    age = b.PassengerAge,
+                    Berth = b.Berth
                 })
             });
         }
@@ -212,61 +213,55 @@ namespace IRBS.API.Controllers
         [HttpPost("book-multiple")]
         public async Task<IActionResult> BookMultiple(BookingDTO dto)
         {
-            if (dto == null || dto.SeatNumbers == null || !dto.SeatNumbers.Any())
-                return BadRequest("No seats selected");
+            if (dto.Passengers == null || !dto.Passengers.Any())
+                return BadRequest("No passengers");
 
-            // USER
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             if (!int.TryParse(userIdClaim, out int userId))
                 return Unauthorized();
 
             var user = await _context.Users.FindAsync(userId);
-            if (user == null)
-                return Unauthorized();
+            if (user == null) return Unauthorized();
 
-            // TRAIN
-            var train = await _context.Trains.FirstOrDefaultAsync(t => t.TrainNumber == dto.TrainNumber);
+            var train = await _context.Trains
+                .FirstOrDefaultAsync(t => t.TrainNumber == dto.TrainNumber);
+
             if (train == null)
-            {
-                return BadRequest($"Invalid train: {train}");
-            }
+                return BadRequest("Invalid train");
 
-            if (dto.Passengers.Count != dto.SeatNumbers.Count)
-            {
-                return BadRequest("Passengers count must match seat count");
-            }
+            // ALL SEATS
+            var allSeats = _bookingService.GenerateAllSeats();
+
+            var bookedSeats = await _context.Bookings
+                .Where(b => b.TrainNumber == dto.TrainNumber &&
+                            b.TravelDate.Date == dto.TravelDate.Date)
+                .Select(b => $"{b.Coach}-{b.SeatNumber}")
+                .ToListAsync();
+
+            var availableSeats = allSeats.Except(bookedSeats).ToList();
+
+            // AUTO ALLOCATE
+            var allocatedSeats = _bookingService.AllocateSeats(
+                availableSeats,
+                dto.Passengers.Count);
+
+            if (allocatedSeats.Count < dto.Passengers.Count)
+                return BadRequest("Not enough seats");
 
             var pnr = _bookingService.GeneratePNR();
+            var bookings = new List<Booking>();
 
-            var bookings = new List<Booking>();            
+            using var tx = await _context.Database.BeginTransactionAsync();
 
-            using var transaction = await _context.Database.BeginTransactionAsync();
-
-            for (int i = 0; i < dto.SeatNumbers.Count; i++)
+            for (int i = 0; i < allocatedSeats.Count; i++)
             {
-                var seat = dto.SeatNumbers[i];
-                var parts = seat.Split('-');
-                if (parts.Length != 2)
-                    return BadRequest($"Invalid seat: {seat}");
+                var parts = allocatedSeats[i].Split('-');
 
-                var coach = parts[0];
-                if (!int.TryParse(parts[1], out int seatNumber))
-                {
-                    return BadRequest($"Invalid seat number: {seat}");
-                }
+                int seatNumber = int.Parse(parts[1]);
+                string coach = parts[0];
 
-                // CHECK EXIST
-                var exists = await _context.Bookings.AnyAsync(b =>
-                    b.TrainNumber == dto.TrainNumber &&
-                    b.TravelDate.Date == dto.TravelDate.Date &&
-                    b.Coach == coach &&
-                    b.SeatNumber == seatNumber
-                );
-
-                if (exists)
-                {
-                    return BadRequest(new { message = $"Seat already booked: {seat}" });
-                }
+                var berth = _bookingService.GetBerth(seatNumber);
 
                 bookings.Add(new Booking
                 {
@@ -279,61 +274,28 @@ namespace IRBS.API.Controllers
 
                     Coach = coach,
                     SeatNumber = seatNumber,
+                    Berth = berth,
+
                     TravelDate = dto.TravelDate,
-                  
-                    PNR = pnr,
-                    PassengerName = dto.Passengers.Count > i
-                        ? dto.Passengers[i].Name
-                        : $"Passenger {i + 1}",
 
-                                PassengerAge = dto.Passengers.Count > i
-                        ? dto.Passengers[i].Age
-                        : 0,
+                    PassengerName = dto.Passengers[i].Name,
+                    PassengerAge = dto.Passengers[i].Age,
 
-                    Status = "Booked"
+                    PNR = pnr
                 });
+
+                dto.Passengers[i].Berth = berth; 
             }
 
             _context.Bookings.AddRange(bookings);
             await _context.SaveChangesAsync();
+            await tx.CommitAsync();
 
-            await transaction.CommitAsync();
+            dto.SeatNumbers = allocatedSeats;
 
-            // PDF DTO
-            var bookingDto = new BookingDTO
-            {
-                TrainNumber = dto.TrainNumber,
-                TravelDate = dto.TravelDate,
-                SeatNumbers = bookings
-                .Select(b => $"{b.Coach}-{b.SeatNumber}")
-                .ToList(),
+            var pdf = _bookingService.GenerateTicketPdf(train, dto, pnr);
 
-                        Passengers = bookings
-                .Select(b => new PassengerDto
-                {
-                    Name = b.PassengerName,
-                    Age = b.PassengerAge
-                })
-                .ToList()
-                    };
-
-            var booking = new Booking
-            {
-                UserId = user.Id,
-                TrainNumber = dto.TrainNumber,
-                Coach = bookings[0].Coach,
-                SeatNumber = bookings[0].SeatNumber,
-                TravelDate = dto.TravelDate,
-                Status = "Booked"
-            };
-
-            // Send notification
-            await _notificationService.SendBookingEmailAsync(user, bookings);
-
-            // GENERATE PDF IMMEDIATELY
-            var pdfBytes = _bookingService.GenerateTicketPdf(train, bookingDto, pnr);
-
-            return File(pdfBytes, "application/pdf", $"Ticket_{pnr}.pdf");
+            return File(pdf, "application/pdf", $"Ticket_{pnr}.pdf");
         }
 
         [HttpPost("auto-allocate")]
@@ -468,7 +430,7 @@ namespace IRBS.API.Controllers
                 table.AddCell(passenger.Age.ToString());
                 table.AddCell(coach);
                 table.AddCell(number.ToString());
-                table.AddCell(_bookingService.GetBerth(number));
+                table.AddCell(passenger.Berth);
             }
 
             doc.Add(table);

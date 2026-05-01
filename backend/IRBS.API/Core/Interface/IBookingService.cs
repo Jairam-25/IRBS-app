@@ -9,5 +9,7 @@ namespace IRBS.API.Core.Interface
         string GetBerth(int num);
         List<string> GenerateAllSeats();
         byte[] GenerateTicketPdf(Train train, BookingDTO bookings, string pnr);
+
+        List<string> AllocateSeats(List<string> availableSeats, int count);
     }
 }

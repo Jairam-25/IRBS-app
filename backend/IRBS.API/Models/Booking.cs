@@ -26,6 +26,8 @@ namespace IRBS.API.Models
 
         public string PNR { get; set; }
 
+        public string Berth { get; set; } = string.Empty;
+
         public string Status { get; set; } = "Booked";
     }
 }
