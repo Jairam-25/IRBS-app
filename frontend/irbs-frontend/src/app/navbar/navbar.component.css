@@ -196,12 +196,47 @@ nav.scrolled .logo {
 
 /* ------------ Animation Train*/
 
+/* =========================
+   PNR BUTTON (PRO STYLE)
+========================= */
+.pnr-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 16px;
+
+  border-radius: 20px;
+
+  background: linear-gradient(135deg, #ff6d00, #ff8f00);
+  color: #fff;
+
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+/* hover */
+.pnr-nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(255, 109, 0, 0.35);
+}
+
+/* icon */
+.pnr-nav-btn i {
+  font-size: 14px;
+}
+
 
 
 /* --------------- */
 
 /* 📱 MOBILE RESPONSIVE */
-@media (max-width: 768px) {
+@media (max-width: 1020px) {
 
   .menu-icon {
     display: block;
@@ -211,6 +246,7 @@ nav.scrolled .logo {
     position: absolute;
     top: 70px;
     right: 20px;
+    width: 220px;
 
     flex-direction: column;
     gap: 15px;
@@ -233,5 +269,15 @@ nav.scrolled .logo {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
+  }  
+
+  .pnr-nav-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .nav-links a {
+    width: 100%;
   }
 }
