@@ -189,6 +189,7 @@ export class TrainListComponent implements OnInit, OnDestroy {
 
             this.trains = (res || []).map((t: any) => ({
               id: t.id,
+              trainNumber: t.trainNumber,   // ✅ ADD THIS (CRITICAL)
               trainName: t.trainName,
               fromStation: t.fromStation || 'N/A',
               toStation: t.toStation || 'N/A',
@@ -217,6 +218,8 @@ export class TrainListComponent implements OnInit, OnDestroy {
   // SELECT TRAIN
   // =========================
   selectTrain(train: any) {
+
+    console.log('SELECTED TRAIN:', train);
 
     if (!this.selectedDate) {
       this.showPopup('Select date', 'Select date first!');

@@ -36,18 +36,11 @@ export class SeatSelectionComponent implements OnInit {
   fromStation = '';
   toStation = '';
  
-  // ─── COACH TABS ───────────────────────────────────────────
-  // Must match backend BookingService.GenerateAllSeats()
-  coaches = [
-    { name: 'S1', total: 72 },
-    { name: 'S2', total: 72 },
-    { name: 'A1', total: 64 }
-  ];
   activeCoach = 'S1';
  
   // ─── PASSENGER FORM ───────────────────────────────────────
   showPassengerForm = false;
-  passengers: { name: string; age: number | null }[] = [];
+  passengers: { name: string; age: number | null; berth?: string }[] = [];
  
   constructor(
     private route: ActivatedRoute,
@@ -71,43 +64,88 @@ export class SeatSelectionComponent implements OnInit {
       this.date        = new Date(params['date']).toISOString().split('T')[0];
       this.fromStation = params['from'];
       this.toStation   = params['to'];
- 
+
+      if (!this.trainNumber) {
+        console.error('TrainNumber missing in query params');
+
+        this.dialog.open(PopupComponent, {
+          width: '360px',
+          data: {
+            title: 'Critical Error',
+            message: 'Train number missing. Please reselect train.'
+          }
+        });
+
+        return;
+      }
+    
       this.generateSeats();
       this.loadBookedSeats();
     });
+
+    if (!this.trainNumber) {
+      console.error('🚨 trainNumber missing in query params');
+
+      this.dialog.open(PopupComponent, {
+        width: '360px',
+        data: {
+          title: 'Critical Error',
+          message: 'Train number missing. Please reselect train.'
+        }
+      });
+
+      return;
+    }
   }
 
-  getBerth(seat: string): string {
+  getSeatType(seat: string): string {
     const num = parseInt(seat.split('-')[1], 10);
-
-    const map = ['LB', 'MB', 'UB', 'LB', 'MB', 'UB', 'SL', 'SU'];
-
-    return map[(num - 1) % 8];
+    const map = ['Window', 'Middle', 'Aisle', 'Aisle', 'Middle', 'Window'];
+    return map[(num - 1) % 6];
   }
 
-  getSeatGroups(): string[][] {
-    const groups: string[][] = [];
+  getSeatRows(): string[][] {
+    const rows: string[][] = [];
 
-    for (let i = 0; i < this.coachSeats.length; i += 8) {
-      groups.push(this.coachSeats.slice(i, i + 8));
+    for (let i = 0; i < this.coachSeats.length; i += 6) {
+      rows.push(this.coachSeats.slice(i, i + 6));
     }
 
-    return groups;
+    return rows;
   }
  
   // =========================
   // GENERATE SEATS
   // Matches backend: S1-1…S1-72 | S2-1…S2-72 | A1-1…A1-64
   // =========================
+coaches: { name: string; total: number }[] = [];
+
   generateSeats() {
     this.seats = [];
- 
-    for (const c of this.coaches) {
-      for (let i = 1; i <= c.total; i++) {
-        this.seats.push(`${c.name}-${i}`);
+    this.coaches = [];
+
+    const config = [
+      { prefix: 'S', count: 10, seats: 72 },
+      { prefix: 'A', count: 5, seats: 64 },
+      { prefix: 'B', count: 3, seats: 64 }
+    ];
+
+    for (const type of config) {
+      for (let c = 1; c <= type.count; c++) {
+        const coachName = `${type.prefix}${c}`;
+
+        this.coaches.push({
+          name: coachName,
+          total: type.seats
+        });
+
+        for (let i = 1; i <= type.seats; i++) {
+          this.seats.push(`${coachName}-${i}`);
+        }
       }
     }
- 
+
+    this.activeCoach = this.coaches[0].name;
     this.filterCoachSeats();
   }
  
@@ -237,10 +275,14 @@ export class SeatSelectionComponent implements OnInit {
  
     // ← Updated payload to match backend BookingDTO
     const body = {
-      trainNumber: this.trainNumber,       // ← was trainId
-      seatNumbers: this.selectedSeats,     // format: "S1-23"
+      trainNumber: this.trainNumber,
+      seatNumbers: this.selectedSeats,
       travelDate: this.date,
-      passengers: this.passengers          // ← NEW: [{name, age}]
+      passengers: this.selectedSeats.map((seat, i) => ({
+        name: this.passengers[i].name,
+        age: this.passengers[i].age,
+        berth: this.getSeatType(seat)   
+      }))
     };
  
     const startTime = Date.now();
@@ -284,27 +326,40 @@ export class SeatSelectionComponent implements OnInit {
  
         }, delay);
  
-        console.log('FINAL PAYLOAD:', body);
+        console.log('FINAL PAYLOAD:', JSON.stringify(body, null, 2));
       },
  
-      error: (err) => {
-        console.log('FULL ERROR:', err);
-        console.log('BACKEND MESSAGE:', err.error);
- 
+      error: async (err) => {
+
         this.isBooking = false;
- 
+
+        let message = 'Unknown error';
+
+        if (err.error instanceof Blob) {
+          const text = await err.error.text();
+          console.log('RAW ERROR:', text);
+
+          try {
+            const json = JSON.parse(text);
+            message = json.message || json.title || text;
+          } catch {
+            message = text;
+          }
+        } else {
+          message = err.error?.message || JSON.stringify(err.error);
+        }
+
+        console.log('DECODED ERROR:', message);
+
         this.dialog.open(PopupComponent, {
           width: '360px',
           panelClass: 'custom-dialog',
           data: {
             title: 'Booking Failed',
-            message: err.error?.message || JSON.stringify(err.error)
+            message
           }
         });
- 
-        console.log('FINAL PAYLOAD:', body);
       }
- 
     });
   }
 }
