@@ -117,7 +117,7 @@ namespace IRBS.API.Controllers
         [HttpGet("secure")]
         public IActionResult Secure()
         {
-            return Ok("Protected API 🔐");
+            return Ok("Protected API");
         }
     }
 }

@@ -1,13 +1,20 @@
-﻿using IRBS.API.Models;
+﻿using IRBS.API.Core.Interface;
+using IRBS.API.Models;
 using IRBS.API.Models.Bus_Model;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
-public class NotificationService
+public class NotificationService : INotificationService
 {
-    private readonly string _fromEmail = "irbs2026@gmail.com";
-    private readonly string _password = "yjwv ubmf wzvi gnzn";
+    private readonly string? _fromEmail;
+    private readonly string? _password;
+
+    public NotificationService(IConfiguration configuration)
+    {
+        _fromEmail = configuration["EmailSettings:FromEmail"];
+        _password = configuration["EmailSettings:Password"];
+    }
 
     public async Task SendEmailAsync(string to, string subject, string body)
     {
@@ -17,31 +24,43 @@ public class NotificationService
             EnableSsl = true
         };
 
-        var mail = new MailMessage(_fromEmail, to, subject, body);
+        var mail = new MailMessage(_fromEmail ?? string.Empty, to, subject, body);
         await client.SendMailAsync(mail);
+        
     }
 
-    public string BuildBookingConfirmation(User user, Booking booking)
+    public async Task SendBookingEmailAsync(User user, List<Booking> bookings)
     {
-        return $@"
+        var first = bookings.First();
+
+        var subject = $"Booking Confirmation - {first.TrainNumber}";
+
+        var seats = bookings.Select(b => $"{b.Coach}-{b.SeatNumber}");
+        var passengers = bookings.Select(b => $"{b.PassengerName} ({b.PassengerAge})");
+
+        var body = $@"
 Dear {user.Name},
 
+Your booking is confirmed.
 We are pleased to inform you that your booking has been confirmed.
 
-Booking Details:
-- Train Number: {booking.TrainId}
-- Train Name: {booking.Train.TrainName}
-- From Station: {booking.Train.FromStation} 
-- To Station: {booking.Train.ToStation}
-- Seat Number: {booking.SeatNumber}
-- Travel Date: {booking.TravelDate:dd-MMM-yyyy HH:mm}
-- Status: {booking.Status}
+PNR: {first.PNR}
+Train Number: {first.TrainNumber}
+From Station: {first.FromStation}
+To Station: {first.ToStation}
+Travel Date: {first.TravelDate:dd-MMM-yyyy}
+
+Seat Numbers: {string.Join(", ", seats)}
+Passengers: {string.Join(", ", passengers)}
+
+Status: CONFIRMED
 
 Thank you for choosing IRBS. We wish you a safe and pleasant journey!
 
 Warm regards,
 IRBS Customer Support
 ";
+        await SendEmailAsync(user.Email, subject, body);
     }
     public string BuildBusBookingConfirmation(User user, BusBooking booking, Bus bus)
     {
@@ -56,8 +75,8 @@ IRBS Customer Support
     Date: {booking.TravelDate:dd-MMM-yyyy}
 Thank you for choosing IRBS. We wish you a safe and pleasant journey!
 
-Warm regards,
-IRBS Customer Support
+Warm regards, 
+IRBS Customer Support.
 ";
     }
 }
