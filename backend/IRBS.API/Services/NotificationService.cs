@@ -1,5 +1,6 @@
 ﻿using IRBS.API.Core.Interface;
 using IRBS.API.Models;
+using IRBS.API.Models.Bus_Model;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -25,6 +26,7 @@ public class NotificationService : INotificationService
 
         var mail = new MailMessage(_fromEmail ?? string.Empty, to, subject, body);
         await client.SendMailAsync(mail);
+        
     }
 
     public async Task SendBookingEmailAsync(User user, List<Booking> bookings)
@@ -53,13 +55,29 @@ Passengers: {string.Join(", ", passengers)}
 
 Status: CONFIRMED
 
-Thank you for choosing IRBS. 
-We wish you a safe and pleasant journey! 
+Thank you for choosing IRBS. We wish you a safe and pleasant journey!
+
+Warm regards,
+IRBS Customer Support
+";
+        await SendEmailAsync(user.Email, subject, body);
+    }
+    public string BuildBusBookingConfirmation(User user, BusBooking booking, Bus bus)
+    {
+        return $@"
+Dear {user.Name},
+
+We are pleased to inform you that your booking has been confirmed.
+
+Bus Name: {bus.BusName}
+Route: {bus.FromCity} to {bus.ToCity}
+Seat: {booking.SeatNumber}
+Date: {booking.TravelDate:dd-MMM-yyyy}
+
+Thank you for choosing IRBS. We wish you a safe and pleasant journey!
 
 Warm regards, 
 IRBS Customer Support.
 ";
-
-        await SendEmailAsync(user.Email, subject, body);
     }
 }

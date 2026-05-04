@@ -1,6 +1,6 @@
 ﻿using IRBS.API.Models;
+using IRBS.API.Models.Bus_Model;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 
 public class AppDbContext : DbContext
 {
@@ -10,6 +10,8 @@ public class AppDbContext : DbContext
     public DbSet<Train> Trains { get; set; }
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<Station> Stations { get; set; }
+    public DbSet<Bus> Buses { get; set; }
+    public DbSet<BusBooking> BusBookings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,6 +30,24 @@ public class AppDbContext : DbContext
             .HasOne(b => b.User)
             .WithMany()
             .HasForeignKey(b => b.UserId);
+
+        modelBuilder.Entity<BusBooking>()
+            .HasIndex(b => new { b.BusId, b.SeatNumber, b.TravelDate })
+            .IsUnique();
+
+        modelBuilder.Entity<BusBooking>()
+            .HasOne(b => b.Bus)
+            .WithMany()
+            .HasForeignKey(b => b.BusId);
+
+        modelBuilder.Entity<BusBooking>()
+            .HasOne(b => b.User)
+            .WithMany()
+            .HasForeignKey(b => b.UserId);
+        modelBuilder.Entity<Bus>()
+            .Property(b => b.Price)
+            .HasPrecision(18, 2);
+
     }
 
 }
