@@ -386,19 +386,77 @@
   flex-shrink: 0;
 }
 
-/* Seat group of 3 */
+/* ------------------------------------------------ */
+
+
+/* COMPARTMENT BOX */
+.compartment-box {
+  background: white;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+  border: 1px solid #e6ebf2;
+  box-shadow: var(--shadow-sm);
+}
+
+/* EACH ROW INSIDE BOX */
+.box-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin-bottom: 10px;
+}
+
+.box-row:last-child {
+  margin-bottom: 0;
+}
+
+/* LEFT + RIGHT GROUP */
+.seat-group {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* 3 SEATS */
 .seat-trio {
   display: flex;
   gap: 4px;
 }
 
-/* Aisle */
+/* SINGLE SEAT */
+.single-seat {
+  margin-left: 6px;
+}
+
+/* AISLE */
 .aisle-gap {
-  flex: 1;
+  width: 40px;
+}
+
+
+
+
+/* -------------------------------------------------------- */
+
+/* Make side seats slightly smaller */
+.seat-cell.side {
+  width: 42px;
+  height: 42px;
+}
+
+/* FIXED AISLE */
+.aisle-gap {
+  width: 40px;   /* 🔥 fixed width */
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 24px;
+}
+
+.aisle-label {
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: #aaa;
 }
 
 .aisle-label {
@@ -411,7 +469,7 @@
 
 /* ── Individual Seat Cell ── */
 .seat-cell {
-  width: 46px;     
+  width: 86px;     
   height: 46px;
   border-radius: var(--radius-sm);
   display: flex;
@@ -430,7 +488,7 @@
 }
 
 .sc-num {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1;
 }
@@ -762,10 +820,31 @@
   border-radius: 3px;
 }
 
+.invalid-input{
+  color: red;
+}
+
+.input-error {
+  border: 2px solid #ff4d4f !important;
+  background: #fff1f0;
+}
+
 .booking-loader p {
   margin-top: 15px;
   font-weight: 500;
   color: #444;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  75% { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
+}
+
+.shake {
+  animation: shake 0.3s;
 }
 
 @keyframes moveTrain {
@@ -776,4 +855,26 @@
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+
+  .box-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .aisle-gap {
+    display: none;
+  }
+
+  .seat-group {
+    justify-content: center;
+  }
+
+  .seat-cell {
+    width: 36px;
+    height: 36px;
+  }
+
 }

@@ -89,46 +89,72 @@
       </div>
 
       <!-- Seat Grid -->
-      <div class="seat-grid-scroll">
+<div class="seat-grid-scroll">
 
-        <div class="compartment" *ngFor="let row of getSeatRows(); let ri = index">
+  <div class="compartment-box" *ngFor="let block of getSeatBlocks(); let bi = index">
 
-          <span class="comp-label">{{ ri + 1 }}</span>
+    <div class="box-row" *ngFor="let row of block">
 
-          <!-- Left 3 -->
-          <div class="seat-trio left">
-            <div
-              *ngFor="let seat of row.slice(0, 3)"
-              class="seat-cell"
-              [ngClass]="getSeatClass(seat)"
-              (click)="selectSeat(seat)"
-            >
-              <span class="sc-num">{{ seat.split('-')[1] }}</span>
-              <span class="sc-type">{{ getSeatType(seat) }}</span>
-            </div>
+      <!-- LEFT SIDE -->
+      <div class="seat-group">
+
+        <!-- 3 seats -->
+        <div class="seat-trio">
+          <div *ngFor="let seat of row.slice(0,3)"
+               class="seat-cell"
+               [ngClass]="getSeatClass(seat)"
+               (click)="selectSeat(seat)">
+            <span class="sc-num">{{ seat.split('-')[1] }}</span>
+            <span class="sc-type">{{ getSeatType(seat) }}</span>
           </div>
+        </div>
 
-          <!-- Aisle -->
-          <div class="aisle-gap">
-            <span class="aisle-label">AISLE</span>
+        <!-- 1 seat -->
+        <div class="single-seat">
+          <div *ngIf="row[3]"
+               class="seat-cell"
+               [ngClass]="getSeatClass(row[3])"
+               (click)="selectSeat(row[3])">
+            <span class="sc-num">{{ row[3].split('-')[1] }}</span>
+            <span class="sc-type">{{ getSeatType(row[3]) }}</span>
           </div>
-
-          <!-- Right 3 -->
-          <div class="seat-trio right">
-            <div
-              *ngFor="let seat of row.slice(3, 6)"
-              class="seat-cell"
-              [ngClass]="getSeatClass(seat)"
-              (click)="selectSeat(seat)"
-            >
-              <span class="sc-num">{{ seat.split('-')[1] }}</span>
-              <span class="sc-type">{{ getSeatType(seat) }}</span>
-            </div>
-          </div>
-
         </div>
 
       </div>
+
+      <!-- AISLE -->
+      <div class="aisle-gap"></div>
+
+      <!-- RIGHT SIDE -->
+      <div class="seat-group">
+
+        <div class="seat-trio">
+          <div *ngFor="let seat of row.slice(4,7)"
+               class="seat-cell"
+               [ngClass]="getSeatClass(seat)"
+               (click)="selectSeat(seat)">
+            <span class="sc-num">{{ seat.split('-')[1] }}</span>
+            <span class="sc-type">{{ getSeatType(seat) }}</span>
+          </div>
+        </div>
+
+        <div class="single-seat">
+          <div *ngIf="row[7]"
+              class="seat-cell"
+              [ngClass]="getSeatClass(row[7])"
+              (click)="selectSeat(row[7])">
+            <span class="sc-num">{{ row[7].split('-')[1] }}</span>
+            <span class="sc-type">{{ getSeatType(row[7]) }}</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 
       <!-- Footer -->
       <div class="sp-footer">
@@ -168,11 +194,31 @@
         <div class="passenger-fields">
           <div class="field-group">
             <label>Passenger Name</label>
-            <input type="text" [(ngModel)]="p.name" placeholder="Full name" class="pax-input" />
+            <span class="invalid-input" *ngIf="p.invalidName">
+              Please enter name...
+            </span>
+            <input #nameInput
+       type="text"
+       [(ngModel)]="p.name"
+       [class.input-error]="p.invalidName"
+       [class.shake]="p.invalidName"
+       (input)="p.invalidName = false"
+       placeholder="Full name"
+       class="pax-input" />
           </div>
           <div class="field-group age-field">
             <label>Age</label>
-            <input type="number" [(ngModel)]="p.age" placeholder="Age" min="1" max="120" class="pax-input" />
+            <span class="invalid-input" *ngIf="p.invalidAge">
+              Please enter age...
+            </span>
+            <input #ageInput
+       type="number"
+       [(ngModel)]="p.age"
+       [class.input-error]="p.invalidAge"
+       [class.shake]="p.invalidAge"
+       (input)="p.invalidAge = false"
+       placeholder="Age"
+       class="pax-input" />
           </div>
         </div>
       </div>

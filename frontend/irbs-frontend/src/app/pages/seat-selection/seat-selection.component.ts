@@ -6,6 +6,9 @@ import { TrainService } from '../../_services/train.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PopupComponent } from '../../_notifyAlert/popup.component';
 import { AuthService } from '../../_services/auth.service';
+
+import { ViewChildren, QueryList, ElementRef } from '@angular/core';
+
  
 @Component({
   selector: 'app-seat-selection',
@@ -15,6 +18,9 @@ import { AuthService } from '../../_services/auth.service';
   styleUrl: './seat-selection.component.css'
 })
 export class SeatSelectionComponent implements OnInit {
+
+  @ViewChildren('nameInput') nameInputs!: QueryList<ElementRef>;
+  @ViewChildren('ageInput') ageInputs!: QueryList<ElementRef>;
  
   seats: string[] = [];
   bookedSeats: string[] = [];
@@ -37,10 +43,18 @@ export class SeatSelectionComponent implements OnInit {
   toStation = '';
  
   activeCoach = 'S1';
+
+  invalidForm = false;
  
   // ─── PASSENGER FORM ───────────────────────────────────────
   showPassengerForm = false;
-  passengers: { name: string; age: number | null; berth?: string }[] = [];
+    passengers: {
+    name: string;
+    age: number | null;
+    berth?: string;
+    invalidName?: boolean;
+    invalidAge?: boolean;
+  }[] = [];
  
   constructor(
     private route: ActivatedRoute,
@@ -98,20 +112,57 @@ export class SeatSelectionComponent implements OnInit {
     }
   }
 
-  getSeatType(seat: string): string {
-    const num = parseInt(seat.split('-')[1], 10);
-    const map = ['Window', 'Middle', 'Aisle', 'Aisle', 'Middle', 'Window'];
-    return map[(num - 1) % 6];
-  }
+getSeatType(seat: string): string {
+
+  const num = parseInt(seat.split('-')[1], 10);
+
+  // position inside 8-seat row
+  const pos = (num - 1) % 8;
+
+  const map = [
+    'Window',   // 0
+    'Middle',   // 1
+    'Aisle',    // 2
+    'Side',     // 3  (single seat)
+    'Aisle',    // 4
+    'Middle',   // 5
+    'Window',   // 6
+    'Side'      // 7  (single seat)
+  ];
+
+//   const map = [
+//   'W',  // Window
+//   'M',  // Middle
+//   'A',  // Aisle
+//   'SL', // Side
+//   'A',
+//   'M',
+//   'W',
+//   'SL'
+// ];
+
+  return map[pos];
+}
 
   getSeatRows(): string[][] {
     const rows: string[][] = [];
 
-    for (let i = 0; i < this.coachSeats.length; i += 6) {
-      rows.push(this.coachSeats.slice(i, i + 6));
+    for (let i = 0; i < this.coachSeats.length; i += 8) {
+      rows.push(this.coachSeats.slice(i, i + 8));
     }
 
     return rows;
+  }
+
+  getSeatBlocks(): string[][][] {
+    const rows = this.getSeatRows();
+    const blocks: string[][][] = [];
+
+    for (let i = 0; i < rows.length; i += 2) {
+      blocks.push(rows.slice(i, i + 2));
+    }
+
+    return blocks;
   }
  
   // =========================
@@ -183,11 +234,11 @@ coaches: { name: string; total: number }[] = [];
     const index = this.selectedSeats.indexOf(seat);
  
     if (index > -1) {
-      // ❌ unselect
+      // unselect
       this.selectedSeats.splice(index, 1);
     } else {
  
-      // 🚫 limit
+      // limit
       if (this.selectedSeats.length >= this.maxSeats) {
         this.dialog.open(PopupComponent, {
           width: '320px',
@@ -199,7 +250,7 @@ coaches: { name: string; total: number }[] = [];
         return;
       }
  
-      // ✅ add
+      // add
       this.selectedSeats.push(seat);
     }
   }
@@ -237,26 +288,81 @@ coaches: { name: string; total: number }[] = [];
   }
  
   // Step 2: validate & proceed to book
-  confirmPassengers() {
- 
-    const invalid = this.passengers.some(
-      p => !p.name.trim() || !p.age || p.age <= 0
-    );
- 
-    if (invalid) {
-      this.dialog.open(PopupComponent, {
-        width: '360px',
-        data: {
-          title: 'Missing Info',
-          message: 'Please fill name and age for all passengers.'
-        }
-      });
+confirmPassengers() {
+
+  let hasError = false;
+
+  this.passengers.forEach(p => {
+
+    // reset first (IMPORTANT for animation)
+    p.invalidName = false;
+    p.invalidAge = false;
+
+  });
+
+  setTimeout(() => {
+
+    this.passengers.forEach(p => {
+
+      p.invalidName = !p.name || !p.name.trim();
+      p.invalidAge  = !p.age || p.age <= 0;
+
+      if (p.invalidName || p.invalidAge) {
+        hasError = true;
+      }
+
+    });
+
+    if (hasError) {
+      this.focusFirstInvalid();
       return;
     }
- 
+
     this.showPassengerForm = false;
     this.bookSeat();
+
+  });
+}
+
+focusFirstInvalid() {
+
+  for (let i = 0; i < this.passengers.length; i++) {
+
+    const p = this.passengers[i];
+
+    if (p.invalidName) {
+      this.nameInputs.toArray()[i]?.nativeElement.focus();
+      return;
+    }
+
+    if (p.invalidAge) {
+      this.ageInputs.toArray()[i]?.nativeElement.focus();
+      return;
+    }
+
   }
+}
+
+  // confirmPassengers() {
+
+  //   let hasError = false;
+
+  //   this.passengers.forEach(p => {
+
+  //     p.invalidName = !p.name || !p.name.trim();
+  //     p.invalidAge  = !p.age || p.age <= 0;
+
+  //     if (p.invalidName || p.invalidAge) {
+  //       hasError = true;
+  //     }
+
+  //   });
+
+  //   if (hasError) return;
+
+  //   this.showPassengerForm = false;
+  //   this.bookSeat();
+  // }
  
   // =========================
   // BOOK MULTIPLE
@@ -273,7 +379,7 @@ coaches: { name: string; total: number }[] = [];
  
     this.isBooking = true;
  
-    // ← Updated payload to match backend BookingDTO
+    // Updated payload to match backend BookingDTO
     const body = {
       trainNumber: this.trainNumber,
       seatNumbers: this.selectedSeats,
