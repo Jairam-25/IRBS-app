@@ -62,21 +62,24 @@ IRBS Customer Support
 ";
         await SendEmailAsync(user.Email, subject, body);
     }
-    public string BuildBusBookingConfirmation(User user, BusBooking booking, Bus bus)
+    public async Task BuildBusBookingConfirmation(User user, BusBooking booking, Bus bus)
     {
-        return $@"
-    Dear {user.Name},
+        var body = $@"
+Dear {user.Name},
 
- We are pleased to inform you that your booking has been confirmed.
+We are pleased to inform you that your booking has been confirmed.
 
-    Bus Name: {bus.BusName}
-    Route: {bus.FromCity} to {bus.ToCity}
-    Seat: {booking.SeatNumber}
-    Date: {booking.TravelDate:dd-MMM-yyyy}
+Bus Name: {bus.BusName}
+Route: {bus.FromCity} to {bus.ToCity}
+Seat: {booking.SeatNumber}
+Date: {booking.TravelDate:dd-MMM-yyyy}
+
 Thank you for choosing IRBS. We wish you a safe and pleasant journey!
 
 Warm regards, 
 IRBS Customer Support.
 ";
+
+        await SendEmailAsync(user.Email, $"Bus Booking Confirmation - {bus.BusName}", body);
     }
 }
