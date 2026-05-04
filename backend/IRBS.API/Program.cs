@@ -1,3 +1,4 @@
+using IRBS.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -45,6 +46,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<TicketPdfService>();
 builder.Services.AddSwaggerGen(c =>
 {
     c.EnableAnnotations();

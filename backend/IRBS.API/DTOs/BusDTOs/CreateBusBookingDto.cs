@@ -4,7 +4,7 @@
     {
         public int BusId { get; set; }
 
-        public string SeatNumber { get; set; } = string.Empty;
+        public List<string> SeatNumbers { get; set; } = new();
 
         public DateTime TravelDate { get; set; }
     }

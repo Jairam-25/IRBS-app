@@ -1,7 +1,6 @@
 ﻿using IRBS.API.Models;
 using IRBS.API.Models.Bus_Model;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 
 public class AppDbContext : DbContext
 {
@@ -45,6 +44,10 @@ public class AppDbContext : DbContext
             .HasOne(b => b.User)
             .WithMany()
             .HasForeignKey(b => b.UserId);
+        modelBuilder.Entity<Bus>()
+            .Property(b => b.Price)
+            .HasPrecision(18, 2);
+
     }
 
 }
