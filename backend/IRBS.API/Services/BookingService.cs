@@ -40,18 +40,23 @@ namespace IRBS.API.Services
         {
             var seats = new List<string>();
 
-            var coaches = new[]
+            var coaches = new List<(string Prefix, int Count, int Seats)>
             {
-            new { Name = "S1", Total = 72 },
-            new { Name = "S2", Total = 72 },
-            new { Name = "A1", Total = 64 }
-        };
+                ("S", 10, 72),
+                ("A", 5, 64),
+                ("B", 3, 64)
+            };
 
-            foreach (var c in coaches)
+            foreach (var coachType in coaches)
             {
-                for (int i = 1; i <= c.Total; i++)
+                for (int c = 1; c <= coachType.Count; c++)
                 {
-                    seats.Add($"{c.Name}-{i}");
+                    string coachName = $"{coachType.Prefix}{c}";
+
+                    for (int i = 1; i <= coachType.Seats; i++)
+                    {
+                        seats.Add($"{coachName}-{i}");
+                    }
                 }
             }
 
@@ -64,13 +69,20 @@ namespace IRBS.API.Services
         {
             var allocated = new List<string>();
 
-            foreach (var coach in new[] { "S1", "S2", "A1" })
-            {
-                var coachSeats = availableSeats
-                    .Where(s => s.StartsWith(coach))
-                    .Select(s => int.Parse(s.Split('-')[1]))
-                    .OrderBy(n => n)
+            var grouped = availableSeats
+                    .GroupBy(s => s.Split('-')[0])
+                    .Select(g => new
+                    {
+                        Coach = g.Key,
+                        Seats = g.Select(x => int.Parse(x.Split('-')[1]))
+                                  .OrderBy(n => n)
+                                  .ToList()
+                    })
                     .ToList();
+
+            foreach (var coach in grouped)
+            {
+                var coachSeats = coach.Seats;
 
                 for (int i = 0; i <= coachSeats.Count - count; i++)
                 {
@@ -89,8 +101,7 @@ namespace IRBS.API.Services
 
                     if (continuous)
                     {
-                        allocated = block.Select(n => $"{coach}-{n}").ToList();
-                        return allocated;
+                        return block.Select(n => $"{coach.Coach}-{n}").ToList();
                     }
                 }
             }

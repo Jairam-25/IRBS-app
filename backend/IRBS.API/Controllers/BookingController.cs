@@ -114,7 +114,6 @@ namespace IRBS.API.Controllers
             });
         }
 
-
         // Get my bookings
         [Authorize]
         [HttpGet("mybookings")]
@@ -159,25 +158,6 @@ namespace IRBS.API.Controllers
                 return BadRequest("Train data missing"); 
             }
 
-            // Convert DB → DTO
-            //var dto = new BookingDTO
-            //{
-            //    TrainId = train.Id,
-            //    TravelDate = bookings.First().TravelDate,
-            //    SeatNumbers = bookings
-            //        .Select(b => $"{b.Coach}-{b.SeatNumber}")
-            //        .ToList(),
-            //    Passengers = bookings.Select(b => new PassengerDto
-            //    {
-            //        Name = b.PassengerName,
-            //        Age = b.PassengerAge
-            //    }).ToList()
-            //};
-
-            //var pdfBytes = _bookingService.GenerateTicketPdf(train, dto, pnr);
-
-            //return File(pdfBytes, "application/pdf", $"Ticket_{pnr}.pdf");
-
             return Ok(new
             {
                 pnr = pnr,
@@ -186,13 +166,16 @@ namespace IRBS.API.Controllers
                 from = train.FromStation,
                 to = train.ToStation,
                 date = bookings.First().TravelDate,
-                seats = bookings.Select(b => $"{b.Coach}-{b.SeatNumber}"),
+                seats = bookings
+                    .Select(b => $"{b.Coach}-{b.SeatNumber}")
+                    .ToList(),
                 passengers = bookings.Select(b => new
                 {
                     name = b.PassengerName,
                     age = b.PassengerAge,
                     Berth = b.Berth
-                })
+                }).ToList(),
+                status = bookings?.FirstOrDefault()?.Status
             });
         }
 
@@ -222,13 +205,14 @@ namespace IRBS.API.Controllers
                 return Unauthorized();
 
             var user = await _context.Users.FindAsync(userId);
-            if (user == null) return Unauthorized();
+            if (user == null)
+                return Unauthorized();
 
             var train = await _context.Trains
                 .FirstOrDefaultAsync(t => t.TrainNumber == dto.TrainNumber);
 
             if (train == null)
-                return BadRequest("Invalid train");
+                return BadRequest(new { message = $"Invalid train number: {dto.TrainNumber}" });
 
             // ALL SEATS
             var allSeats = _bookingService.GenerateAllSeats();
@@ -242,9 +226,18 @@ namespace IRBS.API.Controllers
             var availableSeats = allSeats.Except(bookedSeats).ToList();
 
             // AUTO ALLOCATE
-            var allocatedSeats = _bookingService.AllocateSeats(
-                availableSeats,
-                dto.Passengers.Count);
+            var allocatedSeats = dto.SeatNumbers;
+
+            // Check seat count match
+            if (dto.SeatNumbers.Count != dto.Passengers.Count)
+                return BadRequest("Seat count and passenger count mismatch");
+
+            // Check availability
+            foreach (var seat in dto.SeatNumbers)
+            {
+                if (!availableSeats.Contains(seat))
+                    return BadRequest($"Seat {seat} not available");
+            }
 
             if (allocatedSeats.Count < dto.Passengers.Count)
                 return BadRequest("Not enough seats");
@@ -363,109 +356,38 @@ namespace IRBS.API.Controllers
             }));
         }
 
-        [HttpPost("ticket")]
-        public IActionResult GenerateTicket(BookingDTO dto)
+        [HttpGet("ticket/{pnr}/pdf")]
+        public async Task<IActionResult> DownloadTicketByPNR(string pnr)
         {
-            using var ms = new MemoryStream();
+            var bookings = await _context.Bookings
+                .Include(b => b.Train)
+                .Where(b => b.PNR == pnr)
+                .ToListAsync();
 
-            var writer = new PdfWriter(ms);
-            var pdf = new PdfDocument(writer);
-            var doc = new Document(pdf);
+            if (!bookings.Any())
+                return NotFound(new { message = "Invalid PNR" });
 
-            // HEADER 
-            doc.Add(new Paragraph("Indian Railway Booking System E-TICKET")
-                .SetFontSize(18)
-                .SetFontSize(18)
-                .SetTextAlignment(TextAlignment.CENTER));
+            var train = bookings.First().Train;
 
-            doc.Add(new Paragraph("\n"));
-
-            // PNR 
-            string pnr = new Random().Next(100000000, 999999999).ToString();
-
-            // JOURNEY TABLE 
-            var journeyTable = new Table(2).UseAllAvailableWidth();
-
-            journeyTable.AddCell("Train No");
-            journeyTable.AddCell(dto.TrainNumber.ToString());
-
-            journeyTable.AddCell("Travel Date");
-            journeyTable.AddCell(dto.TravelDate.ToString("yyyy-MM-dd"));
-
-            journeyTable.AddCell("From");
-            journeyTable.AddCell("A");
-
-            journeyTable.AddCell("To");
-            journeyTable.AddCell("B");
-
-            journeyTable.AddCell("PNR");
-            journeyTable.AddCell(pnr);
-
-            doc.Add(journeyTable);
-
-            doc.Add(new Paragraph("\n"));
-
-            // PASSENGER TABLE 
-            var table = new Table(5).UseAllAvailableWidth();
-
-            table.AddHeaderCell("Passenger");
-            table.AddHeaderCell("Age");
-            table.AddHeaderCell("Coach");
-            table.AddHeaderCell("Seat");
-            table.AddHeaderCell("Berth");
-
-            for (int i = 0; i < dto.SeatNumbers.Count; i++)
+            // Build DTO manually
+            var dto = new BookingDTO
             {
-                var seat = dto.SeatNumbers[i];
-                var parts = seat.Split('-');
+                TrainNumber = train.TrainNumber,
+                TravelDate = bookings.First().TravelDate,
+                SeatNumbers = bookings
+                    .Select(b => $"{b.Coach}-{b.SeatNumber}")
+                    .ToList(),
+                Passengers = bookings.Select(b => new PassengerDto
+                {
+                    Name = b.PassengerName,
+                    Age = b.PassengerAge,
+                    Berth = b.Berth
+                }).ToList()
+            };
 
-                string coach = parts[0];
-                int number = int.Parse(parts[1]);
+            var pdf = _bookingService.GenerateTicketPdf(train, dto, pnr);
 
-                var passenger = dto.Passengers.Count > i
-                    ? dto.Passengers[i]
-                    : new PassengerDto { Name = $"Passenger {i + 1}", Age = 0 };
-
-                table.AddCell(passenger.Name);
-                table.AddCell(passenger.Age.ToString());
-                table.AddCell(coach);
-                table.AddCell(number.ToString());
-                table.AddCell(passenger.Berth);
-            }
-
-            doc.Add(table);
-
-            doc.Add(new Paragraph("\n"));
-
-            // STATUS 
-            doc.Add(new Paragraph("Status: CONFIRMED")
-                .SetFontSize(18)
-                .SetFontColor(ColorConstants.GREEN));
-
-            doc.Add(new Paragraph("\n"));
-
-            // QR CODE 
-            var qrGenerator = new QRCodeGenerator();
-            var qrData = qrGenerator.CreateQrCode($"PNR:{pnr}", QRCodeGenerator.ECCLevel.Q);
-            var qrCode = new PngByteQRCode(qrData);
-            var qrBytes = qrCode.GetGraphic(20);
-
-            var qrImage = new Image(ImageDataFactory.Create(qrBytes))
-                .SetWidth(100)
-                .SetHorizontalAlignment(HorizontalAlignment.CENTER);
-
-            doc.Add(qrImage);
-
-            doc.Add(new Paragraph("\n"));
-
-            // FOOTER 
-            doc.Add(new Paragraph("Carry valid ID proof during journey")
-                .SetFontSize(10)
-                .SetTextAlignment(TextAlignment.CENTER));
-
-            doc.Close();
-
-            return File(ms.ToArray(), "application/pdf", "TrainTicket.pdf");
-        }         
+            return File(pdf, "application/pdf", $"Ticket_{pnr}.pdf");
+        }
     }
 }
