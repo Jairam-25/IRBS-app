@@ -50,4 +50,15 @@ export class TrainService {
       { responseType: 'blob' }   // ← backend returns File(pdfBytes, "application/pdf")
     );
   }
+
+  getBookingByPNR(pnr: string) {
+    return this.http.get(`${this.baseUrl}/Booking/ticket/${pnr}`);
+  }
+
+  downloadTicketByPNR(pnr: string) {
+    return this.http.get(
+      `${this.baseUrl}/Booking/ticket/${pnr}/pdf`,
+      { responseType: 'blob' }
+    );
+  }
 }

@@ -34,6 +34,10 @@
     </a>
     </div>
 
+    <button class="pnr-nav-btn" (click)="openPnrModal()">
+      <i class="bi bi-search"></i> PNR Status
+    </button>
+
     <div>
     <!-- 🔐 Logged In -->
   <ng-container *ngIf="auth.isLoggedIn$ | async; else guest">

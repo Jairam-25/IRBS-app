@@ -1,0 +1,47 @@
+<div class="pnr-modal">
+
+  <!-- HEADER -->
+  <div class="pnr-header">
+    <h2>PNR Status</h2>
+    <button (click)="close()">✕</button>
+  </div>
+
+  <!-- INPUT -->
+  <div class="pnr-input-box">
+    <input type="text"
+           [(ngModel)]="pnrNumber"
+           placeholder="Enter PNR Number" />
+
+    <button (click)="searchPNR()">Search</button>
+  </div>
+
+  <!-- STATES -->
+
+  <div *ngIf="loading" class="pnr-loading">
+    Checking PNR...
+  </div>
+
+  <div *ngIf="error" class="pnr-error">
+    {{ error }}
+  </div>
+
+  <!-- RESULT -->
+<div *ngIf="data" class="pnr-result">
+
+  <p><strong>Train:</strong> {{ data.trainNumber }} - {{ data.trainName }}</p>
+  <p><strong>Date:</strong> {{ data.date | date:'mediumDate' }}</p>
+  <p><strong>From:</strong> {{ data.from }}</p>
+  <p><strong>To:</strong> {{ data.to }}</p>
+
+  <p><strong>Seats:</strong>
+    {{ data.seats?.join(', ') }}
+  </p>
+    <p><strong>Status:</strong> {{ data.status }}</p>
+
+  <button class="download-btn" (click)="downloadTicket()">
+    Download Ticket
+  </button>
+
+</div>
+
+</div>
