@@ -99,6 +99,43 @@
   animation: spin 0.8s linear infinite;
 }
 
+/* PASSENGERS */
+.passenger-section {
+  margin-top: 15px;
+}
+
+.passenger-section h4 {
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #444;
+}
+
+.passenger-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.passenger-card {
+  padding: 10px;
+  border-radius: 8px;
+  background: #f9f9f9;
+  border: 1px solid #eee;
+}
+
+.p-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.p-info {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }

@@ -65,6 +65,29 @@
 
       </div>
 
+      <!-- PASSENGERS -->
+<div class="passenger-section" *ngIf="data.passengers?.length">
+
+  <h4>Passengers</h4>
+
+  <div class="passenger-list">
+
+    <div class="passenger-card" *ngFor="let p of data.passengers; let i = index">
+
+      <div class="p-name">{{ p.name }}</div>
+
+      <div class="p-info">
+        <span>Age: {{ p.age }}</span>
+        <span>Berth: {{ p.berth }}</span>
+        <span>Seat: {{ data.seats?.[i] }}</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
       <!-- ACTION -->
       <button class="download-btn" (click)="downloadTicket()">
         Download Ticket

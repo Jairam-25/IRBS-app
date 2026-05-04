@@ -5,7 +5,7 @@ nav {
   z-index: 1000;
 
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
 
   padding: 14px 30px;
@@ -16,7 +16,19 @@ nav {
   transition: all 0.3s ease;
 }
 
-/* 🔥 SCROLL EFFECT */
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pnr-nav-btn {
+  background: rgba(255, 109, 0, 0.1);
+  color: #ff6d00;
+  border: 1px solid rgba(255, 109, 0, 0.3);
+}
+
+/* SCROLL EFFECT */
 nav.scrolled {
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(12px);
@@ -193,8 +205,6 @@ nav.scrolled .logo {
   align-items: center;
   gap: 5px;
 }
-
-/* ------------ Animation Train*/
 
 /* =========================
    PNR BUTTON (PRO STYLE)
