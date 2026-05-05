@@ -34,30 +34,30 @@ export class TrainService {
       .set('trainId', trainId)
       .set('date', new Date(date).toISOString());
  
-    return this.http.get(`${this.baseUrl}/Booking/seats`, { params });
+    return this.http.get(`${this.baseUrl}/TrainBooking/seats`, { params });
   }
  
   // BOOK SEAT
   bookSeat(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/Booking/book`, data);
+    return this.http.post(`${this.baseUrl}/TrainBooking/book`, data);
   }
  
   // BOOK MULTIPLE — responseType: 'blob' because backend returns PDF file
   bookMultipleSeats(data: any): Observable<Blob> {
     return this.http.post(
-      `${this.baseUrl}/Booking/book-multiple`,
+      `${this.baseUrl}/TrainBooking/book-multiple`,
       data,
       { responseType: 'blob' }   // ← backend returns File(pdfBytes, "application/pdf")
     );
   }
 
   getBookingByPNR(pnr: string) {
-    return this.http.get(`${this.baseUrl}/Booking/ticket/${pnr}`);
+    return this.http.get(`${this.baseUrl}/TrainBooking/ticket/${pnr}`);
   }
 
   downloadTicketByPNR(pnr: string) {
     return this.http.get(
-      `${this.baseUrl}/Booking/ticket/${pnr}/pdf`,
+      `${this.baseUrl}/TrainBooking/ticket/${pnr}/pdf`,
       { responseType: 'blob' }
     );
   }
