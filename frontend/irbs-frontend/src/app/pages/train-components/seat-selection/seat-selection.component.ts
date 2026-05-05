@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { TrainService } from '../../../_services/TrainService/train.service';
+import { TrainService } from '../../../_services/train-service/train.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PopupComponent } from '../../../_notifyAlert/popup.component';
-import { AuthService } from '../../../_services/AuthService/auth.service';
+import { AuthService } from '../../../_services/auth-service/auth.service';
 
 import { ViewChildren, QueryList, ElementRef } from '@angular/core';
 

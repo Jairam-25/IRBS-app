@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { TrainService } from '../../../_services/TrainService/train.service';
+import { TrainService } from '../../../_services/train-service/train.service';
 
 @Component({
   selector: 'app-pnr-modal',

@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { TrainService } from '../../../_services/TrainService/train.service';
-import { StationService } from '../../../_services/TrainService/station.service';
+import { TrainService } from '../../../_services/train-service/train.service';
+import { StationService } from '../../../_services/train-service/station.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PopupComponent } from '../../../_notifyAlert/popup.component';
 
