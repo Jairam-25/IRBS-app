@@ -30,14 +30,23 @@
       {{ error }}
     </div>
 
-    <!-- RESULT CARD -->
+    <!-- RESULT -->
     <div *ngIf="data" class="pnr-card">
 
       <!-- TOP -->
       <div class="pnr-top">
         <div>
-          <div class="train">{{ data.trainNumber }} - {{ data.trainName }}</div>
-          <div class="route">{{ data.from }} → {{ data.to }}</div>
+          <div class="train">
+            {{ data.trainNumber }} - {{ data.trainName }}
+          </div>
+
+          <div class="route">
+            {{ data.from }} → {{ data.to }}
+          </div>
+
+          <div class="meta">
+            PNR: {{ data.pnr }} | {{ data.date | date:'mediumDate' }}
+          </div>
         </div>
 
         <div class="status" [ngClass]="data.status?.toLowerCase()">
@@ -45,48 +54,50 @@
         </div>
       </div>
 
-      <!-- DETAILS -->
-      <div class="pnr-details">
-
-        <div class="detail">
-          <span>Date</span>
-          <strong>{{ data.date | date:'mediumDate' }}</strong>
+      <!-- COACH SUMMARY -->
+      <div class="coach-summary" *ngIf="data.seats?.length">
+        <div *ngFor="let item of getGroupedSeats() | keyvalue" class="coach-box">
+          <strong>{{ item.key }}</strong>
+          <div class="seat-list">
+            {{ item.value.join(', ') }}
+          </div>
         </div>
-
-        <div class="detail">
-          <span>Seats</span>
-          <strong>{{ data.seats?.join(', ') }}</strong>
-        </div>
-
-        <div class="detail">
-          <span>PNR</span>
-          <strong>{{ data.pnr }}</strong>
-        </div>
-
       </div>
 
-      <!-- PASSENGERS -->
-<div class="passenger-section" *ngIf="data.passengers?.length">
+      <!-- PASSENGER TABLE -->
+      <div class="ticket-section" *ngIf="data.passengers?.length">
 
-  <h4>Passengers</h4>
+        <div class="section-title">Passenger Details</div>
 
-  <div class="passenger-list">
+        <table class="ticket-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Coach</th>
+              <th>Seat</th>
+              <th>Berth</th>
+            </tr>
+          </thead>
 
-    <div class="passenger-card" *ngFor="let p of data.passengers; let i = index">
+          <tbody>
+            <tr *ngFor="let p of data.passengers; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ p.name }}</td>
+              <td>{{ p.age }}</td>
+              <td>{{ data.seats?.[i]?.split('-')[0] }}</td>
+              <td>{{ data.seats?.[i]?.split('-')[1] }}</td>
+              <td>
+                <span class="berth" [ngClass]="p.berth?.toLowerCase()">
+                  {{ p.berth }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-      <div class="p-name">{{ p.name }}</div>
-
-      <div class="p-info">
-        <span>Age: {{ p.age }}</span>
-        <span>Berth: {{ p.berth }}</span>
-        <span>Seat: {{ data.seats?.[i] }}</span>
       </div>
-
-    </div>
-
-  </div>
-
-</div>
 
       <!-- ACTION -->
       <button class="download-btn" (click)="downloadTicket()">

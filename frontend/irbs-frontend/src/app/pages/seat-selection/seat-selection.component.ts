@@ -343,26 +343,6 @@ focusFirstInvalid() {
   }
 }
 
-  // confirmPassengers() {
-
-  //   let hasError = false;
-
-  //   this.passengers.forEach(p => {
-
-  //     p.invalidName = !p.name || !p.name.trim();
-  //     p.invalidAge  = !p.age || p.age <= 0;
-
-  //     if (p.invalidName || p.invalidAge) {
-  //       hasError = true;
-  //     }
-
-  //   });
-
-  //   if (hasError) return;
-
-  //   this.showPassengerForm = false;
-  //   this.bookSeat();
-  // }
  
   // =========================
   // BOOK MULTIPLE
@@ -435,36 +415,50 @@ focusFirstInvalid() {
         console.log('FINAL PAYLOAD:', JSON.stringify(body, null, 2));
       },
  
-      error: async (err) => {
-
+      error: (err) => {
         this.isBooking = false;
 
-        let message = 'Unknown error';
-
-        if (err.error instanceof Blob) {
-          const text = await err.error.text();
-          console.log('RAW ERROR:', text);
-
-          try {
-            const json = JSON.parse(text);
-            message = json.message || json.title || text;
-          } catch {
-            message = text;
-          }
-        } else {
-          message = err.error?.message || JSON.stringify(err.error);
+        // Handle based on status
+        if (err.status === 401) {
+            this.dialog.open(PopupComponent, {
+            width: '360px',
+            panelClass: 'custom-dialog',
+            data: {
+              title: 'Booking Failed',
+              message: 'Please login and try again to book seats.'
+            }
+          });
         }
-
-        console.log('DECODED ERROR:', message);
-
-        this.dialog.open(PopupComponent, {
+        else if (err.status === 404) {
+          this.dialog.open(PopupComponent, {
           width: '360px',
           panelClass: 'custom-dialog',
           data: {
             title: 'Booking Failed',
-            message
+            message: 'Seats not available. Please reselect seats and try again.'
           }
         });
+        }
+        else if (err.status === 500) {
+          this.dialog.open(PopupComponent, {
+          width: '360px',
+          panelClass: 'custom-dialog',
+          data: {
+            title: 'Booking Failed',
+            message: 'Server error. Try again later'
+          }
+        });
+        }
+        else {
+          this.dialog.open(PopupComponent, {
+          width: '360px',
+          panelClass: 'custom-dialog',
+          data: {
+            title: 'Booking Failed',
+            message: 'Something went wrong'
+          }
+        });
+        };
       }
     });
   }

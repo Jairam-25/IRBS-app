@@ -136,6 +136,96 @@
   margin-top: 4px;
 }
 
+/* META TEXT */
+.meta {
+  font-size: 12px;
+  color: #777;
+  margin-top: 4px;
+}
+
+/* COACH SUMMARY */
+.coach-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.coach-box {
+  background: #f5f5f5;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+/* SECTION */
+.section-title {
+  font-weight: 600;
+  margin: 15px 0 10px;
+  font-size: 14px;
+  color: #333;
+}
+
+/* TABLE */
+.ticket-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ticket-table th {
+  background: #f3f3f3;
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.ticket-table td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.ticket-table tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+
+.ticket-table tbody tr:hover {
+  background: #fff7f2;
+}
+
+/* BERTH COLORS */
+.berth {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.berth.lb {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.berth.mb {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.berth.ub {
+  background: #ede7f6;
+  color: #5e35b1;
+}
+
+.berth.sl {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.berth.su {
+  background: #fce4ec;
+  color: #c2185b;
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
