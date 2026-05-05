@@ -64,7 +64,7 @@ namespace IRBS.API.Controllers
                 return BadRequest(new { success = false, message = "Payment verification failed" });
 
             // Update booking status
-            var booking = await _context.Bookings.FindAsync(dto.BookingId);
+            var booking = await _context.TrainBookings.FindAsync(dto.BookingId);
             if (booking == null) return NotFound("Booking not found");
 
             booking.Status = "Paid";
@@ -101,7 +101,7 @@ IRBS Customer Support
         public IActionResult VerifyDummyPayment(int bookingId)
         {
             // Dummy verification always success
-            var booking = _context.Bookings.FirstOrDefault(b => b.Id == bookingId);
+            var booking = _context.TrainBookings.FirstOrDefault(b => b.Id == bookingId);
             if (booking == null) return NotFound();
 
             booking.Status = "Paid";

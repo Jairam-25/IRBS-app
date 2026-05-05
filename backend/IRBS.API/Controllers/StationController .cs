@@ -18,7 +18,7 @@ namespace IRBS.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetStations()
         {
-            var stations = await _context.Stations
+            var stations = await _context.TrainStations
                 .OrderBy(s => s.Name)
                 .ToListAsync();
 

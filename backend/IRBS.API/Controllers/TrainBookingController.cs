@@ -19,13 +19,13 @@ namespace IRBS.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class BookingController : ControllerBase
+    public class TrainBookingController : ControllerBase
     {
         private readonly AppDbContext _context;
         private readonly IBookingService _bookingService;
         private readonly INotificationService _notificationService;
 
-        public BookingController(AppDbContext context, IBookingService bookingService, INotificationService notificationService )
+        public TrainBookingController(AppDbContext context, IBookingService bookingService, INotificationService notificationService )
         {
             _context = context;
             _bookingService = bookingService;
@@ -39,7 +39,7 @@ namespace IRBS.API.Controllers
             if (!DateTime.TryParse(date, out var travelDate))
                 return BadRequest("Invalid date");
 
-            var seats = _context.Bookings
+            var seats = _context.TrainBookings
                 .Where(x => x.TrainId == trainId && x.TravelDate.Date == travelDate.Date)
                 .Select(x => x.Coach + "-" + x.SeatNumber)
                 .ToList();
@@ -81,7 +81,7 @@ namespace IRBS.API.Controllers
             int seatNumber = int.Parse(parts[1]);
 
             // Check exists
-            var exists = await _context.Bookings.AnyAsync(b =>
+            var exists = await _context.TrainBookings.AnyAsync(b =>
                 b.TrainNumber == dto.TrainNumber &&
                 b.TravelDate.Date == dto.TravelDate.Date &&
                 b.Coach == coach &&
@@ -102,7 +102,7 @@ namespace IRBS.API.Controllers
                 Status = "Booked"
             };
 
-            _context.Bookings.Add(booking);
+            _context.TrainBookings.Add(booking);
             await _context.SaveChangesAsync();
 
             // Send notification
@@ -132,7 +132,7 @@ namespace IRBS.API.Controllers
                 userId = user.Id;
             }
 
-            var myBookings = await _context.Bookings
+            var myBookings = await _context.TrainBookings
                 .AsNoTracking()
                 .Where(b => b.UserId == userId)
                 .Include(b => b.Train)
@@ -145,7 +145,7 @@ namespace IRBS.API.Controllers
         [HttpGet("ticket/{pnr}")]
         public async Task<IActionResult> GetTicketByPNR(string pnr)
         {
-            var bookings = await _context.Bookings
+            var bookings = await _context.TrainBookings
                 .Include(b => b.Train)
                 .Where(b => b.PNR == pnr)
                 .OrderBy(b => b.Id)
@@ -185,7 +185,7 @@ namespace IRBS.API.Controllers
         [HttpPost("update-status")]
         public async Task<IActionResult> UpdateBookingStatus(int bookingId, string status)
         {
-            var booking = await _context.Bookings.FindAsync(bookingId);
+            var booking = await _context.TrainBookings.FindAsync(bookingId);
             if (booking == null) return NotFound();
 
             booking.Status = status;
@@ -220,7 +220,7 @@ namespace IRBS.API.Controllers
             // ALL SEATS
             var allSeats = _bookingService.GenerateAllSeats();
 
-            var bookedSeats = await _context.Bookings
+            var bookedSeats = await _context.TrainBookings
                 .Where(b => b.TrainNumber == dto.TrainNumber &&
                             b.TravelDate.Date == dto.TravelDate.Date)
                 .Select(b => $"{b.Coach}-{b.SeatNumber}")
@@ -283,7 +283,7 @@ namespace IRBS.API.Controllers
                 dto.Passengers[i].Berth = berth; 
             }
 
-            _context.Bookings.AddRange(bookings);
+            _context.TrainBookings.AddRange(bookings);
             await _context.SaveChangesAsync();
             await tx.CommitAsync();
 
@@ -301,7 +301,7 @@ namespace IRBS.API.Controllers
 
             var allSeats = _bookingService.GenerateAllSeats();
 
-            var booked = _context.Bookings
+            var booked = _context.TrainBookings
                 .Where(x => x.TrainId == trainId && x.TravelDate.Date == travelDate.Date)
                 .Select(x => x.Coach + "-" + x.SeatNumber)
                 .ToList();
@@ -363,7 +363,7 @@ namespace IRBS.API.Controllers
         [HttpGet("ticket/{pnr}/pdf")]
         public async Task<IActionResult> DownloadTicketByPNR(string pnr)
         {
-            var bookings = await _context.Bookings
+            var bookings = await _context.TrainBookings
                 .Include(b => b.Train)
                 .Where(b => b.PNR == pnr)
                 .ToListAsync();
