@@ -73,8 +73,12 @@
     <main class="seat-panel">
 
       <!-- Header row inside seat panel -->
-      <div class="sp-header">
+      <div class="sp-header">seat-grid-scroll
         <div class="sp-coach-badge">{{ activeCoach }}</div>
+
+        <div class="sp-coach-badge">
+          {{ activeCoach }}{{ secondaryCoach ? ' + ' + secondaryCoach : '' }}
+        </div>
 
         <div class="seat-legend">
           <span class="leg-item"><i class="leg-box available"></i>Available</span>
@@ -88,72 +92,74 @@
         </div>
       </div>
 
-      <!-- Seat Grid -->
+
+<!-- Seat Grid -->
 <div class="seat-grid-scroll">
+  <div class="dual-coach-wrapper">
 
-  <div class="compartment-box" *ngFor="let block of getSeatBlocks(); let bi = index">
+    <!-- ═══ PRIMARY COACH ═══ -->
+    <div class="coach-column">
+      <div class="coach-col-header">{{ activeCoach }}</div>
 
-    <div class="box-row" *ngFor="let row of block">
+      <div class="compartment-box" *ngFor="let block of getSeatBlocksForCoach(primaryCoachSeats)">
+        <div class="box-row" *ngFor="let row of block">
 
-      <!-- LEFT SIDE -->
-      <div class="seat-group">
-
-        <!-- 3 seats -->
-        <div class="seat-trio">
-          <div *ngFor="let seat of row.slice(0,3)"
-               class="seat-cell"
-               [ngClass]="getSeatClass(seat)"
-               (click)="selectSeat(seat)">
-            <span class="sc-num">{{ seat.split('-')[1] }}</span>
-            <span class="sc-type">{{ getSeatType(seat) }}</span>
+          <div class="seat-trio">
+            <div *ngFor="let seat of row.slice(0,3)"
+                 class="seat-cell"
+                 [ngClass]="getSeatClass(seat)"
+                 (click)="selectSeat(seat)">
+              <span class="sc-num">{{ seat.split('-')[1] }}</span>
+              <span class="sc-type">{{ getSeatType(seat) }}</span>
+            </div>
           </div>
-        </div>
 
-        <!-- 1 seat -->
-        <div class="single-seat">
-          <div *ngIf="row[3]"
-               class="seat-cell"
-               [ngClass]="getSeatClass(row[3])"
-               (click)="selectSeat(row[3])">
-            <span class="sc-num">{{ row[3].split('-')[1] }}</span>
-            <span class="sc-type">{{ getSeatType(row[3]) }}</span>
+          <div class="single-seat">
+            <div *ngIf="row[3]"
+                 class="seat-cell"
+                 [ngClass]="getSeatClass(row[3])"
+                 (click)="selectSeat(row[3])">
+              <span class="sc-num">{{ row[3].split('-')[1] }}</span>
+              <span class="sc-type">{{ getSeatType(row[3]) }}</span>
+            </div>
           </div>
-        </div>
 
+        </div>
       </div>
+    </div>
 
-      <!-- AISLE -->
-      <div class="aisle-gap"></div>
+    <!-- ═══ SECONDARY COACH ═══ -->
+    <div class="coach-column" *ngIf="secondaryCoach">
+      <div class="coach-col-header">{{ secondaryCoach }}</div>
 
-      <!-- RIGHT SIDE -->
-      <div class="seat-group">
+      <div class="compartment-box" *ngFor="let block of getSeatBlocksForCoach(secondaryCoachSeats)">
+        <div class="box-row" *ngFor="let row of block">
 
-        <div class="seat-trio">
-          <div *ngFor="let seat of row.slice(4,7)"
-               class="seat-cell"
-               [ngClass]="getSeatClass(seat)"
-               (click)="selectSeat(seat)">
-            <span class="sc-num">{{ seat.split('-')[1] }}</span>
-            <span class="sc-type">{{ getSeatType(seat) }}</span>
+          <div class="seat-trio">
+            <div *ngFor="let seat of row.slice(0,3)"
+                 class="seat-cell"
+                 [ngClass]="getSeatClass(seat)"
+                 (click)="selectSeat(seat)">
+              <span class="sc-num">{{ seat.split('-')[1] }}</span>
+              <span class="sc-type">{{ getSeatType(seat) }}</span>
+            </div>
           </div>
-        </div>
 
-        <div class="single-seat">
-          <div *ngIf="row[7]"
-              class="seat-cell"
-              [ngClass]="getSeatClass(row[7])"
-              (click)="selectSeat(row[7])">
-            <span class="sc-num">{{ row[7].split('-')[1] }}</span>
-            <span class="sc-type">{{ getSeatType(row[7]) }}</span>
+          <div class="single-seat">
+            <div *ngIf="row[3]"
+                 class="seat-cell"
+                 [ngClass]="getSeatClass(row[3])"
+                 (click)="selectSeat(row[3])">
+              <span class="sc-num">{{ row[3].split('-')[1] }}</span>
+              <span class="sc-type">{{ getSeatType(row[3]) }}</span>
+            </div>
           </div>
-        </div>
 
+        </div>
       </div>
-
     </div>
 
   </div>
-
 </div>
 
       <!-- Footer -->

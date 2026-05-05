@@ -153,27 +153,19 @@
   filter: brightness(200%) grayscale(100%);
 }
 
-/* Scrollable coach list */
 .coach-list {
   flex: 1;
   overflow-y: auto;
   padding: 8px 0;
 }
 
-.coach-list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.coach-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-
+.coach-list::-webkit-scrollbar { width: 4px; }
+.coach-list::-webkit-scrollbar-track { background: transparent; }
 .coach-list::-webkit-scrollbar-thumb {
   background: rgba(255,255,255,0.12);
   border-radius: 4px;
 }
 
-/* Each coach row */
 .coach-item {
   width: 100%;
   display: flex;
@@ -188,26 +180,18 @@
   position: relative;
 }
 
-.coach-item:hover {
-  background: rgba(255,255,255,0.06);
-}
-
-.coach-item.active {
-  background: var(--brand);
-}
+.coach-item:hover { background: rgba(255,255,255,0.06); }
+.coach-item.active { background: var(--brand); }
 
 .coach-item.active::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
+  left: 0; top: 0; bottom: 0;
   width: 3px;
   background: #fff;
   border-radius: 0 3px 3px 0;
 }
 
-/* Index number */
 .ci-index {
   width: 20px;
   height: 20px;
@@ -227,7 +211,6 @@
   color: #fff;
 }
 
-/* Coach name */
 .ci-name {
   font-size: 13px;
   font-weight: 600;
@@ -235,30 +218,22 @@
   flex: 1;
 }
 
-.coach-item.active .ci-name {
-  color: #fff;
-}
+.coach-item.active .ci-name { color: #fff; }
 
-/* Seat count */
 .ci-seats {
   font-size: 10px;
   color: rgba(255,255,255,0.35);
 }
 
-.coach-item.active .ci-seats {
-  color: rgba(255,255,255,0.7);
-}
+.coach-item.active .ci-seats { color: rgba(255,255,255,0.7); }
 
-/* Arrow */
 .ci-arrow {
   font-size: 16px;
   color: rgba(255,255,255,0.2);
   line-height: 1;
 }
 
-.coach-item.active .ci-arrow {
-  color: rgba(255,255,255,0.6);
-}
+.coach-item.active .ci-arrow { color: rgba(255,255,255,0.6); }
 
 /* ═══════════════════════════════════════════════
    RIGHT — SEAT PANEL
@@ -271,7 +246,6 @@
   background: #f0f4f9;
 }
 
-/* ── Seat Panel Header ── */
 .sp-header {
   display: flex;
   align-items: center;
@@ -336,7 +310,9 @@
   border-radius: 20px;
 }
 
-/* ── Seat Grid Scroll Area ── */
+/* ═══════════════════════════════════════════════
+   SEAT GRID SCROLL
+═══════════════════════════════════════════════ */
 .seat-grid-scroll {
   flex: 1;
   overflow-y: auto;
@@ -346,50 +322,16 @@
   gap: 6px;
 }
 
-.seat-grid-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.seat-grid-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
+.seat-grid-scroll::-webkit-scrollbar { width: 6px; }
+.seat-grid-scroll::-webkit-scrollbar-track { background: transparent; }
 .seat-grid-scroll::-webkit-scrollbar-thumb {
   background: #ccd4de;
   border-radius: 6px;
 }
 
-/* ── Compartment Row ── */
-.compartment {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: white;
-  border-radius: var(--radius-md);
-  padding: 10px 14px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid #e8edf3;
-  transition: box-shadow 0.2s;
-}
-
-.compartment:hover {
-  box-shadow: var(--shadow-md);
-}
-
-/* Row number */
-.comp-label {
-  width: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #aab;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-/* ------------------------------------------------ */
-
-
-/* COMPARTMENT BOX */
+/* ═══════════════════════════════════════════════
+   COMPARTMENT BOX
+═══════════════════════════════════════════════ */
 .compartment-box {
   background: white;
   border-radius: 14px;
@@ -399,78 +341,44 @@
   box-shadow: var(--shadow-sm);
 }
 
-/* EACH ROW INSIDE BOX */
 .box-row {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  margin-bottom: 10px;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 8px;
 }
 
-.box-row:last-child {
-  margin-bottom: 0;
-}
+.box-row:last-child { margin-bottom: 0; }
 
-/* LEFT + RIGHT GROUP */
 .seat-group {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
-/* 3 SEATS */
 .seat-trio {
   display: flex;
   gap: 4px;
 }
 
-/* SINGLE SEAT */
 .single-seat {
-  margin-left: 6px;
+  margin-left: 10px;
 }
 
-/* AISLE */
 .aisle-gap {
   width: 40px;
-}
-
-
-
-
-/* -------------------------------------------------------- */
-
-/* Make side seats slightly smaller */
-.seat-cell.side {
-  width: 42px;
-  height: 42px;
-}
-
-/* FIXED AISLE */
-.aisle-gap {
-  width: 40px;   /* 🔥 fixed width */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.aisle-label {
-  font-size: 8px;
-  letter-spacing: 1px;
-  color: #aaa;
-}
-
-.aisle-label {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #bbc;
-  transform: rotate(0deg);
-}
-
-/* ── Individual Seat Cell ── */
+/* ═══════════════════════════════════════════════
+   INDIVIDUAL SEAT CELL
+═══════════════════════════════════════════════ */
 .seat-cell {
-  width: 86px;     
-  height: 46px;
+  width: 64px;
+  height: 48px;
   border-radius: var(--radius-sm);
   display: flex;
   flex-direction: column;
@@ -488,7 +396,7 @@
 }
 
 .sc-num {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   line-height: 1;
 }
@@ -499,7 +407,6 @@
   line-height: 1;
 }
 
-/* States */
 .seat-cell.available {
   background: var(--available-bg);
   color: var(--available-text);
@@ -526,7 +433,9 @@
   opacity: 0.7;
 }
 
-/* ── Footer ── */
+/* ═══════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════ */
 .sp-footer {
   display: flex;
   align-items: center;
@@ -580,7 +489,6 @@
   cursor: not-allowed;
   transform: none;
 }
-
 
 /* ═══════════════════════════════════════════════
    PASSENGER FORM MODAL
@@ -747,7 +655,6 @@
 
 .confirm-btn:hover { background: var(--brand-dark); }
 
-
 /* ═══════════════════════════════════════════════
    BOOKING LOADING OVERLAY
 ═══════════════════════════════════════════════ */
@@ -791,21 +698,6 @@
   animation: loadingLine 1.2s infinite;
 }
 
-@keyframes loadingLine {
-  0%   { left: -40%; }
-  100% { left: 100%; }
-}
-
-.train {
-  display: flex;
-  gap: 6px;
-  position: absolute;
-  left: -80px;
-  top: -8px;
-  animation: moveTrain 1.2s linear infinite;
-}
-
-/* NOTE: .engine + .coach here are train animation elements only */
 .booking-loader .engine {
   width: 18px;
   height: 12px;
@@ -820,31 +712,109 @@
   border-radius: 3px;
 }
 
-.invalid-input{
-  color: red;
-}
-
-.input-error {
-  border: 2px solid #ff4d4f !important;
-  background: #fff1f0;
-}
-
 .booking-loader p {
   margin-top: 15px;
   font-weight: 500;
   color: #444;
 }
 
+.invalid-input { color: red; }
+
+.input-error {
+  border: 2px solid #ff4d4f !important;
+  background: #fff1f0;
+}
+
+/* ═══════════════════════════════════════════════
+   DUAL COACH SIDE-BY-SIDE LAYOUT
+═══════════════════════════════════════════════ */
+.dual-coach-wrapper {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+}
+
+.coach-column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.coach-col-header {
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rail);
+  padding: 7px 0;
+  margin-bottom: 10px;
+  background: white;
+  border-radius: var(--radius-md);
+  border: 1.5px solid #dde3ec;
+  letter-spacing: 0.5px;
+  box-sizing: border-box;
+}
+
+.coach-column .compartment-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px;
+}
+
+.coach-column .box-row {
+  display: flex;
+  align-items: center;
+  justify-content: center !important;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.coach-column .box-row:last-child { margin-bottom: 0; }
+
+.coach-column .seat-trio {
+  display: flex;
+  gap: 4px;
+}
+
+.coach-column .single-seat {
+  margin-left: 14px;
+  display: flex;
+  align-items: center;
+}
+
+/* Default seat size for desktop */
+.coach-column .seat-cell {
+  width: 100px;
+  height: 44px;
+}
+
+.coach-column .sc-num { font-size: 12px; }
+.coach-column .sc-type { font-size: 7.5px; }
+
+/* ═══════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════ */
 @keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  50% { transform: translateX(4px); }
-  75% { transform: translateX(-4px); }
+  0%   { transform: translateX(0); }
+  25%  { transform: translateX(-4px); }
+  50%  { transform: translateX(4px); }
+  75%  { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
 
-.shake {
-  animation: shake 0.3s;
+.shake { animation: shake 0.3s; }
+
+@keyframes loadingLine {
+  0%   { left: -40%; }
+  100% { left: 100%; }
 }
 
 @keyframes moveTrain {
@@ -857,24 +827,145 @@
   to   { opacity: 1; }
 }
 
+/* ═══════════════════════════════════════════════
+   RESPONSIVE — tablet (≤1020px)
+   Shrink seats but keep two coaches side by side
+═══════════════════════════════════════════════ */
+@media (max-width: 1020px) {
+
+  .dual-coach-wrapper {
+    gap: 12px;
+  }
+
+  .coach-column .seat-cell {
+    width: 64px;
+    height: 40px;
+  }
+
+  .coach-column .sc-num { font-size: 11px; }
+  .coach-column .sc-type { font-size: 7px; }
+
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE — mobile (≤768px)
+   Stack coaches vertically, shrink seats further
+═══════════════════════════════════════════════ */
 @media (max-width: 768px) {
-
-  .box-row {
-    flex-direction: column;
+ 
+  /* ── Top bar ── */
+  .ss-topbar {
+    padding: 0 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 56px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+ 
+  .topbar-brand { font-size: 14px; }
+ 
+  .topbar-trip {
+    gap: 2px;
+  }
+ 
+  .trip-chip { padding: 2px 8px; }
+  .chip-label { font-size: 9px; }
+  .chip-value { font-size: 11px; }
+ 
+  /* ── Coach panel ── */
+  .coach-panel { width: 160px; }
+  .ci-name     { font-size: 12px; }
+  .ci-seats    { display: none; }
+ 
+  /* ── Seat panel header ── */
+  .sp-header {
+    flex-wrap: wrap;
     gap: 10px;
+    padding: 10px 14px;
   }
-
-  .aisle-gap {
-    display: none;
+ 
+  .seat-legend { gap: 10px; }
+  .leg-item    { font-size: 11px; }
+ 
+  /* ── Seat grid ── */
+  .seat-grid-scroll { padding: 12px 10px; }
+ 
+  .dual-coach-wrapper {
+    flex-direction: column;   /* stack vertically */
+    gap: 16px;
   }
-
-  .seat-group {
-    justify-content: center;
+ 
+  .coach-column {
+    width: 100%;
   }
-
-  .seat-cell {
-    width: 36px;
-    height: 36px;
+ 
+  .coach-column .seat-cell {
+    width: 52px;
+    height: 38px;
   }
-
+ 
+  .coach-column .sc-num  { font-size: 10px; }
+  .coach-column .sc-type { font-size: 6.5px; }
+ 
+  .coach-column .single-seat { margin-left: 8px; }
+ 
+  .aisle-gap   { display: none; }
+  .seat-group  { justify-content: center; }
+ 
+  /* ── Footer ── */
+  .sp-footer {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 14px;
+    gap: 8px;
+  }
+ 
+  .book-btn {
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+  }
+ 
+  /* ── Passenger modal ── */
+  .passenger-modal {
+    max-width: 100%;
+    border-radius: 14px;
+    margin: 8px;
+  }
+ 
+  .passenger-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+ 
+  .passenger-seat-badge { margin-top: 0; }
+ 
+  /* ── Loading overlay ── */
+  .booking-overlay {
+    padding: 12px;
+    align-items: flex-end;    /* slides up from bottom on mobile */
+  }
+ 
+  .booking-loader {
+    padding: 20px 20px 24px;
+    border-radius: 20px 20px 16px 16px;
+    max-width: 100%;
+  }
+ 
+  .booking-loader p {
+    font-size: 13px;
+    margin-top: 12px;
+  }
+ 
+  .track {
+    max-width: 140px;
+    margin: 12px auto;
+  }
+ 
+  .booking-loader .engine { width: 14px; height: 10px; }
+  .booking-loader .coach  { width: 11px; height: 10px; }
+  .booking-loader .train  { display: none; }
+ 
 }

@@ -45,6 +45,10 @@ export class SeatSelectionComponent implements OnInit {
   activeCoach = 'S1';
 
   invalidForm = false;
+
+secondaryCoach = '';
+primaryCoachSeats: string[] = [];
+secondaryCoachSeats: string[] = [];
  
   // ─── PASSENGER FORM ───────────────────────────────────────
   showPassengerForm = false;
@@ -113,34 +117,9 @@ export class SeatSelectionComponent implements OnInit {
   }
 
 getSeatType(seat: string): string {
-
   const num = parseInt(seat.split('-')[1], 10);
-
-  // position inside 8-seat row
-  const pos = (num - 1) % 8;
-
-  const map = [
-    'Window',   // 0
-    'Middle',   // 1
-    'Aisle',    // 2
-    'Side',     // 3  (single seat)
-    'Aisle',    // 4
-    'Middle',   // 5
-    'Window',   // 6
-    'Side'      // 7  (single seat)
-  ];
-
-//   const map = [
-//   'W',  // Window
-//   'M',  // Middle
-//   'A',  // Aisle
-//   'SL', // Side
-//   'A',
-//   'M',
-//   'W',
-//   'SL'
-// ];
-
+  const pos = (num - 1) % 4;
+  const map = ['Lower', 'Middle', 'Upper', 'Side'];
   return map[pos];
 }
 
@@ -164,6 +143,18 @@ getSeatType(seat: string): string {
 
     return blocks;
   }
+
+getSeatBlocksForCoach(coachSeats: string[]): string[][][] {
+  const rows: string[][] = [];
+  for (let i = 0; i < coachSeats.length; i += 4) {
+    rows.push(coachSeats.slice(i, i + 4));
+  }
+  const blocks: string[][][] = [];
+  for (let i = 0; i < rows.length; i += 2) {   
+    blocks.push(rows.slice(i, i + 2));
+  }
+  return blocks;
+}
  
   // =========================
   // GENERATE SEATS
@@ -201,9 +192,22 @@ coaches: { name: string; total: number }[] = [];
   }
  
   // Filter seats for the active coach tab
-  filterCoachSeats() {
-    this.coachSeats = this.seats.filter(s => s.startsWith(this.activeCoach + '-'));
+filterCoachSeats() {
+  const idx = this.coaches.findIndex(c => c.name === this.activeCoach);
+
+  this.primaryCoachSeats = this.seats.filter(s => s.startsWith(this.activeCoach + '-'));
+
+  if (idx + 1 < this.coaches.length) {
+    this.secondaryCoach = this.coaches[idx + 1].name;
+    this.secondaryCoachSeats = this.seats.filter(s => s.startsWith(this.secondaryCoach + '-'));
+  } else {
+    this.secondaryCoach = '';
+    this.secondaryCoachSeats = [];
   }
+
+  // keep coachSeats in sync (used by getSeatRows/getSeatBlocks if called elsewhere)
+  this.coachSeats = this.primaryCoachSeats;
+}
  
   // Switch active coach
   selectCoach(coach: string) {
