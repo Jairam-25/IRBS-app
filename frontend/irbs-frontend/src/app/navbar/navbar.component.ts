@@ -1,10 +1,10 @@
 import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../_services/auth.service';
+import { AuthService } from '../_services/AuthService/auth.service';
 import { Router } from 'express';
 import { MatDialog } from '@angular/material/dialog';
-import { PnrStatusComponent } from '../pages/pnr-status/pnr-status.component';
+import { PnrStatusComponent } from '../pages/TrainComponents/pnr-status/pnr-status.component';
 
 @Component({
   selector: 'app-navbar',

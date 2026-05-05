@@ -2,10 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { TrainService } from '../../_services/train.service';
-import { StationService } from '../../_services/station.service';
+import { TrainService } from '../../../_services/TrainService/train.service';
+import { StationService } from '../../../_services/TrainService/station.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { PopupComponent } from '../../_notifyAlert/popup.component';
+import { PopupComponent } from '../../../_notifyAlert/popup.component';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
