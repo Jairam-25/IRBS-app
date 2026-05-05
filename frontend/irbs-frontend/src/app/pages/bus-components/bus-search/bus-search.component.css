@@ -1,0 +1,150 @@
+.bus-wrapper {
+  padding: 20px;
+  background: #f7f9fc;
+  min-height: 100vh;
+}
+
+/* SEARCH BOX */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  background: white;
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+mat-form-field {
+  flex: 1;
+  min-width: 220px;
+}
+
+.swap-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #ff6d00;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-btn {
+  height: 56px;
+  padding: 0 20px;
+  background: #ff6d00;
+  color: white;
+  border-radius: 10px;
+  border: none;
+}
+
+/* LIST */
+.bus-list {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 20px;
+}
+
+/* CARD */
+.bus-card {
+  background: white;
+  border-radius: 16px;
+  padding: 18px;
+  border-left: 5px solid #ff6d00;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+/* HEADER */
+.bus-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ROUTE */
+.route {
+  font-size: 14px;
+  color: #444;
+}
+
+/* META */
+.meta {
+  display: flex;
+  gap: 15px;
+  font-size: 13px;
+  color: #666;
+}
+
+/* SEAT INFO */
+.seat-info {
+  display: flex;
+  gap: 10px;
+}
+
+.seat {
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.available {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.booked {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* FOOTER */
+.bus-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ff6d00;
+}
+
+.select-btn {
+  padding: 8px 14px;
+  background: #ff6d00;
+  color: white;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+/* SEAT BAR */
+.seat-bar {
+  height: 6px;
+  background: #eee;
+  border-radius: 10px;
+}
+
+.seat-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4caf50, #8bc34a);
+}
+
+/* STATES */
+.empty-state, .no-result {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.center-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

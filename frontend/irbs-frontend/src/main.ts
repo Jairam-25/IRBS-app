@@ -7,10 +7,13 @@ import { routes } from './app/app.routes';
 import { authInterceptor } from './app/interceptors/auth.interceptor';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
+import { provideNativeDateAdapter } from '@angular/material/core';
+
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes),
     provideAnimations(),
+    provideNativeDateAdapter(),
     provideHttpClient(withInterceptors([authInterceptor])), provideAnimationsAsync()
   ]
 });

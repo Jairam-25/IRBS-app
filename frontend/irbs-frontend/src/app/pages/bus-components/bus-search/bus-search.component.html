@@ -1,0 +1,12 @@
+<h2>Search Buses</h2>
+
+<input [(ngModel)]="from" placeholder="From">
+<input [(ngModel)]="to" placeholder="To">
+<button (click)="search()">Search</button>
+
+<div *ngFor="let b of buses" class="bus-card">
+  <h3>{{ b.busName }}</h3>
+  <p>{{ b.fromCity }} → {{ b.toCity }}</p>
+  <p>{{ b.departureTime }} - {{ b.arrivalTime }}</p>
+  <button (click)="selectBus(b)">Select Seats</button>
+</div>

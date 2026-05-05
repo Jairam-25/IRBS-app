@@ -1,0 +1,31 @@
+.seat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 60px);
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.seat {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.available {
+  background: #e3f2fd;
+}
+
+.selected {
+  background: #ff5722;
+  color: white;
+}
+
+.booked {
+  background: #ef5350;
+  color: white;
+  cursor: not-allowed;
+}

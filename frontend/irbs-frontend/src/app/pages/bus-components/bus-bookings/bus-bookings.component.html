@@ -1,0 +1,6 @@
+<h2>My Bookings</h2>
+
+<div *ngFor="let b of bookings">
+  <p>{{ b.bus.busName }} | {{ b.seatNumber }}</p>
+  <button (click)="cancel(b.id)">Cancel</button>
+</div>

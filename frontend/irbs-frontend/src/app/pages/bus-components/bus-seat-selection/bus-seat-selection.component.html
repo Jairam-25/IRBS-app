@@ -1,0 +1,19 @@
+<h2>Seat Selection</h2>
+
+<div class="seat-grid">
+
+  <div *ngFor="let seat of allSeats"
+       class="seat"
+       [ngClass]="getSeatClass(seat)"
+       (click)="selectSeat(seat)">
+
+    {{ seat }}
+
+  </div>
+
+</div>
+
+<div class="footer">
+  <p>Selected: {{ selectedSeats.join(', ') }}</p>
+  <button (click)="confirmBooking()">Book</button>
+</div>
