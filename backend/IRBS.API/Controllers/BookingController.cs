@@ -141,12 +141,14 @@ namespace IRBS.API.Controllers
             return Ok(myBookings);
         }
 
+        [Authorize]
         [HttpGet("ticket/{pnr}")]
         public async Task<IActionResult> GetTicketByPNR(string pnr)
         {
             var bookings = await _context.Bookings
                 .Include(b => b.Train)
                 .Where(b => b.PNR == pnr)
+                .OrderBy(b => b.Id)
                 .ToListAsync();
 
             if (!bookings.Any())
@@ -179,6 +181,7 @@ namespace IRBS.API.Controllers
             });
         }
 
+        [Authorize]
         [HttpPost("update-status")]
         public async Task<IActionResult> UpdateBookingStatus(int bookingId, string status)
         {
@@ -356,6 +359,7 @@ namespace IRBS.API.Controllers
             }));
         }
 
+        [Authorize]
         [HttpGet("ticket/{pnr}/pdf")]
         public async Task<IActionResult> DownloadTicketByPNR(string pnr)
         {
