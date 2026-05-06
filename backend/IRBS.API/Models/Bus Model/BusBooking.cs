@@ -14,6 +14,7 @@ namespace IRBS.API.Models.Bus_Model
         public string SeatNumber { get; set; } = string.Empty;
 
         public DateTime TravelDate { get; set; }
+        public DateTime BookingDate { get; set; }
 
         public string Status { get; set; } = "Booked";
 

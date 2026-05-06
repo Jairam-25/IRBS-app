@@ -3,7 +3,7 @@ using IRBS.API.Models;
 
 namespace IRBS.API.Core.Interface
 {
-    public interface IBookingService
+    public interface ITrainBookingService
     {
         string GeneratePNR();
         string GetBerth(int num);

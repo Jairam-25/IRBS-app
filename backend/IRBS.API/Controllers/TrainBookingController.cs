@@ -22,10 +22,10 @@ namespace IRBS.API.Controllers
     public class TrainBookingController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly IBookingService _bookingService;
+        private readonly ITrainBookingService _bookingService;
         private readonly INotificationService _notificationService;
 
-        public TrainBookingController(AppDbContext context, IBookingService bookingService, INotificationService notificationService )
+        public TrainBookingController(AppDbContext context, ITrainBookingService bookingService, INotificationService notificationService )
         {
             _context = context;
             _bookingService = bookingService;
@@ -92,7 +92,7 @@ namespace IRBS.API.Controllers
                 return BadRequest(new { message = "Seat already booked" });
 
             // Save
-            var booking = new Booking
+            var booking = new TrainBooking
             {
                 UserId = user.Id,
                 TrainNumber = dto.TrainNumber,
@@ -106,7 +106,7 @@ namespace IRBS.API.Controllers
             await _context.SaveChangesAsync();
 
             // Send notification
-            await _notificationService.SendBookingEmailAsync(user, new List<Booking> { booking });
+            await _notificationService.SendBookingEmailAsync(user, new List<TrainBooking> { booking });
             return Ok(new
             {
                 message = "Seat booked successfully",
@@ -246,7 +246,7 @@ namespace IRBS.API.Controllers
                 return BadRequest("Not enough seats");
 
             var pnr = _bookingService.GeneratePNR();
-            var bookings = new List<Booking>();
+            var bookings = new List<TrainBooking>();
 
             using var tx = await _context.Database.BeginTransactionAsync();
 
@@ -259,7 +259,7 @@ namespace IRBS.API.Controllers
 
                 var berth = _bookingService.GetBerth(seatNumber);
 
-                bookings.Add(new Booking
+                bookings.Add(new TrainBooking
                 {
                     UserId = user.Id,
                     TrainId = train.Id,

@@ -5,6 +5,6 @@ namespace IRBS.API.Core.Interface
     public interface INotificationService
     {
         Task SendEmailAsync(string to, string subject, string body);
-        Task SendBookingEmailAsync(User user, List<Booking> bookings);
+        Task SendBookingEmailAsync(User user, List<TrainBooking> bookings);
     }
 }

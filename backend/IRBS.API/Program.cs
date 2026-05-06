@@ -45,7 +45,7 @@ builder.Services.AddAuthentication(options =>
 
 // Services
 builder.Services.AddControllers();
-builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<ITrainBookingService, TrainBookingService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<NotificationService>();

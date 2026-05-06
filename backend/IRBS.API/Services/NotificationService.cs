@@ -29,7 +29,7 @@ public class NotificationService : INotificationService
         
     }
 
-    public async Task SendBookingEmailAsync(User user, List<Booking> bookings)
+    public async Task SendBookingEmailAsync(User user, List<TrainBooking> bookings)
     {
         var first = bookings.First();
 

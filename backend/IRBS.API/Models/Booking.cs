@@ -2,7 +2,7 @@
 
 namespace IRBS.API.Models
 {
-    public class Booking
+    public class TrainBooking
     {
         public int Id { get; set; }
 

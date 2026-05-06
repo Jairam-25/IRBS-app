@@ -11,7 +11,7 @@ using iText.Layout;
 
 namespace IRBS.API.Services
 {
-    public class BookingService : IBookingService
+    public class TrainBookingService : ITrainBookingService
     {
         public string GeneratePNR()
         {

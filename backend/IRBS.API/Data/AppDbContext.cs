@@ -8,33 +8,22 @@ public class AppDbContext : DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<Train> Trains { get; set; }
-    public DbSet<Booking> TrainBookings { get; set; }
-    public DbSet<Station> TrainStations { get; set; }
+    public DbSet<TrainBooking> TrainBookings { get; set; }
+    public DbSet<TrainStation> TrainStations { get; set; }
     public DbSet<Bus> Buses { get; set; }
     public DbSet<BusBooking> BusBookings { get; set; }
+    public DbSet<BusCities> BusCities { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        //modelBuilder.Entity<Booking>()
-        //    .HasIndex(b => new { b.TrainId, b.SeatNumber, b.TravelDate })
-        //    .IsUnique();
+        // TRAIN TABLE MAPPINGS
+        modelBuilder.Entity<TrainBooking>().ToTable("TrainBooking");
+        modelBuilder.Entity<TrainStation>().ToTable("TrainStation");
+        modelBuilder.Entity<Train>().ToTable("Train");
 
-        //modelBuilder.Entity<Booking>()
-        //    .HasOne(b => b.Train)
-        //    .WithMany()
-        //    .HasForeignKey(b => b.TrainId);
-
-        modelBuilder.Entity<Booking>()
-            .HasOne(b => b.User)
-            .WithMany()
-            .HasForeignKey(b => b.UserId);
-
-        modelBuilder.Entity<BusBooking>()
-            .HasIndex(b => new { b.BusId, b.SeatNumber, b.TravelDate })
-            .IsUnique();
-
+        // BUS BOOKING RELATIONS
         modelBuilder.Entity<BusBooking>()
             .HasOne(b => b.Bus)
             .WithMany()
@@ -44,10 +33,10 @@ public class AppDbContext : DbContext
             .HasOne(b => b.User)
             .WithMany()
             .HasForeignKey(b => b.UserId);
+
         modelBuilder.Entity<Bus>()
             .Property(b => b.Price)
             .HasPrecision(18, 2);
-
     }
 
 }
