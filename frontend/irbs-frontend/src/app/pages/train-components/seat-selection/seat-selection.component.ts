@@ -102,7 +102,7 @@ secondaryCoachSeats: string[] = [];
     });
 
     if (!this.trainNumber) {
-      console.error('🚨 trainNumber missing in query params');
+      console.error('TrainNumber missing in query params');
 
       this.dialog.open(PopupComponent, {
         width: '360px',

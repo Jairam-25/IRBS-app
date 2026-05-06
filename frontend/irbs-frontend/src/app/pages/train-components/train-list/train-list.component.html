@@ -1,12 +1,12 @@
 <div class="train-wrapper">
 
-  <div class="filters">
+  <!-- <div class="filters">
     <span class="chip">All</span>
     <span class="chip">Express</span>
     <span class="chip">Superfast</span>
     <span class="chip">AC</span>
     <span class="chip">Sleeper</span>
-  </div>
+  </div> -->
 
   <!-- SEARCH -->
  <div class="search-box">
@@ -80,7 +80,7 @@
 
 </div>
 
-<!-- 🟡 EMPTY STATE -->
+<!-- EMPTY STATE -->
 <div class="empty-state" *ngIf="!trains.length && !fromStation && !toStation">
 
   <div class="empty-card">
@@ -96,7 +96,7 @@
 
 </div>
 
-<!-- 🔍 NO RESULTS -->
+<!-- NO RESULTS -->
 <div class="no-result" *ngIf="hasSearched && !trains.length">
   <p><i class="bi bi-sign-no-right-turn"></i>  No trains found for selected route</p>
 </div>

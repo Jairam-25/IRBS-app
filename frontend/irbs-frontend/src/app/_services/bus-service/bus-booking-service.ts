@@ -8,11 +8,18 @@ export class BusBookingService {
 
   constructor(private http: HttpClient) {}
 
-  searchBuses(from: string, to: string) {
-    return this.http.get<any[]>(
-      `${this.baseUrl}/Bus/search?from=${from}&to=${to}`
-    );
-  }
+searchBuses(from: string, to: string, date: string) {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/Bus/search`,
+    {
+      params: {
+        from: from,
+        to: to,
+        date: date
+      }
+    }
+  );
+}
 
   getBookedSeats(busId: number, date: string) {
   return this.http.get<string[]>(

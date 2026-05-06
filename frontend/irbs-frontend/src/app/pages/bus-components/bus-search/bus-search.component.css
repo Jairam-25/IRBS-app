@@ -1,19 +1,32 @@
+/* ===== WRAPPER ===== */
 .bus-wrapper {
-  padding: 20px;
-  background: #f7f9fc;
+  padding: 24px;
+  background: #f4f6fb;
   min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-/* SEARCH BOX */
+/* ===== SEARCH BOX ===== */
 .search-box {
   display: flex;
-  align-items: center;
-  gap: 14px;
+  align-items: flex-end;
+  gap: 16px;
   flex-wrap: wrap;
-  background: white;
-  padding: 18px;
-  border-radius: 14px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  margin-bottom: 24px;
+}
+
+.search-box input[type="date"] {
+  height: 56px;
+  padding: 0 12px;
+
+  border: 1px solid #ddd;
+  border-radius: 10px;
+
+  font-size: 14px;
 }
 
 mat-form-field {
@@ -21,76 +34,145 @@ mat-form-field {
   min-width: 220px;
 }
 
+.mat-mdc-form-field {
+  height: 56px;
+}
+
+.mat-mdc-text-field-wrapper {
+  height: 56px !important;
+}
+
+.mat-mdc-form-field-infix {
+  padding-top: 14px !important;
+}
+
+/* ===== SWAP BUTTON ===== */
 .swap-btn {
-  width: 42px;
-  height: 42px;
+  /* width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: #ff6d00;
-  color: white;
+  background: linear-gradient(135deg, #ff6d00, #ff8f00);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease; */
+
+  width: 49px;
+  height: 49px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  border: none;
+  background: #ff6d00;
+  font-size: 1.5rem;
+  color: white;
+
+  cursor: pointer;
+  transition: 0.25s ease;
+
+  flex-shrink: 0;
 }
 
+.swap-btn:hover {
+  transform: rotate(180deg);
+}
+
+/* ===== SEARCH BUTTON ===== */
 .search-btn {
   height: 56px;
-  padding: 0 20px;
-  background: #ff6d00;
-  color: white;
-  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 22px;
+  background: linear-gradient(135deg, #ff6d00, #ff8f00);
+  color: #fff;
+  border-radius: 12px;
   border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
-/* LIST */
+.search-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255,109,0,0.3);
+}
+
+/* ===== BUS LIST ===== */
 .bus-list {
-  margin-top: 28px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
   gap: 20px;
 }
 
-/* CARD */
+/* ===== BUS CARD ===== */
 .bus-card {
-  background: white;
-  border-radius: 16px;
+  background: #fff;
+  border-radius: 18px;
   padding: 18px;
-  border-left: 5px solid #ff6d00;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  border-left: 5px solid #ff6d00;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  transition: all 0.25s ease;
 }
 
-/* HEADER */
+.bus-card:hover {
+  transform: translateY(-5px);
+}
+
+/* ===== HEADER ===== */
 .bus-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
-/* ROUTE */
+.bus-header h3 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.bus-header span {
+  font-size: 13px;
+  background: #fff3e0;
+  color: #ff6d00;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+/* ===== ROUTE ===== */
 .route {
   font-size: 14px;
-  color: #444;
+  color: #555;
+  font-weight: 500;
 }
 
-/* META */
+/* ===== META ===== */
 .meta {
   display: flex;
-  gap: 15px;
+  justify-content: space-between;
   font-size: 13px;
-  color: #666;
+  color: #777;
 }
 
-/* SEAT INFO */
+/* ===== SEAT INFO ===== */
 .seat-info {
   display: flex;
   gap: 10px;
 }
 
 .seat {
-  padding: 6px 10px;
+  padding: 6px 12px;
   border-radius: 20px;
   font-size: 12px;
+  font-weight: 500;
 }
 
 .available {
@@ -103,7 +185,7 @@ mat-form-field {
   color: #c62828;
 }
 
-/* FOOTER */
+/* ===== FOOTER ===== */
 .bus-footer {
   display: flex;
   justify-content: space-between;
@@ -111,40 +193,143 @@ mat-form-field {
 }
 
 .price {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   color: #ff6d00;
 }
 
+/* ===== BUTTON ===== */
 .select-btn {
-  padding: 8px 14px;
-  background: #ff6d00;
-  color: white;
-  border-radius: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #ff6d00, #ff8f00);
+  color: #fff;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
-/* SEAT BAR */
+.select-btn:hover {
+  transform: scale(1.05);
+}
+
+/* ===== SEAT BAR ===== */
 .seat-bar {
   height: 6px;
   background: #eee;
   border-radius: 10px;
+  overflow: hidden;
 }
 
 .seat-fill {
   height: 100%;
   background: linear-gradient(90deg, #4caf50, #8bc34a);
+  transition: width 0.3s ease;
 }
 
-/* STATES */
-.empty-state, .no-result {
+.seat-label {
+  font-size: 12px;
+  color: #666;
+}
+
+/* ===== EMPTY / NO RESULT ===== */
+.empty-state,
+.no-result {
+  display: flex;
   text-align: center;
-  margin-top: 40px;
+  justify-content: center;
+  margin-top: 80px;
 }
 
+.empty-card {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+.tips {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.tips span {
+  background: #f1f1f1;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+/* ===== LOADER ===== */
 .center-loader {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 40px;
+}
+
+/* ===== TRAIN LOADER ===== */
+.train-loader {
+  position: relative;
+  width: 100px;
+  height: 40px;
+}
+
+.track {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 4px;
+  background: #ccc;
+}
+
+.mini-train {
+  display: flex;
+  gap: 4px;
+  animation: moveTrain 1s linear infinite;
+}
+
+.engine,
+.coach {
+  width: 14px;
+  height: 14px;
+  background: #ff6d00;
+  border-radius: 3px;
+}
+
+@keyframes moveTrain {
+  0% { transform: translateX(-20px); }
+  100% { transform: translateX(100px); }
+}
+
+/* ===== ANIMATION ===== */
+.fade-in {
+  animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+
+  .search-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bus-list {
+    grid-template-columns: 1fr;
+  }
+
+  .meta {
+    flex-direction: column;
+    gap: 5px;
+  }
+
 }

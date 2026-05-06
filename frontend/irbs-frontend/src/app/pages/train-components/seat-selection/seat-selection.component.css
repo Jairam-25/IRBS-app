@@ -812,6 +812,15 @@
 
 .shake { animation: shake 0.3s; }
 
+.train {
+  display: flex;
+  gap: 6px;
+  position: absolute;
+  left: -80px;
+  top: -8px;
+  animation: moveTrain 1.2s linear infinite;
+}
+
 @keyframes loadingLine {
   0%   { left: -40%; }
   100% { left: 100%; }

@@ -153,12 +153,20 @@ export class TrainListComponent implements OnInit, OnDestroy {
       queryParams: {
         from: this.fromStation,
         to: this.toStation,
-        date: this.selectedDate.toISOString()
+        date: this.formatDate(this.selectedDate)
       },
       queryParamsHandling: 'merge'
     });
 
     this.callTrainAPI();
+  }
+
+  // Date formatter (YYYY-MM-DD)
+  formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   // =========================
@@ -177,7 +185,11 @@ export class TrainListComponent implements OnInit, OnDestroy {
 
     const startTime = Date.now();
 
-    this.trainService.searchTrains(this.fromStation, this.toStation, this.selectedDate.toISOString())
+    this.trainService.searchTrains(
+      this.fromStation,
+      this.toStation,
+      this.formatDate(this.selectedDate)
+    )
       .subscribe({
 
         next: (res: any) => {
@@ -230,7 +242,7 @@ export class TrainListComponent implements OnInit, OnDestroy {
       queryParams: {
         trainId:     train.id,
         trainNumber: train.trainNumber,
-        date:        this.selectedDate,
+        date: this.formatDate(this.selectedDate),
         from:        train.fromStation,
         to:          train.toStation
       }
