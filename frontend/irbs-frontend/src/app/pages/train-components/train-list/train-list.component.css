@@ -3,12 +3,12 @@
 ========================= */
 .train-wrapper {
   padding: 20px;
-  background: #f7f9fc;
+  background: var(--bg-color);
   min-height: 100vh;
 }
 
 /* =========================
-   SEARCH BAR (FIXED PROPERLY)
+   SEARCH BAR
 ========================= */
 .search-box {
   display: flex;
@@ -16,11 +16,11 @@
   gap: 14px;
   flex-wrap: wrap;
 
-  background: white;
+  background: var(--surface-color);
   padding: 18px;
   border-radius: 14px;
 
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow);
 }
 
 /* FIX MATERIAL FIELD HEIGHT + ALIGNMENT */
@@ -29,12 +29,12 @@ mat-form-field {
   min-width: 220px;
 }
 
-/* 🔥 REMOVE EXTRA SPACE BELOW MATERIAL INPUT */
+/* REMOVE EXTRA SPACE BELOW MATERIAL INPUT */
 ::ng-deep .mat-mdc-form-field-subscript-wrapper {
   display: none;
 }
 
-/* SWAP BUTTON FIX (CENTER PERFECTLY) */
+/* SWAP BUTTON */
 .swap-btn {
   width: 42px;
   height: 42px;
@@ -44,8 +44,8 @@ mat-form-field {
   justify-content: center;
 
   border-radius: 50%;
-  background: #ff6d00;
-  color: white;
+  background: var(--primary);
+  color: var(--card-bg);
 
   cursor: pointer;
   transition: 0.25s ease;
@@ -55,27 +55,30 @@ mat-form-field {
 
 .swap-btn:hover {
   transform: rotate(180deg);
-  background: #e85f00;
+  background: var(--primary-hover);
 }
 
-/* 📅 DATE INPUT FIX */
+/* DATE INPUT */
 .search-box input[type="date"] {
   height: 56px;
   padding: 0 12px;
 
-  border: 1px solid #ddd;
+  border: 1px solid var(--input-border);
   border-radius: 10px;
 
   font-size: 14px;
+
+  background: var(--input-bg);
+  color: var(--text-color);
 }
 
-/* 🔍 SEARCH BUTTON FIX */
+/* SEARCH BUTTON */
 .search-btn {
   height: 56px;
   padding: 0 20px;
 
-  background: #ff6d00;
-  color: white;
+  background: var(--primary);
+  color: var(--card-bg);
 
   border: none;
   border-radius: 10px;
@@ -87,11 +90,11 @@ mat-form-field {
 }
 
 .search-btn:hover {
-  background: #e85f00;
+  background: var(--primary-hover);
 }
 
 /* =========================
-   TRAIN LIST (UNCHANGED)
+   TRAIN LIST
 ========================= */
 .train-list {
   margin-top: 28px;
@@ -105,18 +108,20 @@ mat-form-field {
    TRAIN CARD
 ========================= */
 .train-card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 16px;
   padding: 18px;
 
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow);
   transition: all 0.25s ease;
 
-  border-left: 5px solid #ff6d00;
+  border-left: 5px solid var(--primary);
 
   display: flex;
   flex-direction: column;
   gap: 20px;
+
+  color: var(--text-color);
 }
 
 .train-card:hover {
@@ -135,7 +140,7 @@ mat-form-field {
 
 .train-header h3 {
   margin: 0;
-  color: #222;
+  color: var(--text-color);
 }
 
 /* =========================
@@ -144,7 +149,7 @@ mat-form-field {
 .route {
   margin-top: 8px;
   font-size: 15px;
-  color: #444;
+  color: var(--text-light);
 }
 
 /* =========================
@@ -153,7 +158,7 @@ mat-form-field {
 .meta {
   margin-top: 10px;
   font-size: 13px;
-  color: #666;
+  color: var(--text-light);
 
   display: flex;
   gap: 15px;
@@ -177,18 +182,18 @@ mat-form-field {
 }
 
 .available {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: rgba(76, 175, 80, 0.15);
+  color: #4caf50;
 }
 
 .booked {
-  background: #ffebee;
-  color: #c62828;
+  background: rgba(244, 67, 54, 0.15);
+  color: #f44336;
 }
 
 .total {
-  background: #e3f2fd;
-  color: #1565c0;
+  background: rgba(33, 150, 243, 0.15);
+  color: #2196f3;
 }
 
 /* =========================
@@ -199,8 +204,8 @@ mat-form-field {
   width: 100%;
 
   padding: 10px;
-  background: #ff6d00;
-  color: white;
+  background: var(--primary);
+  color: var(--card-bg);
 
   border: none;
   border-radius: 10px;
@@ -212,7 +217,7 @@ mat-form-field {
 }
 
 .select-btn:hover {
-  background: #e85f00;
+  background: var(--primary-hover);
 }
 
 /* =========================
@@ -220,7 +225,7 @@ mat-form-field {
 ========================= */
 .seat-bar {
   height: 8px;
-  background: #eee;
+  background: var(--border-color);
   border-radius: 10px;
   overflow: hidden;
   margin-top: 8px;
@@ -234,7 +239,7 @@ mat-form-field {
 
 .seat-label {
   font-size: 12px;
-  color: #666;
+  color: var(--text-light);
   margin-top: 5px;
 }
 
@@ -250,16 +255,18 @@ mat-form-field {
 
 .chip {
   padding: 6px 12px;
-  background: #f1f1f1;
+  background: var(--surface-2);
   border-radius: 20px;
   font-size: 13px;
   cursor: pointer;
   transition: 0.2s;
+
+  color: var(--text-color);
 }
 
 .chip:hover {
-  background: #ff6d00;
-  color: white;
+  background: var(--primary);
+  color: var(--card-bg);
 }
 
 /* =========================
@@ -274,21 +281,23 @@ mat-form-field {
 
 .empty-card {
   text-align: center;
-  background: white;
+  background: var(--card-bg);
   padding: 40px;
   border-radius: 18px;
 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow);
   animation: fadeUp 0.6s ease;
+
+  color: var(--text-color);
 }
 
 .empty-card h2 {
   margin-bottom: 10px;
-  color: #222;
+  color: var(--text-color);
 }
 
 .empty-card p {
-  color: #666;
+  color: var(--text-light);
   margin-bottom: 20px;
 }
 
@@ -300,10 +309,12 @@ mat-form-field {
 }
 
 .tips span {
-  background: #f1f1f1;
+  background: var(--surface-2);
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 13px;
+
+  color: var(--text-color);
 }
 
 /* =========================
@@ -313,7 +324,7 @@ mat-form-field {
   text-align: center;
   margin-top: 40px;
   font-size: 16px;
-  color: #c62828;
+  color: #f44336;
 }
 
 /* CENTER LOADER */
@@ -334,7 +345,7 @@ mat-form-field {
 
 /* TEXT */
 .center-loader p {
-  color: #666;
+  color: var(--text-light);
   font-size: 14px;
 }
 
@@ -342,8 +353,6 @@ mat-form-field {
 .fade-in {
   animation: fadeSlideUp 0.6s ease;
 }
-
-/* ------------------------------------------------------------- */
 
 /* Loader wrapper inside button */
 .train-loader {
@@ -361,7 +370,7 @@ mat-form-field {
   position: absolute;
   width: 100%;
   height: 2px;
-  background: rgb(0, 0, 0);
+  background: var(--text-color);
   bottom: 5px;
 }
 
@@ -378,7 +387,7 @@ mat-form-field {
 .mini-train .engine {
   width: 12px;
   height: 10px;
-  background: #ff0000;
+  background: var(--primary);
   border-radius: 2px;
 }
 
@@ -386,36 +395,86 @@ mat-form-field {
 .mini-train .coach {
   width: 10px;
   height: 10px;
-  background: #ff714d;
+  background: var(--primary-hover);
   border-radius: 2px;
 }
 
-
-/* --------------Date Format---------------------------- */
-
+/* DATE FIELD */
 .date-field {
   width: 220px;
 }
 
-/* Match your orange IRBS theme */
+/* MATERIAL THEME */
 ::ng-deep .mat-mdc-form-field-outline {
   border-radius: 10px;
 }
 
 ::ng-deep .mat-datepicker-toggle {
-  color: #ff6d00;
+  color: var(--primary);
 }
 
 /* Input look */
 ::ng-deep .mat-mdc-input-element {
   cursor: pointer;
+  color: var(--text-color);
 }
 
 /* Focus color */
 ::ng-deep .mdc-text-field--focused .mdc-notched-outline__leading,
 ::ng-deep .mdc-text-field--focused .mdc-notched-outline__notch,
 ::ng-deep .mdc-text-field--focused .mdc-notched-outline__trailing {
-  border-color: #ff6d00 !important;
+  border-color: var(--primary) !important;
+}
+
+/* =========================
+   MATERIAL INPUT BORDER FIX
+========================= */
+
+/* Normal border */
+::ng-deep .mdc-notched-outline__leading,
+::ng-deep .mdc-notched-outline__notch,
+::ng-deep .mdc-notched-outline__trailing {
+  border-color: var(--input-border) !important;
+}
+
+/* Hover border */
+::ng-deep .mdc-text-field:hover .mdc-notched-outline__leading,
+::ng-deep .mdc-text-field:hover .mdc-notched-outline__notch,
+::ng-deep .mdc-text-field:hover .mdc-notched-outline__trailing {
+  border-color: var(--primary) !important;
+}
+
+/* Focus border */
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__leading,
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__notch,
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__trailing {
+  border-color: var(--primary) !important;
+}
+
+/* Input text color */
+::ng-deep .mat-mdc-input-element {
+  color: var(--primary) !important;
+  caret-color: var(--primary) !important;
+}
+
+/* Placeholder */
+::ng-deep .mat-mdc-input-element::placeholder {
+  color: var(--text-light) !important;
+}
+
+/* Label color */
+::ng-deep .mdc-floating-label {
+  color: var(--text-light) !important;
+}
+
+/* Focused label */
+::ng-deep .mdc-text-field--focused .mdc-floating-label {
+  color: var(--primary) !important;
+}
+
+/* Material field background */
+::ng-deep .mat-mdc-text-field-wrapper {
+  background: var(--input-bg) !important;
 }
 
 /* Movement */
@@ -470,7 +529,9 @@ mat-form-field {
    RESPONSIVE
 ========================= */
 @media (max-width: 768px) {
+
   .train-list {
     grid-template-columns: 1fr;
   }
+
 }

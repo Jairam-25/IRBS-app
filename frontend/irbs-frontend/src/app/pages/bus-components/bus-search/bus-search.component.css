@@ -1,7 +1,7 @@
 /* ===== WRAPPER ===== */
 .bus-wrapper {
   padding: 24px;
-  background: #f4f6fb;
+  background: var(--bg-color);
   min-height: 100vh;
   font-family: 'Segoe UI', sans-serif;
 }
@@ -12,10 +12,12 @@
   align-items: flex-end;
   gap: 16px;
   flex-wrap: wrap;
-  background: #ffffff;
+
+  background: var(--surface-color);
   padding: 20px;
   border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+
+  box-shadow: var(--shadow);
   margin-bottom: 24px;
 }
 
@@ -23,10 +25,13 @@
   height: 56px;
   padding: 0 12px;
 
-  border: 1px solid #ddd;
+  border: 1px solid var(--input-border);
   border-radius: 10px;
 
   font-size: 14px;
+
+  background: var(--input-bg);
+  color: var(--text-color);
 }
 
 mat-form-field {
@@ -48,16 +53,6 @@ mat-form-field {
 
 /* ===== SWAP BUTTON ===== */
 .swap-btn {
-  /* width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ff6d00, #ff8f00);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.2s ease; */
 
   width: 49px;
   height: 49px;
@@ -68,9 +63,10 @@ mat-form-field {
 
   border-radius: 50%;
   border: none;
-  background: #ff6d00;
+
+  background: var(--primary);
   font-size: 1.5rem;
-  color: white;
+  color: var(--surface-color);
 
   cursor: pointer;
   transition: 0.25s ease;
@@ -80,6 +76,7 @@ mat-form-field {
 
 .swap-btn:hover {
   transform: rotate(180deg);
+  background: var(--primary-hover);
 }
 
 /* ===== SEARCH BUTTON ===== */
@@ -88,13 +85,23 @@ mat-form-field {
   display: flex;
   align-items: center;
   justify-content: center;
+
   padding: 0 22px;
-  background: linear-gradient(135deg, #ff6d00, #ff8f00);
-  color: #fff;
+
+  background: linear-gradient(
+    135deg,
+    var(--primary),
+    var(--primary-hover)
+  );
+
+  color: var(--surface-color);
+
   border-radius: 12px;
   border: none;
+
   cursor: pointer;
   font-weight: 600;
+
   transition: all 0.2s ease;
 }
 
@@ -112,15 +119,20 @@ mat-form-field {
 
 /* ===== BUS CARD ===== */
 .bus-card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 18px;
   padding: 18px;
+
   display: flex;
   flex-direction: column;
   gap: 14px;
-  border-left: 5px solid #ff6d00;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+
+  border-left: 5px solid var(--primary);
+
+  box-shadow: var(--shadow);
   transition: all 0.25s ease;
+
+  color: var(--text-color);
 }
 
 .bus-card:hover {
@@ -137,12 +149,16 @@ mat-form-field {
 .bus-header h3 {
   font-size: 18px;
   margin: 0;
+
+  color: var(--text-color);
 }
 
 .bus-header span {
   font-size: 13px;
-  background: #fff3e0;
-  color: #ff6d00;
+
+  background: rgba(255, 109, 0, 0.12);
+  color: var(--primary);
+
   padding: 4px 10px;
   border-radius: 12px;
 }
@@ -150,7 +166,7 @@ mat-form-field {
 /* ===== ROUTE ===== */
 .route {
   font-size: 14px;
-  color: #555;
+  color: var(--text-light);
   font-weight: 500;
 }
 
@@ -158,8 +174,9 @@ mat-form-field {
 .meta {
   display: flex;
   justify-content: space-between;
+
   font-size: 13px;
-  color: #777;
+  color: var(--text-light);
 }
 
 /* ===== SEAT INFO ===== */
@@ -171,17 +188,18 @@ mat-form-field {
 .seat {
   padding: 6px 12px;
   border-radius: 20px;
+
   font-size: 12px;
   font-weight: 500;
 }
 
 .available {
-  background: #e8f5e9;
+  background: rgba(46, 125, 50, 0.12);
   color: #2e7d32;
 }
 
 .booked {
-  background: #ffebee;
+  background: rgba(198, 40, 40, 0.12);
   color: #c62828;
 }
 
@@ -195,18 +213,28 @@ mat-form-field {
 .price {
   font-size: 20px;
   font-weight: bold;
-  color: #ff6d00;
+
+  color: var(--primary);
 }
 
 /* ===== BUTTON ===== */
 .select-btn {
   padding: 10px 16px;
-  background: linear-gradient(135deg, #ff6d00, #ff8f00);
-  color: #fff;
+
+  background: linear-gradient(
+    135deg,
+    var(--primary),
+    var(--primary-hover)
+  );
+
+  color: var(--surface-color);
+
   border-radius: 10px;
   border: none;
+
   cursor: pointer;
   font-weight: 600;
+
   transition: all 0.2s ease;
 }
 
@@ -217,7 +245,9 @@ mat-form-field {
 /* ===== SEAT BAR ===== */
 .seat-bar {
   height: 6px;
-  background: #eee;
+
+  background: var(--border-color);
+
   border-radius: 10px;
   overflow: hidden;
 }
@@ -230,7 +260,7 @@ mat-form-field {
 
 .seat-label {
   font-size: 12px;
-  color: #666;
+  color: var(--text-light);
 }
 
 /* ===== EMPTY / NO RESULT ===== */
@@ -243,10 +273,13 @@ mat-form-field {
 }
 
 .empty-card {
-  background: white;
+  background: var(--card-bg);
   padding: 30px;
   border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+
+  box-shadow: var(--shadow);
+
+  color: var(--text-color);
 }
 
 .tips {
@@ -257,7 +290,9 @@ mat-form-field {
 }
 
 .tips span {
-  background: #f1f1f1;
+  background: var(--surface-2);
+  color: var(--text-color);
+
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 13px;
@@ -281,9 +316,11 @@ mat-form-field {
 .track {
   position: absolute;
   bottom: 0;
+
   width: 100%;
   height: 4px;
-  background: #ccc;
+
+  background: var(--border-color);
 }
 
 .mini-train {
@@ -296,8 +333,51 @@ mat-form-field {
 .coach {
   width: 14px;
   height: 14px;
-  background: #ff6d00;
+
+  background: var(--primary);
+
   border-radius: 3px;
+}
+
+/* FIX MATERIAL INPUT TEXT + BORDER COLOR */
+
+::ng-deep .mat-mdc-text-field-wrapper {
+  background: var(--input-bg) !important;
+}
+
+/* INPUT TEXT COLOR */
+::ng-deep .mat-mdc-input-element {
+  color: var(--text-color) !important;
+  caret-color: var(--primary) !important;
+}
+
+/* LABEL COLOR */
+::ng-deep .mdc-floating-label {
+  color: var(--text-light) !important;
+}
+
+/* DEFAULT BORDER */
+::ng-deep .mdc-notched-outline__leading,
+::ng-deep .mdc-notched-outline__notch,
+::ng-deep .mdc-notched-outline__trailing {
+  border-color: var(--input-border) !important;
+}
+
+/* FOCUS BORDER */
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__leading,
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__notch,
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__trailing {
+  border-color: var(--primary) !important;
+}
+
+/* DATEPICKER ICON */
+::ng-deep .mat-datepicker-toggle {
+  color: var(--primary) !important;
+}
+
+/* PLACEHOLDER */
+::ng-deep input::placeholder {
+  color: var(--text-light) !important;
 }
 
 @keyframes moveTrain {

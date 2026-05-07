@@ -4,7 +4,7 @@
     <div class="">
       <img src="assets/subway.png" alt="engine" class="panel-engine-img" />
     </div>
-    <div class="logo">IRBS</div>
+    <div class="logo">IRBS</div>    
   </div>
 
   <div class="nav-links" [class.active]="isMenuOpen">
@@ -44,6 +44,15 @@
   <ng-container *ngIf="auth.isLoggedIn$ | async; else guest">
 
     <div class="user-section">
+
+      <button class="theme-btn" (click)="toggleTheme()">
+
+      <i
+        class="bi"
+        [ngClass]="isDarkMode ? 'bi-sun-fill' : 'bi-moon-fill'">
+      </i>
+
+    </button>
 
       <span class="welcome-text">
         <i class="bi bi-person-fill-check"></i> Welcome <strong>{{ auth.userName$ | async }}</strong>
