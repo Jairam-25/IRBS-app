@@ -404,7 +404,7 @@ focusFirstInvalid() {
             panelClass: 'custom-dialog',
             data: {
               title: 'Booking Successful',
-              message: `${this.selectedSeats.length} seat(s) booked! Ticket downloaded.`
+              message: `${this.selectedSeats.length} seat's booked successfully! Ticket details downloaded.`
             }
           });
  
