@@ -1,4 +1,5 @@
 ﻿using IRBS.API.Core.Interface;
+using IRBS.API.DTOs;
 using IRBS.API.Models;
 using IRBS.API.Models.Bus_Model;
 using System.Net;
@@ -16,7 +17,7 @@ public class NotificationService : INotificationService
         _password = configuration["EmailSettings:Password"];
     }
 
-    public async Task SendEmailAsync(string to, string subject, string body)
+    public async Task SendEmailAsync(string? to, string? subject, string? body)
     {
         var client = new SmtpClient("smtp.gmail.com", 587)
         {
@@ -24,7 +25,7 @@ public class NotificationService : INotificationService
             EnableSsl = true
         };
 
-        var mail = new MailMessage(_fromEmail ?? string.Empty, to, subject, body);
+        var mail = new MailMessage(_fromEmail ?? string.Empty, to ?? string.Empty, subject, body);
         await client.SendMailAsync(mail);
         
     }
@@ -62,22 +63,53 @@ IRBS Customer Support
 ";
         await SendEmailAsync(user.Email, subject, body);
     }
-    public string BuildBusBookingConfirmation(User user, BusBooking booking, Bus bus)
+    public string BuildBusBookingConfirmation(
+        User user,
+        CreateBusBookingDto dto,
+        string trackingNumber,
+        Bus bus)
     {
-        return $@"
-Dear {user.Name},
+        var passengerRows = "";
 
-We are pleased to inform you that your booking has been confirmed.
+        foreach (var passenger in dto.Passengers)
+        {
+            passengerRows += $@"
+            Seat : {passenger.SeatNumber}
+            Passenger : {passenger.Name}
+            Age : {passenger.Age}
+            Berth : {passenger.Berth}
 
-Bus Name: {bus.BusName}
-Route: {bus.FromCity} to {bus.ToCity}
-Seat: {booking.SeatNumber}
-Date: {booking.TravelDate:dd-MMM-yyyy}
+            ";
+                    }
 
-Thank you for choosing IRBS. We wish you a safe and pleasant journey!
+                    return $@"
+            Dear {user.Name},
 
-Warm regards, 
-IRBS Customer Support.
-";
+            Your bus booking has been confirmed successfully.
+
+            ========================================
+
+            Tracking Number : {trackingNumber}
+
+            Bus Name : {bus.BusName}
+            Bus Number : {bus.BusNumber}
+
+            Route : {bus.FromCity} to {bus.ToCity}
+
+            Travel Date : {dto.TravelDate:dd-MMM-yyyy}
+
+            ========================================
+            Passenger Details
+            ========================================
+
+            {passengerRows}
+
+            Thank you for choosing IRBS.
+
+            We wish you a safe and pleasant journey.
+
+            Warm regards,
+            IRBS Customer Support.
+        ";
     }
 }

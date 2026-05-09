@@ -8,6 +8,7 @@ namespace IRBS.API.Models
 
         [StringLength(100)]
         public string BusName { get; set; } = string.Empty;
+        public string? BusNumber { get; set; } 
 
         [Required]
         public string BusType { get; set; } = string.Empty;

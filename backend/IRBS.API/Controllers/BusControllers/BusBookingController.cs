@@ -1,10 +1,12 @@
-﻿using IRBS.API.DTOs;
+﻿using IRBS.API.Core.Interface;
+using IRBS.API.DTOs;
+using IRBS.API.Models;
 using IRBS.API.Models.Bus_Model;
+using IRBS.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using IRBS.API.Services;
 
 namespace IRBS.API.Controllers
 {
@@ -13,7 +15,7 @@ namespace IRBS.API.Controllers
     public class BusBookingController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly NotificationService _notificationService;
+        private readonly INotificationService _notificationService;
         private readonly TicketPdfService _ticketPdfService;
 
         public BusBookingController(
@@ -23,6 +25,12 @@ namespace IRBS.API.Controllers
             _context = context;
             _notificationService = notificationService;
             _ticketPdfService = ticketPdfService;
+        }
+
+        private string GenerateBusTrackingNumber()
+        {
+            // simple random numeric tracking number; adjust as needed
+            return DateTime.UtcNow.ToString("yyyyMMddHHmmss") + new Random().Next(1000, 9999).ToString();
         }
 
         // Get booked seats for selected bus/date
@@ -41,7 +49,7 @@ namespace IRBS.API.Controllers
                         x.TravelDate >= startDate &&
                         x.TravelDate < endDate &&
                         x.Status == "Booked" &&
-                        !string.IsNullOrWhiteSpace(x.SeatNumber)) // critical fix
+                        !string.IsNullOrWhiteSpace(x.SeatNumber)) 
                     .ToListAsync();
 
                 var seats = bookings
@@ -64,57 +72,64 @@ namespace IRBS.API.Controllers
         [HttpPost("book")]
         public async Task<IActionResult> BookSeat([FromBody] CreateBusBookingDto dto)
         {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
             try
             {
-                // Get user from token (correct approach)
+                // GET USER
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                 if (!int.TryParse(userIdClaim, out int userId))
                     return Unauthorized();
 
                 var user = await _context.Users.FindAsync(userId);
+
                 if (user == null)
                     return Unauthorized();
 
-                // Validate bus
-                var bus = await _context.Buses.FindAsync(dto.BusId);
+                // VALIDATE BUS
+                Bus? bus = await _context.Buses
+                    .FirstOrDefaultAsync(x => x.BusNumber == dto.BusNumber);
+
                 if (bus == null)
                     return BadRequest("Invalid bus");
 
                 if (!bus.IsActive)
-                    return BadRequest("Bus not active");
+                    return BadRequest("Bus is not active");
 
-                // Clean requested seats                
-                var requestedSeats = dto.SeatNumbers?
-                    .Where(x => !string.IsNullOrWhiteSpace(x))
-                    .Select(x => x.Trim().ToUpper())
+                // VALIDATE PASSENGERS
+                if (dto.Passengers == null || !dto.Passengers.Any())
+                    return BadRequest("Passenger details required");
+
+                // CLEAN SEATS
+                var requestedSeats = dto.Passengers
+                    .Where(x => !string.IsNullOrWhiteSpace(x.SeatNumber))
+                    .Select(x => x.SeatNumber.Trim().ToUpper())
                     .Distinct()
                     .ToList();
 
-                if (requestedSeats == null || !requestedSeats.Any())
-                    return BadRequest("Please select seat(s)");
+                if (!requestedSeats.Any())
+                    return BadRequest("Please select seats");
 
-                // Safe date filtering
+                // DATE FILTER
                 var startDate = dto.TravelDate.Date;
                 var endDate = startDate.AddDays(1);
 
-                // Get existing bookings
+                // GET EXISTING BOOKINGS
                 var existingBookings = await _context.BusBookings
                     .Where(x =>
-                        x.BusId == dto.BusId &&
+                        x.BusNumber == dto.BusNumber &&
                         x.TravelDate >= startDate &&
                         x.TravelDate < endDate &&
-                        x.Status == "Booked" &&
-                        !string.IsNullOrWhiteSpace(x.SeatNumber))
+                        x.Status == "Booked")
                     .ToListAsync();
 
+                // GET BOOKED SEATS
                 var bookedSeats = existingBookings
-                    .SelectMany(x => x.SeatNumber
-                        .Split(',', StringSplitOptions.RemoveEmptyEntries))
-                    .Select(x => x.Trim().ToUpper())
-                    .ToHashSet(); // faster lookup
+                    .Select(x => x.SeatNumber.Trim().ToUpper())
+                    .ToHashSet();
 
-                // Check duplicates
+                // CHECK ALREADY BOOKED
                 var alreadyBooked = requestedSeats
                     .Where(seat => bookedSeats.Contains(seat))
                     .ToList();
@@ -124,34 +139,52 @@ namespace IRBS.API.Controllers
                     return BadRequest($"Seats already booked: {string.Join(", ", alreadyBooked)}");
                 }
 
-                // Check availability
+                // CHECK AVAILABLE COUNT
                 int availableSeats = bus.TotalSeats - bus.BookedSeats;
 
                 if (requestedSeats.Count > availableSeats)
                     return BadRequest("Not enough seats available");
 
-                // Create booking
-                var booking = new BusBooking
+                // GENERATE TRACKING NUMBER
+                var trackingNumber = GenerateBusTrackingNumber();
+
+                // CREATE MULTIPLE ROWS
+                foreach (var passenger in dto.Passengers)
                 {
-                    UserId = userId,
-                    BusId = dto.BusId,
-                    TravelDate = dto.TravelDate,
-                    BookingDate = DateTime.Now,
-                    SeatNumber = string.Join(",", requestedSeats),
-                    Status = "Booked"
-                };
+                    var booking = new BusBooking
+                    {
+                        UserId = userId,
+                        BusId = bus.Id,
+                        BusNumber = bus.BusNumber,
+                        SeatNumber = passenger.SeatNumber.Trim().ToUpper(),
+                        TravelDate = dto.TravelDate,
+                        BookingDate = DateTime.UtcNow,
+                        PassengerName = passenger.Name,
+                        PassengerAge = passenger.Age,
+                        Berth = passenger.Berth,
+                        Status = "Booked",
+                        BusTrackingNumber = trackingNumber
+                    };
 
-                _context.BusBookings.Add(booking);
+                    _context.BusBookings.Add(booking);
+                }
 
-                // Update count
+                // UPDATE BOOKED SEATS
                 bus.BookedSeats += requestedSeats.Count;
 
                 await _context.SaveChangesAsync();
 
-                // Send email (optional — don’t let it crash booking)
+                await transaction.CommitAsync();
+
+                // SEND EMAIL
                 try
                 {
-                    string body = _notificationService.BuildBusBookingConfirmation(user, booking, bus);
+                    string body = _notificationService.BuildBusBookingConfirmation(
+                        user,
+                        dto,
+                        trackingNumber,
+                        bus
+                    );
 
                     await _notificationService.SendEmailAsync(
                         user.Email,
@@ -159,17 +192,18 @@ namespace IRBS.API.Controllers
                         body
                     );
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    return StatusCode(500, ex.ToString());
+                    return BadRequest("While exception book seats on bus:\n" + ex.ToString());
                 }
 
+                // RESPONSE
                 return Ok(new
                 {
                     success = true,
-                    bookingId = booking.Id,
+                    trackingNumber,
                     seats = requestedSeats,
-                    totalSeats = bus.TotalSeats,
+                    totalPassengers = dto.Passengers.Count,
                     bookedSeats = bus.BookedSeats,
                     availableSeats = bus.TotalSeats - bus.BookedSeats,
                     message = "Bus seats booked successfully"
@@ -177,7 +211,9 @@ namespace IRBS.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.ToString());
+                await transaction.RollbackAsync();
+
+                return StatusCode(500, ex.Message);
             }
         }
 

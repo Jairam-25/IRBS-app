@@ -111,7 +111,7 @@ namespace IRBS.API.Services
         }
 
         // PDF
-        public byte[] GenerateTicketPdf(Train train, BookingDTO dto, string pnr)
+        public byte[] GenerateTicketPdf(Train? train, BookingDTO? dto, string? pnr)
         {
             using var ms = new MemoryStream();
 
@@ -129,16 +129,16 @@ namespace IRBS.API.Services
             var journeyTable = new Table(2).UseAllAvailableWidth();
 
             journeyTable.AddCell("Train Number");
-            journeyTable.AddCell(dto.TrainNumber.ToString());
+            journeyTable.AddCell(dto?.TrainNumber?.ToString() ?? "N/A");
 
             journeyTable.AddCell("From");
-            journeyTable.AddCell(train.FromStation);
+            journeyTable.AddCell(train?.FromStation ?? "N/A");
 
             journeyTable.AddCell("To");
-            journeyTable.AddCell(train.ToStation);
+            journeyTable.AddCell(train?.ToStation ?? "N/A");
 
             journeyTable.AddCell("Travel Date");
-            journeyTable.AddCell(dto.TravelDate.ToString("yyyy-MM-dd"));
+            journeyTable.AddCell(dto?.TravelDate.ToString("yyyy-MM-dd") ?? "N/A");
 
             journeyTable.AddCell("PNR");
             journeyTable.AddCell(pnr);
@@ -156,7 +156,7 @@ namespace IRBS.API.Services
             table.AddHeaderCell("Seat");
             table.AddHeaderCell("Berth");
 
-            for (int i = 0; i < dto.SeatNumbers.Count; i++)
+            for (int i = 0; i < dto?.SeatNumbers.Count; i++)
             {
                 var parts = dto.SeatNumbers[i].Split('-');
 

@@ -28,6 +28,7 @@ public class BusController : ControllerBase
             var bus = new Bus
             {
                 BusName = dto.BusName,
+                BusNumber = dto.BusNumber,
                 BusType = dto.BusType,
                 FromCity = dto.FromCity,
                 ToCity = dto.ToCity,

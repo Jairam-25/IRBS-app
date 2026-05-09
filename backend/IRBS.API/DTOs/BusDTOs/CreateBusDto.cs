@@ -6,6 +6,7 @@ namespace IRBS.API.DTOs.BusDTOs
     {
         [Required]
         public string BusName { get; set; } = string.Empty;
+        public string? BusNumber { get; set; }
         public string BusType { get; set; } = string.Empty;
         public string FromCity { get; set; } = string.Empty;
         public string ToCity { get; set; } = string.Empty;

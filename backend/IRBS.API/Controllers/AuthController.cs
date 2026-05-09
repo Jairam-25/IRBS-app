@@ -33,9 +33,9 @@ namespace IRBS.API.Controllers
 
             var user = new User
             {
-                Name = dto.Name,
-                Email = dto.Email,
-                PasswordHash = HashPassword(dto.Password)
+                Name = dto.Name ?? string.Empty,
+                Email = dto.Email ?? string.Empty,
+                PasswordHash = HashPassword(dto.Password ?? string.Empty)
             };
 
             _context.Users.Add(user);
@@ -50,15 +50,18 @@ namespace IRBS.API.Controllers
 
         // Login
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDTO dto)
+        public async Task<IActionResult> Login(LoginDTO? dto)
         {
+            if (dto == null)
+                return BadRequest("Invalid request");
+
             var user = await _context.Users
                 .FirstOrDefaultAsync(x => x.Email == dto.Email);
 
             if (user == null)
                 return Unauthorized("Invalid email");
 
-            var hash = HashPassword(dto.Password);
+            var hash = HashPassword(dto?.Password ?? string.Empty);
 
             if (user.PasswordHash != hash)
                 return Unauthorized("Invalid password");
@@ -87,7 +90,7 @@ namespace IRBS.API.Controllers
             var jwt = _config.GetSection("Jwt");            
 
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwt["Key"])
+                Encoding.UTF8.GetBytes(jwt["Key"] ?? string.Empty)
             );
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

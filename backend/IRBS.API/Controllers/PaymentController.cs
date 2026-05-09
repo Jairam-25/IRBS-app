@@ -56,10 +56,9 @@ namespace IRBS.API.Controllers
         [HttpPost("verify-payment")]
         public async Task<IActionResult> VerifyPayment([FromBody] PaymentVerificationDto dto)
         {
-            var secret = _config["Razorpay:Secret"];
+            var secret = _config["Razorpay:Secret"] ?? string.Empty;
 
-            bool isValid = RazorpayHelper.VerifySignature(dto.OrderId, dto.PaymentId, dto.Signature, secret);
-
+            bool isValid = RazorpayHelper.VerifySignature(dto.OrderId ?? string.Empty, dto.PaymentId ?? string.Empty, dto.Signature ?? string.Empty, secret);
             if (!isValid)
                 return BadRequest(new { success = false, message = "Payment verification failed" });
 
@@ -75,7 +74,7 @@ namespace IRBS.API.Controllers
             var user = await _context.Users.FindAsync(booking.UserId);
             string subject = "Payment Successful - IRBS";
             string body = $@"
-Dear {user.Name},
+Dear {user?.Name},
 
 Your payment for booking {booking.Id} has been successfully processed.
 
@@ -90,8 +89,7 @@ Thank you for choosing IRBS. Safe travels!
 Warm regards,
 IRBS Customer Support
 ";
-            await notifier.SendEmailAsync(user.Email, subject, body);
-
+            await notifier.SendEmailAsync(user?.Email, subject, body);
             return Ok(new { success = true, message = "Payment verified successfully" });
         }
 

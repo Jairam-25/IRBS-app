@@ -376,7 +376,7 @@ namespace IRBS.API.Controllers
             // Build DTO manually
             var dto = new BookingDTO
             {
-                TrainNumber = train.TrainNumber,
+                TrainNumber = train?.TrainNumber,
                 TravelDate = bookings.First().TravelDate,
                 SeatNumbers = bookings
                     .Select(b => $"{b.Coach}-{b.SeatNumber}")
