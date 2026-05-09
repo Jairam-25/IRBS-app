@@ -27,9 +27,9 @@ namespace IRBS.API.Controllers
             _ticketPdfService = ticketPdfService;
         }
 
-        private string GenerateBusTrackingNumber()
+        private string GenerateBusBookingNumber()
         {
-            // simple random numeric tracking number; adjust as needed
+            // simple random numeric booking number; adjust as needed
             return DateTime.UtcNow.ToString("yyyyMMddHHmmss") + new Random().Next(1000, 9999).ToString();
         }
 
@@ -145,8 +145,8 @@ namespace IRBS.API.Controllers
                 if (requestedSeats.Count > availableSeats)
                     return BadRequest("Not enough seats available");
 
-                // GENERATE TRACKING NUMBER
-                var trackingNumber = GenerateBusTrackingNumber();
+                // GENERATE BOOKING NUMBER
+                var bookingNumber = GenerateBusBookingNumber();
 
                 // CREATE MULTIPLE ROWS
                 foreach (var passenger in dto.Passengers)
@@ -163,7 +163,7 @@ namespace IRBS.API.Controllers
                         PassengerAge = passenger.Age,
                         Berth = passenger.Berth,
                         Status = "Booked",
-                        BusTrackingNumber = trackingNumber
+                        BusBookingNumber = bookingNumber
                     };
 
                     _context.BusBookings.Add(booking);
@@ -182,7 +182,7 @@ namespace IRBS.API.Controllers
                     string body = _notificationService.BuildBusBookingConfirmation(
                         user,
                         dto,
-                        trackingNumber,
+                        bookingNumber,
                         bus
                     );
 
@@ -201,7 +201,7 @@ namespace IRBS.API.Controllers
                 return Ok(new
                 {
                     success = true,
-                    trackingNumber,
+                    bookingNumber,
                     seats = requestedSeats,
                     totalPassengers = dto.Passengers.Count,
                     bookedSeats = bus.BookedSeats,
@@ -219,26 +219,74 @@ namespace IRBS.API.Controllers
 
         // My bookings
         [Authorize]
-        [HttpGet("mybookings")]
-        public async Task<IActionResult> MyBookings()
+        [HttpGet("booked/{trackingNumber}")]
+        public async Task<IActionResult> GetBookingByTrackingNumber(string trackingNumber)
         {
             try
             {
+                // GET USER ID
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                 if (!int.TryParse(userIdClaim, out int userId))
                     return Unauthorized();
 
-                var data = await _context.BusBookings
-                    .Where(x => x.UserId == userId)
+                // GET BOOKINGS
+                var bookings = await _context.BusBookings
+                    .Where(x =>
+                        x.UserId == userId &&
+                        x.BusBookingNumber == trackingNumber &&
+                        x.Status == "Booked")
                     .Include(x => x.Bus)
                     .ToListAsync();
 
-                return Ok(data);
+                // CHECK EMPTY
+                if (!bookings.Any())
+                {
+                    return NotFound(new
+                    {
+                        success = false,
+                        message = "Booking not found"
+                    });
+                }
+
+                // FIRST RECORD
+                var first = bookings.First();
+
+                // RESPONSE
+                var result = new
+                {
+                    success = true,
+                    trackingNumber = first.BusBookingNumber,
+                    bookingDate = first.BookingDate,
+                    travelDate = first.TravelDate,
+                    status = first.Status,
+                    bus = new
+                    {
+                        first.Bus!.BusName,
+                        first.Bus!.BusNumber,
+                        first.Bus!.BusType,
+                        first.Bus!.FromCity,
+                        first.Bus!.ToCity,
+                        first.Bus!.DepartureTime,
+                        first.Bus!.ArrivalTime
+                    },
+
+                    passengers = bookings.Select(p => new
+                    {
+                        p.PassengerName,
+                        p.PassengerAge,
+                        p.SeatNumber,
+                        p.Berth
+                    }).ToList()
+                };
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred while fetching your bookings/n{ex.Message}");
+                return StatusCode(
+                    500,
+                    $"An error occurred while fetching booking details\n{ex.Message}");
             }
         }
 

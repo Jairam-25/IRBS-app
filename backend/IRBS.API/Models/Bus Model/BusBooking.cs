@@ -23,7 +23,7 @@ namespace IRBS.API.Models.Bus_Model
 
         public int? PassengerAge { get; set; }
 
-        public string? BusTrackingNumber { get; set; }
+        public string? BusBookingNumber { get; set; }
 
         //public string? PassengerData { get; set; }
 
