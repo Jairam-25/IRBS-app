@@ -1,17 +1,9 @@
 ﻿using IRBS.API.Core.Interface;
 using IRBS.API.DTOs;
 using IRBS.API.Models;
-using iText.IO.Image;
-using iText.Kernel.Colors;
-using iText.Kernel.Pdf;
-using iText.Layout;
-using iText.Layout.Element;
-using iText.Layout.Properties;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Crypto.Macs;
-using QRCoder;
 using System.Security.Claims;
 
 
@@ -25,7 +17,7 @@ namespace IRBS.API.Controllers
         private readonly ITrainBookingService _bookingService;
         private readonly INotificationService _notificationService;
 
-        public TrainBookingController(AppDbContext context, ITrainBookingService bookingService, INotificationService notificationService )
+        public TrainBookingController(AppDbContext context, ITrainBookingService bookingService, INotificationService notificationService)
         {
             _context = context;
             _bookingService = bookingService;
@@ -67,7 +59,7 @@ namespace IRBS.API.Controllers
                 return Unauthorized(new { message = "User not found" });
 
             // Validate Train
-            var train = await _context.Trains.FindAsync(dto.TrainNumber );
+            var train = await _context.Trains.FindAsync(dto.TrainNumber);
             if (train == null)
                 return BadRequest(new { message = "Invalid train" });
 
@@ -155,9 +147,9 @@ namespace IRBS.API.Controllers
                 return NotFound(new { message = "Invalid PNR. Please enter the valid PNR" });
 
             var train = bookings.FirstOrDefault()?.Train;
-            if (train == null) 
-            { 
-                return BadRequest("Train data missing"); 
+            if (train == null)
+            {
+                return BadRequest("Train data missing");
             }
 
             return Ok(new
@@ -280,12 +272,21 @@ namespace IRBS.API.Controllers
                     PNR = pnr
                 });
 
-                dto.Passengers[i].Berth = berth; 
+                dto.Passengers[i].Berth = berth;
             }
 
             _context.TrainBookings.AddRange(bookings);
             await _context.SaveChangesAsync();
             await tx.CommitAsync();
+
+            try
+            {
+                await _notificationService.SendBookingEmailAsync(user, bookings);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("While exception book seats on bus:\n" + ex.ToString());
+            }
 
             dto.SeatNumbers = allocatedSeats;
 

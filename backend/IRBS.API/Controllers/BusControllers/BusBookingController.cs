@@ -233,7 +233,6 @@ namespace IRBS.API.Controllers
                 // GET BOOKINGS
                 var bookings = await _context.BusBookings
                     .Where(x =>
-                        x.UserId == userId &&
                         x.BusBookingNumber == trackingNumber &&
                         x.Status == "Booked")
                     .Include(x => x.Bus)
