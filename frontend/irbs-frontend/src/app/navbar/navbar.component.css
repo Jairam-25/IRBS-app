@@ -338,3 +338,8 @@ nav.scrolled .logo {
     width: 100%;
   }
 }
+
+.tracking-buttons {
+  display: flex;
+  gap: 10px;
+}

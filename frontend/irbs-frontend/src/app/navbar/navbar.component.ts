@@ -5,6 +5,8 @@ import { AuthService } from '../_services/auth-service/auth.service';
 import { Router } from 'express';
 import { MatDialog } from '@angular/material/dialog';
 import { PnrStatusComponent } from '../pages/train-components/pnr-status/pnr-status.component';
+import { BusBookingService } from '../_services/bus-service/bus-booking-service';
+import { BusTrackingComponent } from '../pages/bus-components/bus-tracking/bus-tracking.component';
 
 @Component({
   selector: 'app-navbar',
@@ -71,6 +73,14 @@ toggleTheme() {
     this.dialog.open(PnrStatusComponent, {
       width: '500px',
       panelClass: 'pnr-modal-container'
+    });
+  }
+
+  openBusTrackingModal() {
+
+    this.dialog.open(BusTrackingComponent, {
+      width: '500px',
+      panelClass: 'custom-dialog-container'
     });
   }
 }

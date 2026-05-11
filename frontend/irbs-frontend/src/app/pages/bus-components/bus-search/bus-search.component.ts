@@ -188,7 +188,7 @@ searchBuses() {
 }
 
 loadSeats(bus: BusInterface) {
-  this.service.getBookedSeats(bus.id, bus.travelDate)
+  this.service.getBookedSeats(bus.id, bus.travelDate, bus.busName)
     .subscribe((seats) => {
       bus.bookedSeats = seats.length;
     });
@@ -198,7 +198,8 @@ loadSeats(bus: BusInterface) {
   selectBus(bus: BusInterface) {
     this.router.navigate(['/seats', bus.id], {
       queryParams: { 
-        date: new Date(bus.travelDate).toISOString()
+        date: new Date(bus.travelDate).toISOString(),
+        busName: bus.busName
       }
     });
   }

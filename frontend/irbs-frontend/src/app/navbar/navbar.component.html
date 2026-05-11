@@ -33,13 +33,35 @@
       <i class="bi bi-tags-fill"></i> Offers
     </a>
 
-    <button class="pnr-nav-btn" (click)="openPnrModal()">
-      <i class="bi bi-search"></i> PNR Status
-    </button>
+</div> 
 
-    </div>    
+<div class="tracking-buttons">
 
-    <div class="right-section">
+  <!-- TRAIN -->
+  <button
+    class="pnr-nav-btn"
+    (click)="openPnrModal()">
+
+    <i class="bi bi-train-front-fill"></i>
+    Train PNR
+
+  </button>
+
+  <!-- BUS -->
+  <button
+    class="pnr-nav-btn"
+    (click)="openBusTrackingModal()">
+
+    <i class="bi bi-bus-front-fill"></i>
+    Bus Ticket
+
+  </button>
+
+</div>
+
+   
+
+<div class="right-section">
     <!-- 🔐 Logged In -->
   <ng-container *ngIf="auth.isLoggedIn$ | async; else guest">
 
