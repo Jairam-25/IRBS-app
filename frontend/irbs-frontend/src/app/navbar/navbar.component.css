@@ -1,0 +1,345 @@
+/* NAVBAR BASE */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 14px 30px;
+
+  background: var(--navbar-bg);
+  backdrop-filter: blur(0px);
+
+  transition: all 0.3s ease;
+}
+
+.theme-btn {
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+
+  border: none;
+
+  background: var(--surface-color);
+
+  color: var(--text-color);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  box-shadow: 0 2px 10px var(--shadow-color);
+}
+
+.theme-btn:hover {
+  transform: scale(1.05);
+}
+
+
+/* Dark ligth stytles */
+.navbar {
+  background: var(--navbar-bg);
+  color: var(--text-color);
+
+  padding: 15px 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  transition: 0.3s;
+}
+
+button {
+  padding: 8px 14px;
+  border: none;
+  cursor: pointer;
+}
+
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pnr-nav-btn {
+  background: rgba(255, 109, 0, 0.1);
+  color: #ff6d00;
+  border: 1px solid rgba(255, 109, 0, 0.3);
+}
+
+/* SCROLL EFFECT */
+nav.scrolled {
+  background: var(--navbar-bg);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+  padding: 10px 30px;
+}
+
+/* LOGO */
+.logo {
+  font-size: 30px;
+  font-weight: bold;
+  color: #ff6d00;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+nav.scrolled .logo {
+  transform: scale(0.9);
+}
+
+/* NAV LINKS */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+}
+
+/* LINKS STYLE */
+.nav-links a {
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: 500;
+  position: relative;
+  transition: 0.3s;
+}
+
+/* HOVER EFFECT */
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: #ff6d00;
+  transition: 0.3s;
+}
+
+.nav-links a:hover {
+  color: var(--primary-color);
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/* ACTIVE LINK (Angular auto adds class) */
+.nav-links a.active {
+  color: var(--primary-color);
+}
+
+.nav-links a.active::after {
+  width: 100%;
+}
+
+/* MENU ICON (mobile) */
+.menu-icon {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------------------ */
+
+
+/* 👤 USER AREA ONLY */
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 6px 12px;
+  border-radius: 30px;
+
+  background: rgba(255, 109, 0, 0.08);
+  border: 1px solid rgba(255, 109, 0, 0.2);
+}
+
+/* Welcome text */
+.welcome-text {
+  font-size: 14px;
+  color: var(--text-color);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.welcome-text strong {
+  color: #ff6d00;
+  font-weight: 600;
+}
+
+/* Logout button */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  background: #ff6d00;
+  color: var(--text-color);
+
+  border: none;
+  border-radius: 20px;
+
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+/* hover */
+.logout-btn:hover {
+  background: #e85f00;
+  transform: translateY(-1px);
+}
+
+/* =========================
+   LOGIN BUTTON (PRO)
+========================= */
+.login-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 30px;
+
+  border-radius: 20px;
+
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+
+  color: #ff6d00;
+  background: rgba(255, 109, 0, 0.08);
+  border: 1px solid rgba(255, 109, 0, 0.25);
+
+  transition: all 0.25s ease;
+}
+
+/* hover effect */
+.login-btn:hover {
+  background: #ff6d00;
+  color: var(--text-color);
+  transform: translateY(-1px);
+}
+
+/* icon */
+.login-btn i {
+  font-size: 16px;
+}
+
+.panel-engine-img {
+  width: 35px;
+  height: 35px;
+  margin-right: 10px;
+  position: relative;
+  top: 6px;
+}
+
+.Logo-Section{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* =========================
+   PNR BUTTON (PRO STYLE)
+========================= */
+.pnr-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 16px;
+
+  border-radius: 20px;
+
+  background: linear-gradient(135deg, #ff6d00, #ff8f00);
+  color: var(--text-color);
+
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+/* hover */
+.pnr-nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(255, 109, 0, 0.35);
+}
+
+/* icon */
+.pnr-nav-btn i {
+  font-size: 14px;
+}
+
+
+
+/* --------------- */
+
+/* 📱 MOBILE RESPONSIVE */
+@media (max-width: 1020px) {
+
+  .menu-icon {
+    display: block;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 70px;
+    right: 20px;
+    width: 220px;
+
+    flex-direction: column;
+    gap: 15px;
+
+    background: var(--surface-color);
+    padding: 20px;
+    border-radius: 12px;
+
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+
+    transition: all 0.3s ease;
+  }
+
+  /* SHOW MENU */
+  .nav-links.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }  
+
+  .pnr-nav-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .nav-links a {
+    width: 100%;
+  }
+}
+
+.tracking-buttons {
+  display: flex;
+  gap: 10px;
+}

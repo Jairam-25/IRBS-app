@@ -1,0 +1,8 @@
+:host {
+  display: block;
+  position: relative;
+}
+
+router-outlet + * {
+  display: block;
+}

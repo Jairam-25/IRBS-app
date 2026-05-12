@@ -1,0 +1,537 @@
+/* =========================
+   MAIN WRAPPER
+========================= */
+.train-wrapper {
+  padding: 20px;
+  background: var(--bg-color);
+  min-height: 100vh;
+}
+
+/* =========================
+   SEARCH BAR
+========================= */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+
+  background: var(--surface-color);
+  padding: 18px;
+  border-radius: 14px;
+
+  box-shadow: var(--shadow);
+}
+
+/* FIX MATERIAL FIELD HEIGHT + ALIGNMENT */
+mat-form-field {
+  flex: 1;
+  min-width: 220px;
+}
+
+/* REMOVE EXTRA SPACE BELOW MATERIAL INPUT */
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* SWAP BUTTON */
+.swap-btn {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--card-bg);
+
+  cursor: pointer;
+  transition: 0.25s ease;
+
+  flex-shrink: 0;
+}
+
+.swap-btn:hover {
+  transform: rotate(180deg);
+  background: var(--primary-hover);
+}
+
+/* DATE INPUT */
+.search-box input[type="date"] {
+  height: 56px;
+  padding: 0 12px;
+
+  border: 1px solid var(--input-border);
+  border-radius: 10px;
+
+  font-size: 14px;
+
+  background: var(--input-bg);
+  color: var(--text-color);
+}
+
+/* SEARCH BUTTON */
+.search-btn {
+  height: 56px;
+  padding: 0 20px;
+
+  background: var(--primary);
+  color: var(--card-bg);
+
+  border: none;
+  border-radius: 10px;
+
+  cursor: pointer;
+  font-weight: 500;
+
+  transition: 0.2s ease;
+}
+
+.search-btn:hover {
+  background: var(--primary-hover);
+}
+
+/* =========================
+   TRAIN LIST
+========================= */
+.train-list {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(540px, 1fr));
+  gap: 28px;
+  align-items: stretch;
+}
+
+/* =========================
+   TRAIN CARD
+========================= */
+.train-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 18px;
+
+  box-shadow: var(--shadow);
+  transition: all 0.25s ease;
+
+  border-left: 5px solid var(--primary);
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  color: var(--text-color);
+}
+
+.train-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+
+/* =========================
+   HEADER
+========================= */
+.train-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.train-header h3 {
+  margin: 0;
+  color: var(--text-color);
+}
+
+/* =========================
+   ROUTE
+========================= */
+.route {
+  margin-top: 8px;
+  font-size: 15px;
+  color: var(--text-light);
+}
+
+/* =========================
+   META INFO
+========================= */
+.meta {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text-light);
+
+  display: flex;
+  gap: 15px;
+}
+
+/* =========================
+   SEAT INFO
+========================= */
+.seat-info {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.seat {
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.available {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4caf50;
+}
+
+.booked {
+  background: rgba(244, 67, 54, 0.15);
+  color: #f44336;
+}
+
+.total {
+  background: rgba(33, 150, 243, 0.15);
+  color: #2196f3;
+}
+
+/* =========================
+   BUTTON
+========================= */
+.select-btn {
+  margin-top: 15px;
+  width: 100%;
+
+  padding: 10px;
+  background: var(--primary);
+  color: var(--card-bg);
+
+  border: none;
+  border-radius: 10px;
+
+  cursor: pointer;
+  font-weight: 500;
+
+  transition: 0.2s ease;
+}
+
+.select-btn:hover {
+  background: var(--primary-hover);
+}
+
+/* =========================
+   SEAT BAR
+========================= */
+.seat-bar {
+  height: 8px;
+  background: var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.seat-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4caf50, #8bc34a);
+  transition: width 0.4s ease;
+}
+
+.seat-label {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 5px;
+}
+
+/* =========================
+   FILTERS
+========================= */
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: 6px 12px;
+  background: var(--surface-2);
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+
+  color: var(--text-color);
+}
+
+.chip:hover {
+  background: var(--primary);
+  color: var(--card-bg);
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+.empty-card {
+  text-align: center;
+  background: var(--card-bg);
+  padding: 40px;
+  border-radius: 18px;
+
+  box-shadow: var(--shadow);
+  animation: fadeUp 0.6s ease;
+
+  color: var(--text-color);
+}
+
+.empty-card h2 {
+  margin-bottom: 10px;
+  color: var(--text-color);
+}
+
+.empty-card p {
+  color: var(--text-light);
+  margin-bottom: 20px;
+}
+
+.tips {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.tips span {
+  background: var(--surface-2);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+
+  color: var(--text-color);
+}
+
+/* =========================
+   NO RESULT
+========================= */
+.no-result {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 16px;
+  color: #f44336;
+}
+
+/* CENTER LOADER */
+.center-loader {
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* BIG VERSION */
+.train-loader.big {
+  width: 200px;
+  height: 40px;
+}
+
+/* TEXT */
+.center-loader p {
+  color: var(--text-light);
+  font-size: 14px;
+}
+
+/* smooth card transition */
+.fade-in {
+  animation: fadeSlideUp 0.6s ease;
+}
+
+/* Loader wrapper inside button */
+.train-loader {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Track line */
+.track {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: var(--text-color);
+  bottom: 5px;
+}
+
+/* Train container */
+.mini-train {
+  display: flex;
+  gap: 4px;
+  position: absolute;
+  left: -60px;
+  animation: moveTrain 1.2s linear infinite;
+}
+
+/* Engine */
+.mini-train .engine {
+  width: 12px;
+  height: 10px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+/* Coaches */
+.mini-train .coach {
+  width: 10px;
+  height: 10px;
+  background: var(--primary-hover);
+  border-radius: 2px;
+}
+
+/* DATE FIELD */
+.date-field {
+  width: 220px;
+}
+
+/* MATERIAL THEME */
+::ng-deep .mat-mdc-form-field-outline {
+  border-radius: 10px;
+}
+
+::ng-deep .mat-datepicker-toggle {
+  color: var(--primary);
+}
+
+/* Input look */
+::ng-deep .mat-mdc-input-element {
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+/* Focus color */
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__leading,
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__notch,
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__trailing {
+  border-color: var(--primary) !important;
+}
+
+/* =========================
+   MATERIAL INPUT BORDER FIX
+========================= */
+
+/* Normal border */
+::ng-deep .mdc-notched-outline__leading,
+::ng-deep .mdc-notched-outline__notch,
+::ng-deep .mdc-notched-outline__trailing {
+  border-color: var(--input-border) !important;
+}
+
+/* Hover border */
+::ng-deep .mdc-text-field:hover .mdc-notched-outline__leading,
+::ng-deep .mdc-text-field:hover .mdc-notched-outline__notch,
+::ng-deep .mdc-text-field:hover .mdc-notched-outline__trailing {
+  border-color: var(--primary) !important;
+}
+
+/* Focus border */
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__leading,
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__notch,
+::ng-deep .mdc-text-field--focused .mdc-notched-outline__trailing {
+  border-color: var(--primary) !important;
+}
+
+/* Input text color */
+::ng-deep .mat-mdc-input-element {
+  color: var(--primary) !important;
+  caret-color: var(--primary) !important;
+}
+
+/* Placeholder */
+::ng-deep .mat-mdc-input-element::placeholder {
+  color: var(--text-light) !important;
+}
+
+/* Label color */
+::ng-deep .mdc-floating-label {
+  color: var(--text-light) !important;
+}
+
+/* Focused label */
+::ng-deep .mdc-text-field--focused .mdc-floating-label {
+  color: var(--primary) !important;
+}
+
+/* Material field background */
+::ng-deep .mat-mdc-text-field-wrapper {
+  background: var(--input-bg) !important;
+}
+
+/* Movement */
+@keyframes moveTrain {
+  0% {
+    left: -60px;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.center-loader {
+  animation: fadeLoader 0.3s ease;
+}
+
+@keyframes fadeLoader {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* =========================
+   ANIMATION
+========================= */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+
+  .train-list {
+    grid-template-columns: 1fr;
+  }
+
+}

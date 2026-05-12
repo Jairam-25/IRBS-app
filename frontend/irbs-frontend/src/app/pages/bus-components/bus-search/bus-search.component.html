@@ -1,0 +1,163 @@
+<div class="bus-wrapper">
+
+  <!-- FILTERS -->
+  <!-- <div class="filters">
+    <span class="chip">All</span>
+    <span class="chip">AC</span>
+    <span class="chip">Non-AC</span>
+    <span class="chip">Sleeper</span>
+    <span class="chip">Seater</span>
+  </div> -->
+
+  <!-- SEARCH -->
+  <div class="search-box">
+
+   <!-- FROM -->
+<mat-form-field appearance="outline" class="full">
+  <mat-label>From City</mat-label>
+  <input matInput
+         [(ngModel)]="fromCity"
+         [matAutocomplete]="autoFrom"
+         (input)="filterFrom(fromCity)" />
+
+  <mat-autocomplete #autoFrom="matAutocomplete">
+    <mat-option *ngFor="let c of filteredFromCities" [value]="c.city">
+      {{ c.city }}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>
+
+  <!-- SWAP BUTTON -->
+<button class="swap-btn" (click)="swapCities()">
+  ⇅
+</button>
+
+<!-- TO -->
+<mat-form-field appearance="outline" class="full">
+  <mat-label>To City</mat-label>
+  <input matInput
+         [(ngModel)]="toCity"
+         [matAutocomplete]="autoTo"
+         (input)="filterTo(toCity)" />
+
+  <mat-autocomplete #autoTo="matAutocomplete">
+    <mat-option *ngFor="let c of filteredToCities" [value]="c.city">
+      {{ c.city }}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>
+
+    <!-- DATE -->
+    <mat-form-field appearance="outline" class="date-field">
+      <mat-label>Travel Date</mat-label>
+      <input matInput [matDatepicker]="picker" [(ngModel)]="travelDate" readonly>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- SEARCH BUTTON -->
+    <button *ngIf="!isLoading" class="search-btn" (click)="searchBuses()">
+      Search
+
+      <div *ngIf="isLoading" class="train-loader">
+        <div class="track"></div>
+        <div class="mini-train">
+          <div class="engine"></div>
+          <div class="coach"></div>
+          <div class="coach"></div>
+        </div>
+      </div>
+
+    </button>
+
+  </div>
+
+  <!-- EMPTY -->
+  <div class="empty-state" *ngIf="!buses.length && !fromCity && !toCity">
+    <div class="empty-card">
+      <h2><i class="bi bi-bus-front-fill"></i> Search Buses Easily</h2>
+      <p>Enter your journey details to find available buses, timings and seats.</p>
+
+      <div class="tips">
+        <span><i class="bi bi-check-circle-fill"></i> Fast booking</span>
+        <span><i class="bi bi-check-circle-fill"></i> Live seat availability</span>
+        <span><i class="bi bi-check-circle-fill"></i> Secure payments</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NO RESULT -->
+  <div class="no-result" *ngIf="hasSearched && !buses.length">
+    <p><i class="bi bi-ban"></i> No buses found for selected route</p>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="isLoading" class="center-loader">
+    <div class="train-loader big">
+      <div class="track"></div>
+      <div class="mini-train">
+        <div class="engine"></div>
+        <div class="coach"></div>
+        <div class="coach"></div>
+      </div>
+    </div>
+    <p>Fetching buses...</p>
+  </div>
+
+  <!-- BUS LIST -->
+  <div class="bus-list fade-in" *ngIf="!isLoading && buses.length">
+
+    <div class="bus-card" *ngFor="let bus of buses">
+
+      <!-- SEAT BAR -->
+      <div class="seat-bar">
+        <div class="seat-fill"
+             [style.width.%]="(bus.totalSeats - bus.bookedSeats) / bus.totalSeats * 100">
+        </div>
+      </div>
+
+      <div class="seat-label">
+        {{ bus.totalSeats - bus.bookedSeats }} / {{ bus.totalSeats }} seats available
+      </div>
+
+      <!-- HEADER -->
+      <div class="bus-header">
+        <h3>{{ bus.busName }}</h3>
+        <span>{{ bus.busType }}</span>
+      </div>
+
+      <!-- ROUTE -->
+      <div class="route">
+        {{ bus.fromCity }} → {{ bus.toCity }}
+      </div>
+
+      <!-- TIME -->
+      <div class="meta">
+        <span><i class="bi bi-clock"></i> {{ bus.departureTime }} - {{ bus.arrivalTime }}</span>
+        <span><i class="bi bi-calendar"></i> {{ bus.travelDate | date }}</span>
+      </div>
+
+      <!-- SEATS -->
+      <div class="seat-info">
+        <span class="seat available">
+          Available: {{ bus.totalSeats - bus.bookedSeats }}
+        </span>
+        <span class="seat booked">
+          Booked: {{ bus.bookedSeats }}
+        </span>
+      </div>
+
+      <!-- PRICE + BUTTON -->
+      <div class="bus-footer">
+        <div class="price">₹{{ bus.price }}</div>
+
+        <button class="select-btn" (click)="selectBus(bus)">
+          Select Seats
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

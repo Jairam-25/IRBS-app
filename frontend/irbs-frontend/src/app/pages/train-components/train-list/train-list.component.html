@@ -1,0 +1,157 @@
+<div class="train-wrapper">
+
+  <!-- <div class="filters">
+    <span class="chip">All</span>
+    <span class="chip">Express</span>
+    <span class="chip">Superfast</span>
+    <span class="chip">AC</span>
+    <span class="chip">Sleeper</span>
+  </div> -->
+
+  <!-- SEARCH -->
+ <div class="search-box">
+
+  <!-- FROM -->
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>From Station</mat-label>
+    <input matInput
+           [(ngModel)]="fromStation"
+           [matAutocomplete]="autoFrom"
+           (input)="filterFrom(fromStation)" />
+
+    <mat-autocomplete #autoFrom="matAutocomplete">
+      <mat-option *ngFor="let s of filteredFromStations" [value]="s.name">
+        {{ s.name }}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <!-- SWAP BUTTON -->
+  <button mat-icon-button class="swap-btn" (click)="swapStations()">
+    ⇅
+  </button>
+
+  <!-- TO -->
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>To Station</mat-label>
+    <input matInput
+           [(ngModel)]="toStation"
+           [matAutocomplete]="autoTo"
+           (input)="filterTo(toStation)" />
+
+    <mat-autocomplete #autoTo="matAutocomplete">
+      <mat-option *ngFor="let s of filteredToStations" [value]="s.name">
+        {{ s.name }}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="date-field">
+    <mat-label>Travel Date</mat-label>
+
+    <input
+      matInput
+      [matDatepicker]="picker"
+      [(ngModel)]="selectedDate"
+      [min]="minDate"
+      readonly
+    >
+
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <button class="search-btn" (click)="searchTrains()" [disabled]="isLoading">
+
+  <span *ngIf="!isLoading">
+    Search
+  </span>
+
+  <div *ngIf="isLoading" class="train-loader">
+    <div class="track"></div>
+    <div class="mini-train">
+      <div class="engine"></div>
+      <div class="coach"></div>
+      <div class="coach"></div>
+    </div>
+  </div>
+
+</button>
+
+</div>
+
+<!-- EMPTY STATE -->
+<div class="empty-state" *ngIf="!trains.length && !fromStation && !toStation">
+
+  <div class="empty-card">
+    <h2><i class="bi bi-train-front-fill"></i> Search Trains Easily</h2>
+    <p>Enter your journey details to find available trains, timings and seats.</p>
+
+    <div class="tips">
+      <span><i class="bi bi-check-circle-fill"></i> Fast booking</span>
+      <span><i class="bi bi-check-circle-fill"></i> Live seat availability</span>
+      <span><i class="bi bi-check-circle-fill"></i> Secure payments</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- NO RESULTS -->
+<div class="no-result" *ngIf="hasSearched && !trains.length">
+  <p><i class="bi bi-sign-no-right-turn"></i>  No trains found for selected route</p>
+</div>
+
+<!-- GLOBAL LOADING -->
+<div *ngIf="isLoading" class="center-loader">
+  <div class="train-loader big">
+    <div class="track"></div>
+    <div class="mini-train">
+      <div class="engine"></div>
+      <div class="coach"></div>
+      <div class="coach"></div>
+    </div>
+  </div>
+  <p>Fetching trains...</p>
+</div>
+
+  <!-- LIST -->
+  <div class="train-list fade-in" *ngIf="!isLoading && trains.length">
+
+    <div class="train-card" *ngFor="let train of trains">
+
+      <div class="seat-bar">
+    <div class="seat-fill" [style.width.%]="(train.availableSeats / train.totalSeats) * 100"></div>
+  </div>
+
+  <div class="seat-label">
+    {{ train.availableSeats }} / {{ train.totalSeats }} seats available
+  </div>
+
+      <div class="train-header">
+        <h3>{{ train.trainName }}</h3>
+        <span>#{{ train.id }}</span>
+      </div>
+
+      <div class="route">
+        {{ train.fromStation }} → {{ train.toStation }}
+      </div>
+
+      <div class="meta">
+        <span><i class="bi bi-calendar3-event-fill"></i> {{ train.date }}</span>
+        <span><i class="bi bi-alarm-fill"></i> {{ train.departureTime }} - {{ train.arrivalTime }}</span>
+      </div>
+
+      <div class="seat-info">
+        <span class="seat available">Available: {{ train.availableSeats }}</span>
+        <span class="seat booked">Booked: {{ train.bookedSeats }}</span>
+      </div>
+
+      <button class="select-btn" (click)="selectTrain(train)">
+        Select
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
