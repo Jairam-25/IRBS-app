@@ -1,0 +1,15 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/backend/IRBS.API/bin/Debug
+/backend/IRBS.API/.vs/IRBS.API
+/backend/IRBS.API/Migrations
+/backend/IRBS.API/obj
+/backend/IRBS.API/.vs/CopilotSnapshots/316FBA37317A624085A47EB7F08F7B8F
+/backend/IRBS.API/.vs/ProjectEvaluation/irbs.api.metadata.v10.bin
+/backend/IRBS.API/.vs/ProjectEvaluation/irbs.api.metadata.v10.bin
+/backend/IRBS.API/.vs/ProjectEvaluation/irbs.api.projects.v10.bin
+/backend/IRBS.API/.vs/ProjectEvaluation/irbs.api.strings.v10.bin
+/backend/IRBS.API/.vs/CopilotSnapshots/AFC7715FCC9C3E46A78957D2F407C9DC
