@@ -2,7 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../_services/auth-service/auth.service';
-import { Router } from 'express';
+import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { PnrStatusComponent } from '../pages/train-components/pnr-status/pnr-status.component';
 import { BusBookingService } from '../_services/bus-service/bus-booking-service';
@@ -57,7 +57,6 @@ toggleTheme() {
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
-    close();
   }
 
   logout() {

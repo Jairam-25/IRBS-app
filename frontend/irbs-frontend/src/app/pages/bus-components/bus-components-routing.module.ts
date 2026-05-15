@@ -7,7 +7,6 @@ import { BusSearchComponent } from './bus-search/bus-search.component';
 const routes: Routes = [
   { path: '', component: BusSearchComponent },
   { path: 'seats/:busId', component: BusSeatSelectionComponent },
-  { path: 'bus-search', component: BusSearchComponent },
   { path: 'my-bookings', component: BusBookingsComponent }
 ];
 
@@ -16,5 +15,5 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class BusComponentsRoutingModule {
-  
- }
+
+}

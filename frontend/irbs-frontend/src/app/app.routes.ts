@@ -6,13 +6,14 @@ import { LoginComponent } from './pages/login/login.component';
 import { BusBookingsComponent } from './pages/bus-components/bus-bookings/bus-bookings.component';
 import { BusSearchComponent } from './pages/bus-components/bus-search/bus-search.component';
 import { BusSeatSelectionComponent } from './pages/bus-components/bus-seat-selection/bus-seat-selection.component';
+import { AuthGuard } from './interceptors/auth.guard'; 
 
 export const routes: Routes = [
   { path: '', component: HomeComponent, data: { animation: 'Home' } },
   { path: 'trains', component: TrainListComponent, data: { animation: 'Trains' } },
-  { path: 'seat-selection', component: SeatSelectionComponent, data: { animation: 'Seat' } },
   { path: 'login', component: LoginComponent, data: { animation: 'Login' } },
-  { path: 'seats/:busId', component: BusSeatSelectionComponent },
   { path: 'bus-search', component: BusSearchComponent },
-  { path: 'my-bookings', component: BusBookingsComponent }
+  { path: 'seat-selection', component: SeatSelectionComponent, canActivate: [AuthGuard], data: { animation: 'Seat' } },
+  { path: 'seats/:busId', component: BusSeatSelectionComponent, canActivate: [AuthGuard] },
+  { path: 'my-bookings', component: BusBookingsComponent, canActivate: [AuthGuard] }
 ];

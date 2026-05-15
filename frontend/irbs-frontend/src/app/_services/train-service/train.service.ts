@@ -1,13 +1,14 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
- 
+import { environment } from '../../../_environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class TrainService {
  
-  private baseUrl = 'https://localhost:7280/api';
+ private baseUrl = environment.apiUrl;
  
   constructor(private http: HttpClient) {}
  

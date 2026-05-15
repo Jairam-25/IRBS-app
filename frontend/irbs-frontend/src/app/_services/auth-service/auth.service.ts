@@ -2,17 +2,16 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
-import { Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { environment } from '../../../_environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private apiUrl = 'https://localhost:7280/api/Auth';
+  private apiUrl = `${environment.apiUrl}/Auth`;
 
-  // =========================
+    // =========================
   // STATE (safe defaults)
   // =========================
   private userNameSubject = new BehaviorSubject<string>('');
@@ -59,7 +58,6 @@ export class AuthService {
 
   const decoded: any = jwtDecode(token);
 
-  // ✅ correct claim extraction
   const name =
     decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] ||
     decoded.name ||
@@ -69,24 +67,29 @@ export class AuthService {
     decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] ||
     '';
 
-  // fallback logic (clean)
   const finalName = name || email.split('@')[0] || 'User';
 
-  localStorage.setItem('userName', finalName);
+  const userId =
+    decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] ||
+    decoded.sub ||
+    '';
 
+  localStorage.setItem('userName', finalName);
+  localStorage.setItem('userId', userId); 
   this.userNameSubject.next(finalName);
   this.isLoggedInSubject.next(true);
 }
 
   logout() {
-    if (!this.isBrowser()) return;
+  if (!this.isBrowser()) return;
 
-    localStorage.removeItem('token');
-    localStorage.removeItem('userName');
+  localStorage.removeItem('token');
+  localStorage.removeItem('userName');
+  localStorage.removeItem('userId'); 
 
-    this.userNameSubject.next('');
-    this.isLoggedInSubject.next(false);
-  }
+  this.userNameSubject.next('');
+  this.isLoggedInSubject.next(false);
+}
 
   // =========================
   // HELPERS (SSR SAFE)

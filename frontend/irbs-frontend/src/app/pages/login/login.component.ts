@@ -68,25 +68,26 @@ export class LoginComponent {
   // =====================
   // PASSWORD RULES
   // =====================
-  hasMinLength() {
+  hasMinLength() { 
     return this.password.length >= 8;
-  }
+   }
 
   hasUppercase() {
-    return /[A-Z]/.test(this.password);
-  }
+     return /[A-Z]/.test(this.password);
+     }
 
   hasLowercase() {
-    return /[a-z]/.test(this.password);
-  }
-
-  hasNumber() {
+     return /[a-z]/.test(this.password);
+     }
+     
+  hasNumber() { 
     return /\d/.test(this.password);
-  }
-
-  hasSpecial() {
-    return /[@$!%*?&]/.test(this.password);
-  }
+   }
+   
+  hasSpecial()
+     { 
+      return /[@$!%*?&]/.test(this.password);
+     }
 
   checkPassword() {
     this.passwordValid =
@@ -126,7 +127,7 @@ export class LoginComponent {
     }
   }
 
-  // =====================
+    // =====================
   // LOGIN
   // =====================
   login() {
@@ -140,15 +141,11 @@ export class LoginComponent {
     this.auth.login(data).subscribe({
       next: (res) => {
         this.auth.setSession(res);
+        this.isLoading = false;
 
         const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
 
-        setTimeout(() => {
-          this.isLoading = false;
-          this.router.navigate([returnUrl]);
-        }, 800);
-
-        this.dialog.open(PopupComponent, {
+        const ref = this.dialog.open(PopupComponent, {
           width: '360px',
           maxWidth: '90vw',
           panelClass: 'custom-dialog',
@@ -158,19 +155,23 @@ export class LoginComponent {
           },
           disableClose: true
         });
+
+        ref.afterClosed().subscribe(() => {
+          this.router.navigate([returnUrl]);
+        });
       },
       error: () => {
         this.isLoading = false;
         this.dialog.open(PopupComponent, {
-              width: '360px',
-              maxWidth: '90vw',
-              panelClass: 'custom-dialog',
-              data: {
-                title: 'Invalid Credentials',
-                message: 'Invalid email or password. Please try again.'
-              },
-              disableClose: true
-            });
+          width: '360px',
+          maxWidth: '90vw',
+          panelClass: 'custom-dialog',
+          data: {
+            title: 'Invalid Credentials',
+            message: 'Invalid email or password. Please try again.'
+          },
+          disableClose: true
+        });
       }
     });
   }
@@ -196,7 +197,7 @@ export class LoginComponent {
       next: () => {
         this.isLoading = false;
 
-        this.dialog.open(PopupComponent, {
+        const ref = this.dialog.open(PopupComponent, {
           width: '360px',
           maxWidth: '90vw',
           panelClass: 'custom-dialog',
@@ -207,15 +208,15 @@ export class LoginComponent {
           disableClose: true
         });
 
-        this.isRegisterMode = false;
-        this.password = '';
-        this.confirmPassword = '';
+        ref.afterClosed().subscribe(() => {
+          this.isRegisterMode = false;
+          this.password = '';
+          this.confirmPassword = '';
+        });
       },
       error: (err) => {
         this.isLoading = false;
-
-        // 🔥 THIS IS YOUR FIX
-        if (err.error === "User already exists") {
+        if (err.error === 'User already exists') {
           this.emailExistsError = true;
         }
       }

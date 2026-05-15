@@ -6,10 +6,8 @@ import { TrainService } from '../../../_services/train-service/train.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PopupComponent } from '../../../_notifyAlert/popup.component';
 import { AuthService } from '../../../_services/auth-service/auth.service';
-
 import { ViewChildren, QueryList, ElementRef } from '@angular/core';
 
- 
 @Component({
   selector: 'app-seat-selection',
   standalone: true,
@@ -20,72 +18,72 @@ import { ViewChildren, QueryList, ElementRef } from '@angular/core';
 export class SeatSelectionComponent implements OnInit {
 
   @ViewChildren('nameInput') nameInputs!: QueryList<ElementRef>;
-  @ViewChildren('ageInput') ageInputs!: QueryList<ElementRef>;
- 
+  @ViewChildren('ageInput')  ageInputs!: QueryList<ElementRef>;
+
   seats: string[] = [];
   bookedSeats: string[] = [];
- 
-  // Active coach seats for display
+
+   // Active coach seats for display
   coachSeats: string[] = [];
- 
-  // MULTI SELECT
+
+   // MULTI SELECT
   selectedSeats: string[] = [];
   maxSeats = 6;
- 
+
   trainId!: number;
-  trainNumber = '';       // ← NEW: backend uses TrainNumber (string)
+  trainNumber = '';
   date!: string;
- 
+
   isBooking = false;
- 
+
   userName = '';
   fromStation = '';
   toStation = '';
- 
+
   activeCoach = 'S1';
 
   invalidForm = false;
 
-secondaryCoach = '';
-primaryCoachSeats: string[] = [];
-secondaryCoachSeats: string[] = [];
- 
-  // ─── PASSENGER FORM ───────────────────────────────────────
+  secondaryCoach = '';
+  primaryCoachSeats: string[] = [];
+  secondaryCoachSeats: string[] = [];
+
+
   showPassengerForm = false;
-    passengers: {
+  passengers: {
     name: string;
     age: number | null;
     berth?: string;
     invalidName?: boolean;
     invalidAge?: boolean;
   }[] = [];
- 
+
+  coaches: { name: string; total: number }[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private trainService: TrainService,
     private dialog: MatDialog,
     private auth: AuthService
   ) {}
- 
+
   ngOnInit() {
- 
+
     // USER
     this.auth.userName$.subscribe(name => {
       this.userName = name || 'Guest';
     });
- 
+
     // PARAMS
     this.route.queryParams.subscribe(params => {
- 
+
       this.trainId     = +params['trainId'];
-      this.trainNumber = params['trainNumber'] || '';   // ← NEW
+      this.trainNumber = params['trainNumber'] || '';
       this.date        = new Date(params['date']).toISOString().split('T')[0];
       this.fromStation = params['from'];
       this.toStation   = params['to'];
 
       if (!this.trainNumber) {
-        console.error('TrainNumber missing in query params');
-
         this.dialog.open(PopupComponent, {
           width: '360px',
           data: {
@@ -96,32 +94,19 @@ secondaryCoachSeats: string[] = [];
 
         return;
       }
-    
+
       this.generateSeats();
       this.loadBookedSeats();
     });
 
-    if (!this.trainNumber) {
-      console.error('TrainNumber missing in query params');
-
-      this.dialog.open(PopupComponent, {
-        width: '360px',
-        data: {
-          title: 'Critical Error',
-          message: 'Train number missing. Please reselect train.'
-        }
-      });
-
-      return;
-    }
   }
 
-getSeatType(seat: string): string {
-  const num = parseInt(seat.split('-')[1], 10);
-  const pos = (num - 1) % 4;
-  const map = ['Lower', 'Middle', 'Upper', 'Side'];
-  return map[pos];
-}
+  getSeatType(seat: string): string {
+    const num = parseInt(seat.split('-')[1], 10);
+    const pos = (num - 1) % 4;
+    const map = ['Lower', 'Middle', 'Upper', 'Side'];
+    return map[pos];
+  }
 
   getSeatRows(): string[][] {
     const rows: string[][] = [];
@@ -144,23 +129,17 @@ getSeatType(seat: string): string {
     return blocks;
   }
 
-getSeatBlocksForCoach(coachSeats: string[]): string[][][] {
-  const rows: string[][] = [];
-  for (let i = 0; i < coachSeats.length; i += 4) {
-    rows.push(coachSeats.slice(i, i + 4));
+  getSeatBlocksForCoach(coachSeats: string[]): string[][][] {
+    const rows: string[][] = [];
+    for (let i = 0; i < coachSeats.length; i += 4) {
+      rows.push(coachSeats.slice(i, i + 4));
+    }
+    const blocks: string[][][] = [];
+    for (let i = 0; i < rows.length; i += 2) {
+      blocks.push(rows.slice(i, i + 2));
+    }
+    return blocks;
   }
-  const blocks: string[][][] = [];
-  for (let i = 0; i < rows.length; i += 2) {   
-    blocks.push(rows.slice(i, i + 2));
-  }
-  return blocks;
-}
- 
-  // =========================
-  // GENERATE SEATS
-  // Matches backend: S1-1…S1-72 | S2-1…S2-72 | A1-1…A1-64
-  // =========================
-coaches: { name: string; total: number }[] = [];
 
   generateSeats() {
     this.seats = [];
@@ -175,11 +154,10 @@ coaches: { name: string; total: number }[] = [];
     for (const type of config) {
       for (let c = 1; c <= type.count; c++) {
         const coachName = `${type.prefix}${c}`;
-
         this.coaches.push({
-          name: coachName,
-          total: type.seats
-        });
+           name: coachName, 
+           total: type.seats
+           });
 
         for (let i = 1; i <= type.seats; i++) {
           this.seats.push(`${coachName}-${i}`);
@@ -190,32 +168,36 @@ coaches: { name: string; total: number }[] = [];
     this.activeCoach = this.coaches[0].name;
     this.filterCoachSeats();
   }
- 
-  // Filter seats for the active coach tab
-filterCoachSeats() {
-  const idx = this.coaches.findIndex(c => c.name === this.activeCoach);
 
-  this.primaryCoachSeats = this.seats.filter(s => s.startsWith(this.activeCoach + '-'));
+    // Filter seats for the active coach tab
+  filterCoachSeats() {
+    const idx = this.coaches.findIndex(c => c.name === this.activeCoach);
 
-  if (idx + 1 < this.coaches.length) {
-    this.secondaryCoach = this.coaches[idx + 1].name;
-    this.secondaryCoachSeats = this.seats.filter(s => s.startsWith(this.secondaryCoach + '-'));
-  } else {
-    this.secondaryCoach = '';
-    this.secondaryCoachSeats = [];
+    this.primaryCoachSeats = this.seats.filter(s =>
+      s.startsWith(this.activeCoach + '-')
+    );
+
+    if (idx + 1 < this.coaches.length) {
+      this.secondaryCoach = this.coaches[idx + 1].name;
+      this.secondaryCoachSeats = this.seats.filter(s =>
+        s.startsWith(this.secondaryCoach + '-')
+      );
+    } else {
+      this.secondaryCoach = '';
+      this.secondaryCoachSeats = [];
+    }
+
+      // keep coachSeats in sync (used by getSeatRows/getSeatBlocks if called elsewhere)
+    this.coachSeats = this.primaryCoachSeats;
   }
 
-  // keep coachSeats in sync (used by getSeatRows/getSeatBlocks if called elsewhere)
-  this.coachSeats = this.primaryCoachSeats;
-}
- 
-  // Switch active coach
+    // Switch active coach
   selectCoach(coach: string) {
     this.activeCoach = coach;
     this.filterCoachSeats();
   }
- 
-  // =========================
+
+    // =========================
   // LOAD BOOKED
   // =========================
   loadBookedSeats() {
@@ -224,24 +206,24 @@ filterCoachSeats() {
         next: (res: any) => {
           this.bookedSeats = res || [];
         },
-        error: (err: any) => console.error('Seat load error', err)
+        error: () => {}
       });
   }
- 
+
   // =========================
   // SELECT (MULTI)
   // =========================
   selectSeat(seat: string) {
- 
+
     if (this.bookedSeats.includes(seat) || this.isBooking) return;
- 
+
     const index = this.selectedSeats.indexOf(seat);
- 
+
     if (index > -1) {
-      // unselect
+
       this.selectedSeats.splice(index, 1);
     } else {
- 
+
       // limit
       if (this.selectedSeats.length >= this.maxSeats) {
         this.dialog.open(PopupComponent, {
@@ -253,26 +235,22 @@ filterCoachSeats() {
         });
         return;
       }
- 
+
       // add
       this.selectedSeats.push(seat);
     }
   }
- 
+  
   // =========================
   // UI CLASS
   // =========================
   getSeatClass(seat: string) {
-    if (this.bookedSeats.includes(seat)) return 'booked';
+    if (this.bookedSeats.includes(seat))  return 'booked';
     if (this.selectedSeats.includes(seat)) return 'selected';
     return 'available';
   }
- 
-  // ─── PASSENGER FORM ───────────────────────────────────────
- 
-  // Step 1: open passenger detail form
+
   openPassengerForm() {
- 
     if (!this.selectedSeats.length) {
       this.dialog.open(PopupComponent, {
         width: '360px',
@@ -280,79 +258,54 @@ filterCoachSeats() {
       });
       return;
     }
- 
-    // Init one passenger entry per selected seat
     this.passengers = this.selectedSeats.map(() => ({ name: '', age: null }));
     this.showPassengerForm = true;
   }
- 
-  // Close form without booking
+
   closePassengerForm() {
     this.showPassengerForm = false;
   }
- 
-  // Step 2: validate & proceed to book
-confirmPassengers() {
 
-  let hasError = false;
-
-  this.passengers.forEach(p => {
-
-    // reset first (IMPORTANT for animation)
-    p.invalidName = false;
-    p.invalidAge = false;
-
-  });
-
-  setTimeout(() => {
+  confirmPassengers() {
+    let hasError = false;
 
     this.passengers.forEach(p => {
-
-      p.invalidName = !p.name || !p.name.trim();
-      p.invalidAge  = !p.age || p.age <= 0;
-
-      if (p.invalidName || p.invalidAge) {
-        hasError = true;
-      }
-
+      p.invalidName = false;
+      p.invalidAge  = false;
     });
 
-    if (hasError) {
-      this.focusFirstInvalid();
-      return;
-    }
+    setTimeout(() => {
+      this.passengers.forEach(p => {
+        p.invalidName = !p.name || !p.name.trim();
+        p.invalidAge  = !p.age || p.age <= 0;
+        if (p.invalidName || p.invalidAge) hasError = true;
+      });
 
-    this.showPassengerForm = false;
-    this.bookSeat();
+      if (hasError) {
+        this.focusFirstInvalid();
+        return;
+      }
 
-  });
-}
-
-focusFirstInvalid() {
-
-  for (let i = 0; i < this.passengers.length; i++) {
-
-    const p = this.passengers[i];
-
-    if (p.invalidName) {
-      this.nameInputs.toArray()[i]?.nativeElement.focus();
-      return;
-    }
-
-    if (p.invalidAge) {
-      this.ageInputs.toArray()[i]?.nativeElement.focus();
-      return;
-    }
-
+      this.showPassengerForm = false;
+      this.bookSeat();
+    });
   }
-}
 
- 
-  // =========================
-  // BOOK MULTIPLE
-  // =========================
+  focusFirstInvalid() {
+    for (let i = 0; i < this.passengers.length; i++) {
+      const p = this.passengers[i];
+      if (p.invalidName) {
+        this.nameInputs.toArray()[i]?.nativeElement.focus();
+        return;
+      }
+      if (p.invalidAge) {
+        this.ageInputs.toArray()[i]?.nativeElement.focus();
+        return;
+      }
+    }
+  }
+
   bookSeat() {
- 
     if (!this.selectedSeats.length) {
       this.dialog.open(PopupComponent, {
         width: '360px',
@@ -360,109 +313,80 @@ focusFirstInvalid() {
       });
       return;
     }
- 
+
     this.isBooking = true;
- 
-    // Updated payload to match backend BookingDTO
+
     const body = {
       trainNumber: this.trainNumber,
       seatNumbers: this.selectedSeats,
       travelDate: this.date,
       passengers: this.selectedSeats.map((seat, i) => ({
-        name: this.passengers[i].name,
-        age: this.passengers[i].age,
-        berth: this.getSeatType(seat)   
+        name:  this.passengers[i].name,
+        age:   this.passengers[i].age,
+        berth: this.getSeatType(seat)
       }))
     };
- 
+
     const startTime = Date.now();
- 
+
     this.trainService.bookMultipleSeats(body).subscribe({
- 
       next: (blob: Blob) => {
- 
         const elapsed = Date.now() - startTime;
         const delay   = Math.max(0, 1500 - elapsed);
- 
-        // ─── Auto-download the PDF ticket ───────────────────
+
         const url = window.URL.createObjectURL(blob);
         const a   = document.createElement('a');
         a.href    = url;
         a.download = `Ticket_${this.trainNumber}.pdf`;
         a.click();
         window.URL.revokeObjectURL(url);
- 
+
         setTimeout(() => {
- 
           this.isBooking = false;
- 
-          // Instant UI update
           this.bookedSeats.push(...this.selectedSeats);
- 
+
           this.dialog.open(PopupComponent, {
             width: '360px',
             panelClass: 'custom-dialog',
             data: {
               title: 'Booking Successful',
-              message: `${this.selectedSeats.length} seat's booked successfully! Ticket details downloaded.`
+              message: `${this.selectedSeats.length} seat(s) booked successfully! Ticket downloaded.`
             }
           });
- 
+
           this.selectedSeats = [];
           this.passengers    = [];
- 
-          // Sync with backend
           this.loadBookedSeats();
- 
         }, delay);
- 
-        console.log('FINAL PAYLOAD:', JSON.stringify(body, null, 2));
       },
- 
       error: (err) => {
         this.isBooking = false;
 
-        // Handle based on status
         if (err.status === 401) {
-            this.dialog.open(PopupComponent, {
+          this.dialog.open(PopupComponent, {
             width: '360px',
             panelClass: 'custom-dialog',
-            data: {
-              title: 'Booking Failed',
-              message: 'Please login and try again to book seats.'
-            }
+            data: { title: 'Booking Failed', message: 'Please login and try again.' }
+          });
+        } else if (err.status === 404) {
+          this.dialog.open(PopupComponent, {
+            width: '360px',
+            panelClass: 'custom-dialog',
+            data: { title: 'Booking Failed', message: 'Seats not available. Please reselect.' }
+          });
+        } else if (err.status === 500) {
+          this.dialog.open(PopupComponent, {
+            width: '360px',
+            panelClass: 'custom-dialog',
+            data: { title: 'Booking Failed', message: 'Server error. Try again later.' }
+          });
+        } else {
+          this.dialog.open(PopupComponent, {
+            width: '360px',
+            panelClass: 'custom-dialog',
+            data: { title: 'Booking Failed', message: 'Something went wrong.' }
           });
         }
-        else if (err.status === 404) {
-          this.dialog.open(PopupComponent, {
-          width: '360px',
-          panelClass: 'custom-dialog',
-          data: {
-            title: 'Booking Failed',
-            message: 'Seats not available. Please reselect seats and try again.'
-          }
-        });
-        }
-        else if (err.status === 500) {
-          this.dialog.open(PopupComponent, {
-          width: '360px',
-          panelClass: 'custom-dialog',
-          data: {
-            title: 'Booking Failed',
-            message: 'Server error. Try again later'
-          }
-        });
-        }
-        else {
-          this.dialog.open(PopupComponent, {
-          width: '360px',
-          panelClass: 'custom-dialog',
-          data: {
-            title: 'Booking Failed',
-            message: 'Something went wrong'
-          }
-        });
-        };
       }
     });
   }
