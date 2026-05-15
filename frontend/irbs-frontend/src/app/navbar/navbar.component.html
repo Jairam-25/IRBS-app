@@ -1,7 +1,10 @@
 <nav class="navbar" [class.scrolled]="isScrolled">
 
-  <div class="">
-    <div class="logo">IRBS</div>
+  <div class="Logo-Section">
+    <div class="">
+      <img src="assets/subway.png" alt="engine" class="panel-engine-img" />
+    </div>
+    <div class="logo">IRBS</div>    
   </div>
 
   <div class="nav-links" [class.active]="isMenuOpen">
@@ -18,7 +21,7 @@
       <i class="bi bi-airplane-fill"></i> Flights
     </a>
 
-    <a routerLink="/buses" routerLinkActive="active">
+    <a routerLink="/bus-search" routerLinkActive="active">
       <i class="bi bi-bus-front-fill"></i> Buses
     </a>
 
@@ -29,13 +32,49 @@
     <a routerLink="/offers" routerLinkActive="active">
       <i class="bi bi-tags-fill"></i> Offers
     </a>
-    </div>
 
-    <div>
+</div> 
+
+<div class="tracking-buttons">
+
+  <!-- TRAIN -->
+  <button
+    class="pnr-nav-btn"
+    (click)="openPnrModal()">
+
+    <i class="bi bi-train-front-fill"></i>
+    Train PNR
+
+  </button>
+
+  <!-- BUS -->
+  <button
+    class="pnr-nav-btn"
+    (click)="openBusTrackingModal()">
+
+    <i class="bi bi-bus-front-fill"></i>
+    Bus Ticket
+
+  </button>
+
+</div>
+
+   
+
+<div class="right-section">
     <!-- 🔐 Logged In -->
   <ng-container *ngIf="auth.isLoggedIn$ | async; else guest">
 
     <div class="user-section">
+
+      <button class="theme-btn" (click)="toggleTheme()">
+
+      <i
+        class="bi"
+        [ngClass]="isDarkMode ? 'bi-sun-fill' : 'bi-moon-fill'">
+      </i>
+
+    </button>
 
       <span class="welcome-text">
         <i class="bi bi-person-fill-check"></i> Welcome <strong>{{ auth.userName$ | async }}</strong>

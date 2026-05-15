@@ -1,0 +1,337 @@
+<div class="bus-seat-shell">
+
+  <!-- TOP HEADER -->
+  <section class="header-card">
+
+    <div class="header-left">
+      <span class="tag">AC Sleeper Coach</span>
+
+      <h2>{{ busName }}</h2>
+
+    </div>
+
+    <div class="status-panel">
+
+      <div class="status-item">
+        <span class="status-dot available"></span>
+        <span>Available</span>
+      </div>
+
+      <div class="status-item">
+        <span class="status-dot selected"></span>
+        <span>Selected</span>
+      </div>
+
+      <div class="status-item">
+        <span class="status-dot booked"></span>
+        <span>Booked</span>
+      </div>
+
+      <div class="status-item">
+        <span class="status-dot ladies"></span>
+        <span>Ladies</span>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- MAIN LAYOUT -->
+  <section class="layout-card">
+
+    <!-- INFO -->
+    <div class="seat-info-row">
+
+      <div class="info-box">
+        <span class="info-label">Travel Date</span>
+        <strong>{{ travelDate }}</strong>
+      </div>
+
+      <div class="info-box">
+        <span class="info-label">Available</span>
+        <strong>{{ allSeats.length - bookedSeats.length }}</strong>
+      </div>
+
+      <div class="info-box">
+        <span class="info-label">Booked</span>
+        <strong>{{ bookedSeats.length }}</strong>
+      </div>
+
+      <div class="info-box">
+        <span class="info-label">Updated</span>
+        <strong>
+          {{ isRefreshing ? 'Refreshing...' : (lastRefresh | date:'shortTime') }}
+        </strong>
+      </div>
+
+    </div>
+
+    <!-- BUS -->
+    <div class="bus-wrapper">
+
+      <!-- TOP SLEEPER -->
+      <!-- <div class="sleeper-section">
+
+        <div class="sleeper-title">Upper Sleeper</div>
+
+        <div class="sleeper-row">
+
+          <div
+            class="sleeper-seat"
+            *ngFor="let seat of sleeperUpperSeats"
+            [ngClass]="getSeatClass(seat.id)"
+            (click)="selectSeat(seat.id)"
+          >
+            <span>{{ seat.id }}</span>
+          </div>
+
+        </div>
+
+      </div> -->
+
+<!-- BUS BODY -->
+<div class="bus-body">
+
+  <!-- FRONT -->
+  <div class="bus-front">
+
+    <!-- <div class="driver-box">
+      <div class="wheel"></div>
+      <span>Driver</span>
+    </div>
+
+    <div class="door">
+      <span>Entry</span>
+    </div> -->
+
+  </div>
+
+  <!-- MAIN COACH -->
+  <div class="coach-layout">
+
+    <!-- LEFT SINGLE -->
+    <div class="left-side">
+
+      <div
+        class="seat-row"
+        *ngFor="let seat of leftSeats"
+      >
+
+        <div
+          class="seat"
+          [ngClass]="getSeatClass(seat.id)"
+          (click)="selectSeat(seat.id)"
+        >
+          {{ seat.id }}
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- AISLE -->
+    <div class="aisle">
+
+      <div class="walk-line"></div>
+
+    </div>
+
+    <!-- RIGHT DOUBLE -->
+    <div class="right-side">
+
+      <div
+        class="double-row"
+        *ngFor="let row of rightSeats"
+      >
+
+        <div
+          class="seat"
+          *ngFor="let seat of row"
+          [ngClass]="getSeatClass(seat.id)"
+          (click)="selectSeat(seat.id)"
+        >
+          {{ seat.id }}
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- SLEEPER -->
+    <div class="sleeper-zone">
+
+      <!-- UPPER -->
+      <div class="sleeper-block">
+
+        <div class="sleeper-title">
+          Upper Sleeper
+        </div>
+
+        <div class="sleeper-row">
+
+          <div
+            class="sleeper-seat"
+            *ngFor="let seat of sleeperUpperSeats"
+            [ngClass]="getSeatClass(seat.id)"
+            (click)="selectSeat(seat.id)"
+          >
+            {{ seat.id }}
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- LOWER -->
+      <div class="sleeper-block">
+
+        <div class="sleeper-title">
+          Lower Sleeper
+        </div>
+
+        <div class="sleeper-row">
+
+          <div
+            class="sleeper-seat"
+            *ngFor="let seat of sleeperLowerSeats"
+            [ngClass]="getSeatClass(seat.id)"
+            (click)="selectSeat(seat.id)"
+          >
+            {{ seat.id }}
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+    </div>
+
+    <!-- LEGEND -->
+    <div class="legend">
+
+      <div class="legend-item">
+        <div class="legend-seat available"></div>
+        <span>Available</span>
+      </div>
+
+      <div class="legend-item">
+        <div class="legend-seat selected"></div>
+        <span>Selected</span>
+      </div>
+
+      <div class="legend-item">
+        <div class="legend-seat booked"></div>
+        <span>Booked</span>
+      </div>
+
+      <div class="legend-item">
+        <div class="legend-seat ladies"></div>
+        <span>Ladies</span>
+      </div>
+
+    </div>
+
+    <!-- ACTION -->
+    <div class="actions-row">
+
+      <button
+        class="book-button"
+        (click)="openPassengerForm()"
+        [disabled]="!selectedSeats.length || isBooking"
+      >
+        {{ isBooking ? 'Booking...' : 'Confirm Booking' }}
+      </button>
+
+      <p class="helper-text">
+        Seats are locked immediately after successful booking.
+      </p>
+
+    </div>
+
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       PASSENGER DETAILS MODAL
+  ══════════════════════════════════════════════════════ -->
+  <div class="passenger-overlay" *ngIf="showPassengerForm">
+    <div class="passenger-modal">
+
+      <div class="modal-header">
+        <h3>Passenger Details</h3>
+        <button class="close-btn" (click)="closePassengerForm()">✕</button>
+      </div>
+
+      <div class="passenger-list">
+        <div class="passenger-row" *ngFor="let p of passengers; let i = index">
+          <div class="passenger-seat-badge">{{ selectedSeats[i] }}</div>
+          <div class="passenger-fields">
+            <div class="field-group">
+              <label>Passenger Name</label>
+              <span class="invalid-input" *ngIf="p.invalidName">
+                Min 3 characters required...
+              </span>
+              <input 
+                type="text"
+                [(ngModel)]="p.name"
+                [class.input-error]="p.invalidName"
+                (input)="p.invalidName = false"
+                placeholder="Full name"
+                class="pax-input" />
+            </div>
+            <div class="field-group age-field">
+              <label>Age</label>
+              <span class="invalid-input" *ngIf="p.invalidAge">
+                Enter valid age...
+              </span>
+              <input 
+                type="number"
+                [(ngModel)]="p.age"
+                [class.input-error]="p.invalidAge"
+                (input)="p.invalidAge = false"
+                placeholder="Age"
+                class="pax-input" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="cancel-btn" (click)="closePassengerForm()">Cancel</button>
+        <button class="confirm-btn" (click)="confirmBooking()">Book Now</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LOADER -->
+  <div class="booking-overlay" *ngIf="isBooking">
+
+
+    <div class="booking-loader">
+
+      <div class="track">
+        <div class="track-fill"></div>
+      </div>
+
+      <div class="train">
+
+        <div class="engine"></div>
+        <div class="coach"></div>
+        <div class="coach"></div>
+        <div class="coach"></div>
+
+      </div>
+
+      <p>Booking your seats...</p>
+
+    </div>
+
+  </div>
+
+</div>

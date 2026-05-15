@@ -1,0 +1,110 @@
+<div class="pnr-overlay" (click)="close()">
+  <div class="pnr-modal" (click)="$event.stopPropagation()">
+
+    <!-- HEADER -->
+    <div class="pnr-header">
+      <div>
+        <h2>PNR Status</h2>
+        <span class="subtitle">Check your booking details</span>
+      </div>
+      <button class="close-btn" (click)="close()">✕</button>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="pnr-search">
+      <input
+        type="text"
+        [(ngModel)]="pnrNumber"
+        placeholder="Enter PNR Number"
+      />
+      <button (click)="searchPNR()">Search</button>
+    </div>
+
+    <!-- STATES -->
+    <div *ngIf="loading" class="pnr-loading">
+      <div class="loader"></div>
+      Checking PNR...
+    </div>
+
+    <div *ngIf="error" class="pnr-error">
+      {{ error }}
+    </div>
+
+    <!-- RESULT -->
+    <div *ngIf="data" class="pnr-card">
+
+      <!-- TOP -->
+      <div class="pnr-top">
+        <div>
+          <div class="train">
+            {{ data.trainNumber }} - {{ data.trainName }}
+          </div>
+
+          <div class="route">
+            {{ data.from }} → {{ data.to }}
+          </div>
+
+          <div class="meta">
+            PNR: {{ data.pnr }} | {{ data.date | date:'mediumDate' }}
+          </div>
+        </div>
+
+        <div class="status" [ngClass]="data.status?.toLowerCase()">
+          {{ data.status || 'CONFIRMED' }}
+        </div>
+      </div>
+
+      <!-- COACH SUMMARY -->
+      <div class="coach-summary" *ngIf="data.seats?.length">
+        <div *ngFor="let item of getGroupedSeats() | keyvalue" class="coach-box">
+          <strong>{{ item.key }}</strong>
+          <div class="seat-list">
+            {{ item.value.join(', ') }}
+          </div>
+        </div>
+      </div>
+
+      <!-- PASSENGER TABLE -->
+      <div class="ticket-section" *ngIf="data.passengers?.length">
+
+        <div class="section-title">Passenger Details</div>
+
+        <table class="ticket-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Coach</th>
+              <th>Seat</th>
+              <th>Berth</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let p of data.passengers; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ p.name }}</td>
+              <td>{{ p.age }}</td>
+              <td>{{ data.seats?.[i]?.split('-')[0] }}</td>
+              <td>{{ data.seats?.[i]?.split('-')[1] }}</td>
+              <td>
+                <span class="berth" [ngClass]="p.berth?.toLowerCase()">
+                  {{ p.berth }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+
+      <!-- ACTION -->
+      <button class="download-btn" (click)="downloadTicket()">
+        Download Ticket
+      </button>
+
+    </div>
+
+  </div>
+</div>

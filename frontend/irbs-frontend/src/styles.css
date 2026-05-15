@@ -1,58 +1,121 @@
-/* You can add global styles to this file, and also import other style files */
+/* =========================================================
+   GLOBAL THEME VARIABLES
+========================================================= */
+
+:root {
+
+  /* MAIN */
+  --bg-color: #f4f6f9;
+  --surface-color: #ffffff;
+  --surface-2: #f9fafc;
+
+  /* TEXT */
+  --text-color: #111827;
+  --text-light: #6b7280;
+
+  /* BRAND */
+  --primary: #ff6d00;
+  --primary-hover: #e65c00;
+
+  /* BORDER */
+  --border-color: #e5e7eb;
+
+  /* NAVBAR */
+  --navbar-bg: rgba(255,255,255,0.9);
+
+  /* CARD */
+  --card-bg: #ffffff;
+
+  /* INPUT */
+  --input-bg: #ffffff;
+  --input-border: #d1d5db;
+
+  /* SHADOW */
+  --shadow:
+    0 4px 20px rgba(0,0,0,0.08);
+}
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+.dark-theme {
+
+  --bg-color: #0f1115;
+
+  --surface-color: #161a22;
+  --surface-2: #1d2330;
+
+  --text-color: #f3f4f6;
+  --text-light: #9ca3af;
+
+  --primary: #ff7a1a;
+  --primary-hover: #ff8f3d;
+
+  --border-color: #2f3542;
+
+  --navbar-bg: rgba(15,17,21,0.95);
+
+  --card-bg: #1a1f29;
+
+  --input-bg: #1e2530;
+  --input-border: #374151;
+
+  --shadow:
+    0 4px 20px rgba(0,0,0,0.35);
+}
+
+/* =========================================================
+   GLOBAL BASE
+========================================================= */
+
+html,
 body {
-  font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f5f7fa;
-  color: #333;
+
+  background: var(--bg-color);
+  color: var(--text-color);
+
+  font-family: 'Inter', sans-serif;
+
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
 }
 
-h1, h2, h3 {
-  font-weight: 600;
+/* =========================================================
+   COMMON ELEMENTS
+========================================================= */
+
+input,
+select,
+textarea {
+  background: var(--input-bg);
+  color: var(--text-color);
+
+  border: 1px solid var(--input-border);
+
+  transition: 0.3s;
 }
 
+button {
+  transition: 0.3s;
+}
+
+.card,
+.search-card,
+.feature-card,
+.booking-card {
+  background: var(--card-bg);
+  color: var(--text-color);
+
+  border: 1px solid var(--border-color);
+
+  box-shadow: var(--shadow);
+}
+
+/* Paragraphs */
 p {
-  font-weight: 400;
-  color: #666;
-}
-
-input, button {
-  font-family: inherit;
-  font-size: 14px;
-}
-
-.auth-card {
-  font-size: 14px;
-  letter-spacing: 0.3px;
-}
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
-.custom-dialog .mat-mdc-dialog-surface {
-  overflow: hidden !important;
-  border-radius: 16px;
-  padding: 0;
-}
-
-
-.mat-mdc-form-field-outline {
-  border-radius: 10px;
-}
-
-.mat-datepicker-toggle {
-  color: #ff6d00;
-}
-
-.mat-mdc-input-element {
-  cursor: pointer;
-}
-
-.mat-mdc-form-field {
-  --mdc-theme-primary: #ff6d00;
-}
-
-.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
-.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
-.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
-  border-color: #ff6d00 !important;
+  color: var(--text-light);
 }

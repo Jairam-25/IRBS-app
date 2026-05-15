@@ -1,0 +1,252 @@
+<div class="pnr-overlay" (click)="close()">
+
+  <div
+    class="pnr-modal"
+    (click)="$event.stopPropagation()">
+
+    <!-- HEADER -->
+    <div class="pnr-header">
+
+      <div>
+
+        <h2>Bus Booking Status</h2>
+
+        <span class="subtitle">
+          Check your booking details
+        </span>
+
+      </div>
+
+      <button
+        class="close-btn"
+        (click)="close()">
+
+        ✕
+
+      </button>
+
+    </div>
+
+    <!-- SEARCH -->
+    <div class="pnr-search">
+
+      <input
+        type="text"
+        [(ngModel)]="trackingNumber"
+        placeholder="Enter Tracking Number"
+      />
+
+      <button (click)="searchBooking()">
+
+        Search
+
+      </button>
+
+    </div>
+
+    <!-- LOADING -->
+    <div
+      *ngIf="loading"
+      class="pnr-loading">
+
+      <div class="loader"></div>
+
+      Checking Booking...
+
+    </div>
+
+    <!-- ERROR -->
+    <div
+      *ngIf="error"
+      class="pnr-error">
+
+      {{ error }}
+
+    </div>
+
+    <!-- RESULT -->
+    <div
+      *ngIf="data"
+      class="pnr-card">
+
+      <!-- TOP -->
+      <div class="pnr-top">
+
+        <div>
+
+          <div class="vehicle-name">
+
+            {{ data.bus.busName }}
+
+          </div>
+
+          <div class="route">
+
+            {{ data.bus.fromCity }}
+            →
+            {{ data.bus.toCity }}
+
+          </div>
+
+          <div class="meta">
+
+            Tracking:
+            {{ data.trackingNumber }}
+
+          </div>
+
+          <div class="meta">
+
+            Bus Number:
+            {{ data.bus.busNumber }}
+
+          </div>
+
+          <div class="meta">
+
+            {{ data.travelDate | date:'mediumDate' }}
+
+          </div>
+
+        </div>
+
+        <div
+          class="status"
+          [ngClass]="data.status?.toLowerCase()">
+
+          {{ data.status }}
+
+        </div>
+
+      </div>
+
+      <!-- DETAILS -->
+      <div class="pnr-details">
+
+        <div class="detail">
+
+          <span>Bus Type</span>
+
+          <strong>
+            {{ data.bus.busType }}
+          </strong>
+
+        </div>
+
+        <div class="detail">
+
+          <span>Departure</span>
+
+          <strong>
+            {{ data.bus.departureTime }}
+          </strong>
+
+        </div>
+
+        <div class="detail">
+
+          <span>Arrival</span>
+
+          <strong>
+            {{ data.bus.arrivalTime }}
+          </strong>
+
+        </div>
+
+        <div class="detail">
+
+          <span>Passengers</span>
+
+          <strong>
+            {{ data.passengers.length }}
+          </strong>
+
+        </div>
+
+      </div>
+
+      <!-- PASSENGERS -->
+      <div
+        class="ticket-section"
+        *ngIf="data.passengers?.length">
+
+        <div class="section-title">
+
+          Passenger Details
+
+        </div>
+
+        <table class="ticket-table">
+
+          <thead>
+
+            <tr>
+
+              <th>#</th>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Seat</th>
+              <th>Berth</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <tr
+              *ngFor="
+                let p of data.passengers;
+                let i = index
+              ">
+
+              <td>{{ i + 1 }}</td>
+
+              <td>
+                {{ p.passengerName }}
+              </td>
+
+              <td>
+                {{ p.passengerAge }}
+              </td>
+
+              <td>
+                {{ p.seatNumber }}
+              </td>
+
+              <td>
+
+                <span
+                  class="berth"
+                  [ngClass]="
+                    p.berth?.toLowerCase()
+                  ">
+
+                  {{ p.berth }}
+
+                </span>
+
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+      <!-- DOWNLOAD -->
+      <button
+        class="download-btn"
+        (click)="downloadTicket()">
+
+        Download Ticket
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

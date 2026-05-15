@@ -1,8 +1,12 @@
 import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../_services/auth.service';
-import { Router } from 'express';
+import { AuthService } from '../_services/auth-service/auth.service';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { PnrStatusComponent } from '../pages/train-components/pnr-status/pnr-status.component';
+import { BusBookingService } from '../_services/bus-service/bus-booking-service';
+import { BusTrackingComponent } from '../pages/bus-components/bus-tracking/bus-tracking.component';
 
 @Component({
   selector: 'app-navbar',
@@ -13,11 +17,43 @@ import { Router } from 'express';
 })
 export class NavbarComponent {
 
-  constructor(public auth: AuthService) {}
+  constructor(public auth: AuthService, private dialog: MatDialog) {}
 
   isNavigating = false;
   isMenuOpen = false;
   isScrolled = false;
+
+isDarkMode = false;
+
+ngOnInit(): void {
+
+  const savedTheme = localStorage.getItem('theme');
+
+  if (savedTheme === 'dark') {
+
+    this.isDarkMode = true;
+
+    document.body.classList.add('dark-theme');
+  }
+}
+
+toggleTheme() {
+
+  this.isDarkMode = !this.isDarkMode;
+
+  if (this.isDarkMode) {
+
+    document.body.classList.add('dark-theme');
+
+    localStorage.setItem('theme', 'dark');
+
+  } else {
+
+    document.body.classList.remove('dark-theme');
+
+    localStorage.setItem('theme', 'light');
+  }
+}
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
@@ -30,5 +66,20 @@ export class NavbarComponent {
   @HostListener('window:scroll', [])
   onWindowScroll() {
     this.isScrolled = window.scrollY > 20;
+  }
+
+  openPnrModal() {
+    this.dialog.open(PnrStatusComponent, {
+      width: '500px',
+      panelClass: 'pnr-modal-container'
+    });
+  }
+
+  openBusTrackingModal() {
+
+    this.dialog.open(BusTrackingComponent, {
+      width: '500px',
+      panelClass: 'custom-dialog-container'
+    });
   }
 }
