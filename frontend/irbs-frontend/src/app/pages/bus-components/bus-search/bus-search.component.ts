@@ -196,11 +196,15 @@ loadSeats(bus: BusInterface) {
 }
 
   // Select bus → go to seat page
-  selectBus(bus: BusInterface) {
+  selectBus(bus: any) {
+    // Robust check for busNumber in case of PascalCase or missing property
+    const bNumber = bus.busNumber || bus.BusNumber || bus.busName || bus.id?.toString();
+    
     this.router.navigate(['/seats', bus.id], {
       queryParams: { 
         date: new Date(bus.travelDate).toISOString(),
-        busName: bus.busName
+        busName: bus.busName,
+        busNumber: bNumber
       }
     });
   }

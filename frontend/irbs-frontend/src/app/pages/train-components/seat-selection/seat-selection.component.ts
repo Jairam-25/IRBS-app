@@ -317,15 +317,16 @@ export class SeatSelectionComponent implements OnInit {
     this.isBooking = true;
 
     const body = {
-      trainNumber: this.trainNumber,
-      seatNumbers: this.selectedSeats,
-      travelDate: this.date,
-      passengers: this.selectedSeats.map((seat, i) => ({
-        name:  this.passengers[i].name,
-        age:   this.passengers[i].age,
-        berth: this.getSeatType(seat)
+      TrainNumber: this.trainNumber,
+      SeatNumbers: this.selectedSeats,
+      TravelDate: this.date,
+      Passengers: this.selectedSeats.map((seat, i) => ({
+        Name:  this.passengers[i].name,
+        Age:   this.passengers[i].age,
+        Berth: this.getSeatType(seat)
       }))
     };
+
 
     const startTime = Date.now();
 

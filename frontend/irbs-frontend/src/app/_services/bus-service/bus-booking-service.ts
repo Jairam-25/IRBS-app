@@ -51,13 +51,15 @@ private baseUrl = environment.apiUrl;
   }
 
   // BOOK SEATS
-  bookSeats(data: any): Observable<any> {
+  bookSeats(data: any): Observable<Blob> {
 
-    return this.http.post<any>(
-      `${this.baseUrl}/BusBooking/book`,
-      data
+    return this.http.post(
+      `${this.baseUrl}/BusBooking/book-multiple`,
+      data,
+      { responseType: 'blob' }
     );
   }
+
 
   // GET MY BOOKINGS
   getMyBookings(): Observable<any> {

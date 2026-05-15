@@ -1,5 +1,6 @@
 export interface BusInterface {
   id: number;
+  busNumber: string; // added
   busName: string;
   busType: string;
   fromCity: string;
@@ -11,4 +12,5 @@ export interface BusInterface {
   bookedSeats: number;
   price: number;
 }
+
 

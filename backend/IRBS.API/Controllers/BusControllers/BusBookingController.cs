@@ -1,4 +1,4 @@
-﻿using IRBS.API.Core.Interface;
+using IRBS.API.Core.Interface;
 using IRBS.API.DTOs;
 using IRBS.API.Models;
 using IRBS.API.Models.Bus_Model;
@@ -67,9 +67,9 @@ namespace IRBS.API.Controllers
             }
         }
 
-        // Book seat(s)
+        // Book multiple seats
         [Authorize]
-        [HttpPost("book")]
+        [HttpPost("book-multiple")]
         public async Task<IActionResult> BookSeat([FromBody] CreateBusBookingDto dto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -139,11 +139,11 @@ namespace IRBS.API.Controllers
                     return BadRequest($"Seats already booked: {string.Join(", ", alreadyBooked)}");
                 }
 
-                // CHECK AVAILABLE COUNT
-                int availableSeats = bus.TotalSeats - bus.BookedSeats;
+                // CHECK AVAILABLE COUNT (FIXED: Use existingBookings.Count instead of aggregate bus.BookedSeats)
+                int availableSeatsCount = bus.TotalSeats - existingBookings.Count;
 
-                if (requestedSeats.Count > availableSeats)
-                    return BadRequest("Not enough seats available");
+                if (requestedSeats.Count > availableSeatsCount)
+                    return BadRequest("Not enough seats available on this date");
 
                 // GENERATE BOOKING NUMBER
                 var bookingNumber = GenerateBusBookingNumber();
@@ -169,7 +169,7 @@ namespace IRBS.API.Controllers
                     _context.BusBookings.Add(booking);
                 }
 
-                // UPDATE BOOKED SEATS
+                // UPDATE BOOKED SEATS (Aggregate count in Bus table - optional but keeping for now)
                 bus.BookedSeats += requestedSeats.Count;
 
                 await _context.SaveChangesAsync();
@@ -194,24 +194,30 @@ namespace IRBS.API.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return BadRequest("While exception book seats on bus:\n" + ex.ToString());
+                    // Log but don't fail booking
+                    Console.WriteLine("Email error: " + ex.Message);
                 }
 
-                // RESPONSE
-                return Ok(new
-                {
-                    success = true,
-                    bookingNumber,
-                    seats = requestedSeats,
-                    totalPassengers = dto.Passengers.Count,
-                    bookedSeats = bus.BookedSeats,
-                    availableSeats = bus.TotalSeats - bus.BookedSeats,
-                    message = "Bus seats booked successfully"
-                });
+                // GENERATE PDF
+                var firstBooking = await _context.BusBookings
+                    .Include(x => x.Bus)
+                    .Include(x => x.User)
+                    .FirstOrDefaultAsync(x => x.BusBookingNumber == bookingNumber);
+
+                if (firstBooking == null)
+                    return BadRequest("Error generating ticket");
+
+                var pdfBytes = _ticketPdfService.GenerateBusTicket(firstBooking);
+
+                return File(
+                    pdfBytes,
+                    "application/pdf",
+                    $"IRBS_Bus_Ticket_{bookingNumber}.pdf"
+                );
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
+                if (transaction != null) await transaction.RollbackAsync();
 
                 return StatusCode(500, ex.Message);
             }

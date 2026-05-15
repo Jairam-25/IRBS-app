@@ -242,7 +242,7 @@
 
       <button
         class="book-button"
-        (click)="confirmBooking()"
+        (click)="openPassengerForm()"
         [disabled]="!selectedSeats.length || isBooking"
       >
         {{ isBooking ? 'Booking...' : 'Confirm Booking' }}
@@ -256,8 +256,62 @@
 
   </section>
 
+  <!-- ══════════════════════════════════════════════════════
+       PASSENGER DETAILS MODAL
+  ══════════════════════════════════════════════════════ -->
+  <div class="passenger-overlay" *ngIf="showPassengerForm">
+    <div class="passenger-modal">
+
+      <div class="modal-header">
+        <h3>Passenger Details</h3>
+        <button class="close-btn" (click)="closePassengerForm()">✕</button>
+      </div>
+
+      <div class="passenger-list">
+        <div class="passenger-row" *ngFor="let p of passengers; let i = index">
+          <div class="passenger-seat-badge">{{ selectedSeats[i] }}</div>
+          <div class="passenger-fields">
+            <div class="field-group">
+              <label>Passenger Name</label>
+              <span class="invalid-input" *ngIf="p.invalidName">
+                Min 3 characters required...
+              </span>
+              <input 
+                type="text"
+                [(ngModel)]="p.name"
+                [class.input-error]="p.invalidName"
+                (input)="p.invalidName = false"
+                placeholder="Full name"
+                class="pax-input" />
+            </div>
+            <div class="field-group age-field">
+              <label>Age</label>
+              <span class="invalid-input" *ngIf="p.invalidAge">
+                Enter valid age...
+              </span>
+              <input 
+                type="number"
+                [(ngModel)]="p.age"
+                [class.input-error]="p.invalidAge"
+                (input)="p.invalidAge = false"
+                placeholder="Age"
+                class="pax-input" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="cancel-btn" (click)="closePassengerForm()">Cancel</button>
+        <button class="confirm-btn" (click)="confirmBooking()">Book Now</button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- LOADER -->
   <div class="booking-overlay" *ngIf="isBooking">
+
 
     <div class="booking-loader">
 

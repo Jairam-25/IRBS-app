@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { BusBookingService } from '../../../_services/bus-service/bus-booking-service';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -29,12 +30,26 @@ export class BusSeatSelectionComponent implements OnInit, OnDestroy {
   allSeats: BusSeat[] = [];
   bookedSeats: string[] = [];
   selectedSeats: string[] = [];
+  busNumber!: string; // Added
+
+  // Array to store passenger details for each selected seat
+  passengers: { 
+    name: string; 
+    age: number; 
+    seatNumber: string; 
+    berth: string;
+    invalidName?: boolean;
+    invalidAge?: boolean;
+  }[] = [];
 
   maxSeats = 6;
   isBooking = false;
   lastRefresh = new Date();
   isRefreshing = false;
   private refreshTimer: any;
+
+  // Passenger Form State
+  showPassengerForm = false;
 
   sleeperUpperSeats: BusSeat[] = [];
   sleeperLowerSeats: BusSeat[] = [];
@@ -45,7 +60,8 @@ export class BusSeatSelectionComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private service: BusBookingService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    @Inject(PLATFORM_ID) private platformId: any
   ) {}
 
   ngOnInit() {
@@ -55,6 +71,9 @@ export class BusSeatSelectionComponent implements OnInit, OnDestroy {
 
     this.busName =
       this.route.snapshot.queryParamMap.get('busName')!;
+
+    this.busNumber =
+      this.route.snapshot.queryParamMap.get('busNumber')!;
 
     this.travelDate =
       this.route.snapshot.queryParamMap.get('date')!;
@@ -191,7 +210,9 @@ export class BusSeatSelectionComponent implements OnInit, OnDestroy {
 
     if (index > -1) {
       this.selectedSeats.splice(index, 1);
+      this.removePassenger(seatId); // added
     } else {
+
       if (this.selectedSeats.length >= this.maxSeats) {
         this.dialog.open(PopupComponent, {
           width: '360px',
@@ -204,6 +225,28 @@ export class BusSeatSelectionComponent implements OnInit, OnDestroy {
       }
 
       this.selectedSeats.push(seatId);
+      
+      // Get seat details to determine berth
+      const seat = this.allSeats.find(s => s.id === seatId);
+      
+      // Add a passenger placeholder for this seat
+      this.passengers.push({
+        name: '', 
+        age: 0, 
+        seatNumber: seatId,
+        berth: seat?.section || 'Lower',
+        invalidName: false,
+        invalidAge: false
+      });
+
+    }
+  }
+
+  // Helper to remove passenger when seat is unselected
+  removePassenger(seatId: string) {
+    const index = this.passengers.findIndex(p => p.seatNumber === seatId);
+    if (index > -1) {
+      this.passengers.splice(index, 1);
     }
   }
 
@@ -228,9 +271,41 @@ export class BusSeatSelectionComponent implements OnInit, OnDestroy {
     return 'Tap to reserve';
   }
 
-  confirmBooking() {
+  // PASSENGER FORM CONTROLS
+  openPassengerForm() {
+    this.showPassengerForm = true;
+  }
 
-    const userId = Number(localStorage.getItem('userId'));
+  closePassengerForm() {
+    this.showPassengerForm = false;
+  }
+
+  confirmBooking() {
+    // Basic validation
+    let hasError = false;
+    this.passengers.forEach(p => {
+      if (!p.name || p.name.trim().length < 3) {
+        p.invalidName = true;
+        hasError = true;
+      }
+      if (!p.age || p.age <= 0) {
+        p.invalidAge = true;
+        hasError = true;
+      }
+    });
+
+
+    if (hasError) return;
+
+    this.finalizeBooking();
+  }
+
+  finalizeBooking() {
+    let userId = 0;
+    if (isPlatformBrowser(this.platformId)) {
+      const storedUserId = localStorage.getItem('userId');
+      userId = storedUserId ? Number(storedUserId) : 0;
+    }
 
     if (!userId) {
       this.dialog.open(PopupComponent, {
@@ -243,59 +318,89 @@ export class BusSeatSelectionComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Ensure busNumber is not the string "null" or "undefined"
+    let finalBusNumber = this.busNumber;
+    if (finalBusNumber === 'null' || finalBusNumber === 'undefined' || !finalBusNumber) {
+        finalBusNumber = this.busName || 'BUS-GENERIC'; 
+    }
+
+    // Use PascalCase for the backend DTO
+    const finalPassengers = this.passengers.map((p) => ({
+      Name: p.name,
+      Age: p.age,
+      SeatNumber: p.seatNumber,
+      Berth: p.berth
+    }));
+
     const payload = {
-      busId: this.busId,
-      busName: this.busName,
-      userId: userId,
-      travelDate: this.travelDate,
-      seatNumbers: this.selectedSeats
+      BusNumber: finalBusNumber,
+      TravelDate: new Date(this.travelDate).toISOString(),
+      Passengers: finalPassengers
     };
+
+    console.log('Final Bus Booking Payload (book-multiple):', JSON.stringify(payload, null, 2));
 
     this.isBooking = true;
 
     this.service.bookSeats(payload).subscribe({
-      next: () => {
+      next: (blob: Blob) => {
         this.isBooking = false;
         this.selectedSeats = [];
+        this.passengers = []; 
+        this.showPassengerForm = false; // Close modal
         this.loadBookedSeats();
+
+        // Download the PDF
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `IRBS_Bus_Ticket_${new Date().getTime()}.pdf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
 
         this.dialog.open(PopupComponent, {
           width: '360px',
           data: {
             title: 'Booking Successful! 🎉',
-            message: 'Your seats successfully booked!'
+            message: 'Your seats successfully booked! Ticket downloaded.'
           }
         });
       },
-      error: err => {
-        this.isBooking = false;
 
-        if (err.status === 401) {
-          this.dialog.open(PopupComponent, {
-            width: '360px',
-            data: {
-              title: 'Login Required',
-              message: 'Please login and try again.'
+      error: (err: any) => {
+        this.isBooking = false;
+        console.error('Booking error detail:', err);
+
+        // Handle Blob error response from server (since responseType is blob)
+        if (err.error instanceof Blob) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result as string;
+            console.error('Server error message:', result);
+            try {
+              const errorObj = JSON.parse(result);
+              this.showErrorPopup(errorObj.message || errorObj || 'Booking failed');
+            } catch (e) {
+              this.showErrorPopup(result || 'Booking failed');
             }
-          });
-        } else if (err.status === 400) {
-          this.dialog.open(PopupComponent, {
-            width: '360px',
-            data: {
-              title: 'Booking Failed',
-              message: err?.error || 'Seats already booked.'
-            }
-          });
+          };
+          reader.readAsText(err.error);
         } else {
-          this.dialog.open(PopupComponent, {
-            width: '360px',
-            data: {
-              title: 'Booking Failed',
-              message: 'Something went wrong. Try again.'
-            }
-          });
+          const msg = err.error?.message || err.error || 'Booking failed. Please try again.';
+          this.showErrorPopup(msg);
         }
       }
     });
   }
+
+  private showErrorPopup(message: string) {
+    this.dialog.open(PopupComponent, {
+      width: '360px',
+      data: {
+        title: 'Booking Failed ❌',
+        message: message
+      }
+    });
+  }
 }
+
