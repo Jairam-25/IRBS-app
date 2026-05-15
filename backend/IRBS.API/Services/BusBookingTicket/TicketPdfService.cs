@@ -29,7 +29,7 @@ namespace IRBS.API.Services
                         {
                             col.Spacing(10);
 
-                            col.Item().Text($"Booking ID : {booking.Id}");                           
+                            col.Item().Text($"Booking ID : {booking.BusBookingNumber}");                           
                             col.Item().Text($"Bus No.    : {booking.Bus?.BusNumber}");
                             col.Item().Text($"Bus Name   : {booking.Bus?.BusName}");
                             col.Item().Text($"Route      : {booking.Bus?.FromCity} to {booking.Bus?.ToCity}");
