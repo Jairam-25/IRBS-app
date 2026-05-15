@@ -20,6 +20,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { BusBookingService } from '../../../_services/bus-service/bus-booking-service';
 
 import { BusInterface } from '../../../_interface/bus-interface';
+import { environment } from '../../../../_environments/environment';
 
 @Component({
   selector: 'app-bus-search',
@@ -70,7 +71,7 @@ export class BusSearchComponent implements OnInit {
 
   // Load cities from API
   loadCities() {
-    this.http.get<any[]>('https://localhost:7280/api/city')
+    this.http.get<any[]>(`${environment.apiUrl}/city`)
       .subscribe({
         next: (res) => {
           this.cities = res || [];

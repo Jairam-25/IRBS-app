@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../_environments/environment';
 
 import { Observable } from 'rxjs';
 
@@ -8,7 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class BusBookingService {
 
-  private baseUrl = 'https://localhost:7280/api';
+private baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 

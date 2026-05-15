@@ -231,8 +231,6 @@ export class TrainListComponent implements OnInit, OnDestroy {
   // =========================
   selectTrain(train: any) {
 
-    console.log('SELECTED TRAIN:', train);
-
     if (!this.selectedDate) {
       this.showPopup('Select date', 'Select date first!');
       return;
